@@ -64,6 +64,10 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const scratchRef = useRef<Uint8Array<ArrayBuffer>>(new Uint8Array(BAND_COUNT));
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  /** Set when a track change should start playing regardless of prior state. */
+  const playOnChangeRef = useRef(false);
+  /** True while swapping src, so the load's own pause event is ignored. */
+  const switchingRef = useRef(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [durations, setDurations] = useState<Record<string, number>>({});
@@ -103,8 +107,17 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
+    const onPlay = () => {
+      switchingRef.current = false;
+      setIsPlaying(true);
+      claimAudio("music");
+    };
+    // Hold the bus to the element's real state, so a pause from any source —
+    // not just our own button — hands the background mix back.
+    const onPause = () => {
+      setIsPlaying(false);
+      if (!switchingRef.current) releaseAudio("music");
+    };
     const onTime = () => setCurrentTime(audio.currentTime);
     const onMeta = () => {
       setCurrentTime(audio.currentTime);
@@ -195,8 +208,10 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       const audio = audioRef.current;
       if (!audio) return;
 
-      // Selecting a different track always starts it, rather than toggling.
+      // Picking a different track is an explicit request to hear it, so it
+      // starts playing even if nothing was playing before.
       if (index != null && index !== currentIndex) {
+        playOnChangeRef.current = true;
         select(index);
         return;
       }
@@ -230,6 +245,12 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const next = useCallback(() => select(currentIndex + 1), [currentIndex, select]);
   const previous = useCallback(() => select(currentIndex - 1), [currentIndex, select]);
 
+  // A track running out should roll into the next one rather than stopping.
+  const advance = useCallback(() => {
+    playOnChangeRef.current = true;
+    select(currentIndex + 1);
+  }, [currentIndex, select]);
+
   // Changing track mid-play should keep playing, without an autoplay surprise
   // on first mount — hence the guard on `isPlaying`.
   const wasPlayingRef = useRef(false);
@@ -240,8 +261,16 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    switchingRef.current = true;
     audio.load();
-    if (wasPlayingRef.current) playCurrent();
+    if (wasPlayingRef.current || playOnChangeRef.current) playCurrent();
+    playOnChangeRef.current = false;
+
+    // If the swap never reaches `play` (e.g. it was paused), stop suppressing.
+    const settle = window.setTimeout(() => {
+      switchingRef.current = false;
+    }, 400);
+    return () => window.clearTimeout(settle);
     // Re-running only when the track changes is the point.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
@@ -305,7 +334,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         ref={audioRef}
         src={currentTrack.audio}
         preload="metadata"
-        onEnded={next}
+        onEnded={advance}
       />
     </MusicContext.Provider>
   );
