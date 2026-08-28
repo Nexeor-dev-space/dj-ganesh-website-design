@@ -17,6 +17,19 @@ import type { Track } from "@/types/music";
 const FFT_SIZE = 128;
 export const BAND_COUNT = FFT_SIZE / 2;
 
+type Graph = { context: AudioContext; analyser: AnalyserNode };
+
+/**
+ * One analyser graph per audio element, for the element's whole lifetime.
+ *
+ * `createMediaElementSource` permanently reroutes an element's output through
+ * the graph, and may only be called once for it. Closing that context — or
+ * calling it a second time after a remount — leaves the element silent. So the
+ * graph is cached against the element and never torn down while it lives; the
+ * WeakMap entry goes when the element does.
+ */
+const graphs = new WeakMap<HTMLAudioElement, Graph>();
+
 type MusicPlayer = {
   tracks: Track[];
   currentTrack: Track;
@@ -60,7 +73,6 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const contextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const scratchRef = useRef<Uint8Array<ArrayBuffer>>(new Uint8Array(BAND_COUNT));
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -146,51 +158,66 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  // Close the graph on unmount so no AudioContext is left open.
+  // On unmount, stop the audio and drop the bus — but leave the graph intact.
+  // Closing the context or disconnecting the source would permanently silence
+  // the element, which survives remounts (Fast Refresh, Strict Mode).
   useEffect(() => {
+    const audio = audioRef.current;
     return () => {
+      audio?.pause();
       releaseAudio("music");
-      sourceRef.current?.disconnect();
-      analyserRef.current?.disconnect();
-      const context = contextRef.current;
-      if (context && context.state !== "closed") void context.close();
-      sourceRef.current = null;
       analyserRef.current = null;
       contextRef.current = null;
     };
   }, []);
 
+  // Best-effort: the waveform is decoration. Any failure here must leave
+  // playback untouched, so everything is cached and guarded.
   const ensureGraph = useCallback(() => {
     const audio = audioRef.current;
-    if (!audio || analyserRef.current) return;
+    if (!audio) return;
 
-    type LegacyWindow = Window & { webkitAudioContext?: typeof AudioContext };
-    const Ctor = window.AudioContext ?? (window as LegacyWindow).webkitAudioContext;
-    if (!Ctor) return; // No Web Audio: playback still works, bars stay flat.
+    let graph = graphs.get(audio);
 
-    const context = new Ctor();
-    const analyser = context.createAnalyser();
-    analyser.fftSize = FFT_SIZE;
-    analyser.smoothingTimeConstant = 0.82;
+    if (!graph) {
+      try {
+        type LegacyWindow = Window & { webkitAudioContext?: typeof AudioContext };
+        const Ctor =
+          window.AudioContext ?? (window as LegacyWindow).webkitAudioContext;
+        if (!Ctor) return; // No Web Audio: playback works, bars stay flat.
 
-    // Only ever called once per element — the element outlives track changes.
-    const source = context.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(context.destination);
+        const context = new Ctor();
+        const analyser = context.createAnalyser();
+        analyser.fftSize = FFT_SIZE;
+        analyser.smoothingTimeConstant = 0.82;
 
-    contextRef.current = context;
-    analyserRef.current = analyser;
-    sourceRef.current = source;
+        const source = context.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(context.destination);
+
+        graph = { context, analyser };
+        graphs.set(audio, graph);
+      } catch {
+        return; // Leave the element routed straight to the speakers.
+      }
+    }
+
+    contextRef.current = graph.context;
+    analyserRef.current = graph.analyser;
+    void graph.context.resume();
   }, []);
 
   const playCurrent = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    ensureGraph();
-    void contextRef.current?.resume();
+    // Claim the bus and start the audio before touching Web Audio, so the
+    // background mix ducks and the track plays even if the graph cannot be
+    // built. The visualiser is the only thing that suffers.
     claimAudio("music");
-    void audio.play().catch(() => setIsPlaying(false));
+    const started = audio.play();
+    ensureGraph();
+    void started?.catch(() => setIsPlaying(false));
   }, [ensureGraph]);
 
   const select = useCallback(
