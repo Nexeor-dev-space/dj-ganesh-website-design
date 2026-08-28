@@ -41,14 +41,16 @@ public/       images · videos · audio · fonts
 - **Layout**: wrap every section in `<Container>` (`components/layout/Container.tsx`)
   or the `.container-page` class so the whole site shares one max-width
   (1440px) and gutter.
+- **Accent**: one signature colour, `--accent` (`#B8FF66`), used sparingly —
+  small labels, nav hover, CTA hover, the sound indicator. Never as a fill.
 - **Assets**: client-provided media goes in `public/audio`, `public/images`,
   `public/videos`. Do not rename or re-encode client audio files.
 
 ## Hero media
 
-`lib/media.ts` resolves the hero backdrop from `public/` at build time — no code
-change is needed to swap it:
-
-1. `public/videos/hero.mp4` — used if present (autoplay, muted, loop, inline).
-2. `public/images/dj-ganesh-hero.jpg` — image fallback, and the video poster.
-3. Neither present — a CSS-only dark backdrop renders instead.
+- **Photograph**: `public/images/banner-bg.png` is the fixed visual identity of
+  the first viewport. It is never modified on disk — grade, grain, vignette and
+  scrims are applied in CSS (`.hero-photo`, `.overlay-*` in `globals.css`).
+- **Sound**: the hero toggle activates automatically once a client mix is placed
+  at `public/audio/hero-mix.mp3` (see `lib/media.ts`). Until then the control
+  renders disabled. Nothing ever autoplays.

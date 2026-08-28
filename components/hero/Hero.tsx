@@ -1,10 +1,14 @@
+import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { HeroBackground } from "@/components/hero/HeroBackground";
-import { ButtonLink } from "@/components/ui/Button";
-import { ArrowDownIcon, ArrowRightIcon, socialIcons } from "@/components/ui/Icons";
-import { socialLinks } from "@/lib/site";
+import { HeroSoundToggle } from "@/components/hero/HeroSoundToggle";
+import { resolveHeroAudio } from "@/lib/media";
+
+const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 export function Hero() {
+  const audioSrc = resolveHeroAudio();
+
   return (
     <section
       id="hero"
@@ -13,86 +17,69 @@ export function Hero() {
     >
       <HeroBackground />
 
-      {/* Editorial content — left aligned, vertically centred */}
-      <Container className="relative z-10 flex flex-1 items-end pt-3xl pb-2xl md:pt-4xl md:pb-3xl lg:items-center">
-        <div className="w-full max-w-[700px]">
-          <p
-            className="reveal text-[11px] uppercase tracking-[0.22em] text-muted-foreground md:text-[12px]"
-            style={{ "--reveal-delay": "400ms" } as React.CSSProperties}
-          >
-            BollyAfro Pioneer · Est. 1998
-          </p>
+      {/* The lockup sits low and left, in the darkest part of the frame and
+          well clear of his face and hands. */}
+      <Container className="relative z-10 flex flex-1 flex-col justify-end pt-5xl pb-xl">
+        <p
+          className="reveal text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
+          style={delay(650)}
+        >
+          BollyAfro Pioneer
+        </p>
 
-          <h1
-            id="hero-title"
-            className="hero-title reveal mt-md"
-            style={{ "--reveal-delay": "500ms" } as React.CSSProperties}
-          >
-            {/* Stacked deliberately — the name reads as a poster lockup and
-                stays on two lines at every breakpoint. */}
-            <span className="block">DJ</span>
-            <span className="block">Ganesh</span>
-          </h1>
+        <h1 id="hero-title" className="hero-title mt-md md:mt-lg">
+          <span className="line-mask">
+            <span style={delay(350)}>DJ</span>
+          </span>
+          <span className="line-mask">
+            <span style={delay(450)}>Ganesh</span>
+          </span>
+        </h1>
 
-          <div
-            className="reveal mt-lg max-w-[520px]"
-            style={{ "--reveal-delay": "700ms" } as React.CSSProperties}
-          >
-            <p className="text-lg font-medium tracking-tight text-foreground md:text-2xl">
-              India&apos;s #1 Celebrity &amp; Wedding DJ
-            </p>
-            <p className="mt-sm text-[13px] leading-relaxed text-muted-foreground md:text-sm">
-              28 years behind the decks · 5000+ events · 45+ countries
-            </p>
-          </div>
+        <p
+          className="reveal mt-lg text-[11px] font-light uppercase tracking-[0.22em] text-white/60 md:mt-xl md:text-[12px]"
+          style={delay(800)}
+        >
+          India&apos;s #1 Celebrity &amp; Wedding DJ
+        </p>
 
-          <div
-            className="reveal mt-xl flex flex-col items-start gap-md sm:flex-row sm:items-center sm:gap-2xl"
-            style={{ "--reveal-delay": "900ms" } as React.CSSProperties}
+        <div className="reveal mt-xl flex flex-col items-start gap-lg sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2xl sm:gap-y-md"
+          style={delay(950)}>
+          <a
+            href="#contact"
+            className="group flex items-center gap-md border-b border-white/25 pb-sm text-[11px] font-light uppercase tracking-[0.24em] transition-colors duration-300 hover:border-accent hover:text-accent md:text-[12px]"
           >
-            <ButtonLink href="#contact">
-              Book DJ Ganesh
-              <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none" />
-            </ButtonLink>
+            Book DJ Ganesh
+            <span
+              aria-hidden
+              className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5 motion-reduce:transition-none"
+            >
+              &rarr;
+            </span>
+          </a>
 
-            <ButtonLink href="#music" variant="ghost">
-              Explore Music
-              <ArrowDownIcon className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-y-1 motion-reduce:transition-none" />
-            </ButtonLink>
-          </div>
+          <a
+            href="#music"
+            className="text-[11px] font-light uppercase tracking-[0.24em] text-white/45 transition-colors duration-300 hover:text-accent md:text-[12px]"
+          >
+            Listen to Music
+          </a>
         </div>
       </Container>
 
-      {/* Utility rail — socials + scroll indicator */}
+      {/* Utility rail — deliberately quiet */}
       <Container
-        className="reveal-fade relative z-10 flex items-end justify-between gap-md pb-lg md:pb-xl"
-        style={{ "--reveal-delay": "1100ms" } as React.CSSProperties}
+        className="reveal-fade relative z-10 flex items-center justify-between gap-md pb-lg md:pb-xl"
+        style={delay(1200)}
       >
-        <ul className="flex items-center gap-lg">
-          {socialLinks.map((social) => {
-            const Icon = socialIcons[social.icon];
-            return (
-              <li key={social.href}>
-                <a
-                  href={social.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  aria-label={`${social.label} — opens in a new tab`}
-                  className="block text-white/55 transition-colors duration-200 hover:text-foreground"
-                >
-                  <Icon className="h-[18px] w-[18px]" />
-                </a>
-              </li>
-            );
-          })}
-        </ul>
+        <HeroSoundToggle src={audioSrc} />
 
         <a
-          href="#music"
-          className="group hidden items-center gap-md text-[10px] uppercase tracking-[0.22em] text-muted-foreground transition-colors duration-200 hover:text-foreground sm:flex"
+          href="#about"
+          className="group hidden items-center gap-md text-[10px] font-light uppercase tracking-[0.24em] text-white/45 transition-colors duration-200 hover:text-accent sm:flex"
         >
           Scroll to explore
-          <span className="scroll-line relative block h-10 w-px bg-white/20" />
+          <span className="scroll-line relative block h-8 w-px bg-white/15" aria-hidden />
         </a>
       </Container>
     </section>

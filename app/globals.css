@@ -14,6 +14,9 @@
   --muted-foreground: rgba(255, 255, 255, 0.65);
   --border: rgba(255, 255, 255, 0.12);
 
+  /* The single signature accent — electric, atmospheric, used sparingly. */
+  --accent: #b8ff66;
+
   /* Layout */
   --container-max-width: 1440px;
   --container-padding-mobile: 20px;
@@ -57,6 +60,7 @@
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-accent: var(--accent);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -263,35 +267,24 @@
   /* Radial falloff towards the edges of the frame. */
   .overlay-vignette {
     background: radial-gradient(
-      118% 88% at 55% 42%,
-      transparent 34%,
-      rgba(5, 5, 5, 0.22) 70%,
-      rgba(5, 5, 5, 0.6) 100%
+      105% 78% at 52% 34%,
+      transparent 26%,
+      rgba(5, 5, 5, 0.3) 64%,
+      rgba(5, 5, 5, 0.82) 100%
     );
   }
 
   /* Fine film grain — pure CSS, no asset request. */
   .overlay-grain {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.055;
+    opacity: 0.07;
     mix-blend-mode: overlay;
   }
 
-  /* Fallback backdrop when no hero video or image has been supplied yet. */
-  .overlay-placeholder {
-    background:
-      radial-gradient(
-        62% 48% at 70% 26%,
-        rgba(255, 255, 255, 0.22) 0%,
-        rgba(255, 255, 255, 0.05) 45%,
-        transparent 72%
-      ),
-      radial-gradient(
-        48% 40% at 26% 74%,
-        rgba(255, 255, 255, 0.12) 0%,
-        transparent 68%
-      ),
-      linear-gradient(155deg, #16161a 0%, #0b0b0d 48%, #000 100%);
+  /* Grade for the supplied banner: deeper blacks, lifted grays, more bite.
+     Applied in CSS only — public/images/banner-bg.png is never modified. */
+  .hero-photo {
+    filter: grayscale(1) contrast(1.18) brightness(0.94);
   }
 
   /* Thin travelling line under the scroll indicator. */
@@ -312,24 +305,59 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Hero display type                                                         */
+/*  Hero display type — oversized, editorial, art-directed per breakpoint      */
 /* -------------------------------------------------------------------------- */
 
 @layer components {
   .hero-title {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(56px, 17vw, 96px);
-    line-height: 0.88;
-    letter-spacing: var(--tracking-display);
+    font-size: clamp(58px, 17vw, 100px); /* mobile */
+    line-height: 0.82;
+    letter-spacing: -0.045em;
     text-transform: uppercase;
-    text-wrap: balance;
   }
 
   @media (width >= 768px) {
     .hero-title {
-      font-size: clamp(72px, 10vw, 180px);
-      line-height: 0.86;
+      font-size: clamp(70px, 12vw, 140px); /* tablet */
+      line-height: 0.8;
     }
+  }
+
+  @media (width >= 1280px) {
+    .hero-title {
+      font-size: clamp(90px, 13vw, 220px); /* desktop */
+      line-height: 0.8;
+    }
+  }
+
+  /* Clipped upward reveal — one mask per line of the lockup. */
+  .line-mask {
+    display: block;
+    overflow: hidden;
+  }
+
+  .line-mask > span {
+    display: block;
+    animation: line-rise 1000ms var(--ease-out) both;
+    animation-delay: var(--reveal-delay, 0ms);
+    will-change: transform;
+  }
+
+  @keyframes line-rise {
+    from {
+      transform: translate3d(0, 105%, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line-mask > span {
+    animation: none;
+    transform: none;
   }
 }

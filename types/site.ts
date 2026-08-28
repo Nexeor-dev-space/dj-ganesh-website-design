@@ -10,11 +10,3 @@ export type NavLink = {
   label: string;
   href: string;
 };
-
-export type SocialIconName = "instagram" | "youtube";
-
-export type SocialLink = {
-  label: string;
-  href: string;
-  icon: SocialIconName;
-};

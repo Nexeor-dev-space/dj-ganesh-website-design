@@ -13,21 +13,9 @@ export const siteConfig: SiteConfig = {
 };
 
 export const navLinks = [
+  { label: "About", href: "#about" },
   { label: "Music", href: "#music" },
   { label: "Shows", href: "#shows" },
-  { label: "About", href: "#about" },
+  { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
-] as const;
-
-export const socialLinks = [
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/djganesh_djg/",
-    icon: "instagram",
-  },
-  {
-    label: "YouTube",
-    href: "https://www.youtube.com/@DJGANESH_DJG",
-    icon: "youtube",
-  },
 ] as const;
