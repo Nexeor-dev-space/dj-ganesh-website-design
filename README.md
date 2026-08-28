@@ -43,3 +43,12 @@ public/       images · videos · audio · fonts
   (1440px) and gutter.
 - **Assets**: client-provided media goes in `public/audio`, `public/images`,
   `public/videos`. Do not rename or re-encode client audio files.
+
+## Hero media
+
+`lib/media.ts` resolves the hero backdrop from `public/` at build time — no code
+change is needed to swap it:
+
+1. `public/videos/hero.mp4` — used if present (autoplay, muted, loop, inline).
+2. `public/images/dj-ganesh-hero.jpg` — image fallback, and the video poster.
+3. Neither present — a CSS-only dark backdrop renders instead.

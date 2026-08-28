@@ -17,8 +17,8 @@
   /* Layout */
   --container-max-width: 1440px;
   --container-padding-mobile: 20px;
+  --container-padding-tablet: 32px;
   --container-padding-desktop: clamp(24px, 4vw, 64px);
-  --container-breakpoint: 640px;
 
   /* Spacing scale — 8 / 16 / 24 / 32 / 48 / 64 / 96 / 120 / 160 */
   --space-xs: 8px;
@@ -34,6 +34,19 @@
   /* Typography */
   --font-size-base: 16px;
   --line-height-base: 1.6;
+  --tracking-eyebrow: 0.22em;
+  --tracking-display: -0.04em;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+  --duration-slow: 800ms;
+
+  /* Surfaces */
+  --border-strong: rgba(255, 255, 255, 0.24);
+  --overlay-strong: rgba(5, 5, 5, 0.72);
 }
 
 /* Expose the tokens to Tailwind: bg-background, text-muted-foreground,
@@ -47,6 +60,8 @@
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
 
   --spacing-xs: var(--space-xs);
   --spacing-sm: var(--space-sm);
@@ -59,6 +74,7 @@
   --spacing-5xl: var(--space-5xl);
 
   --container-page: var(--container-max-width);
+  --ease-brand: var(--ease-out);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -145,7 +161,175 @@
 
   @media (width >= 640px) {
     .container-page {
+      padding-inline: var(--container-padding-tablet);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .container-page {
       padding-inline: var(--container-padding-desktop);
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Entrance animation                                                        */
+/*  Shared by the hero (and reusable by future sections). Elements opt in     */
+/*  with `.reveal` + an inline `--reveal-delay`.                              */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes reveal-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Slow drift for a still hero image, so the frame feels alive. */
+  @keyframes hero-drift {
+    from {
+      transform: scale(1.02);
+    }
+    to {
+      transform: scale(1.06);
+    }
+  }
+
+  @keyframes scroll-line {
+    0% {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    45% {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+    55% {
+      transform: scaleY(1);
+      transform-origin: bottom;
+    }
+    100% {
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+  }
+
+  .reveal {
+    animation: reveal-up 900ms var(--ease-out) both;
+    animation-delay: var(--reveal-delay, 0ms);
+    will-change: transform, opacity;
+  }
+
+  .reveal-fade {
+    animation: reveal-fade 1200ms var(--ease-out) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-fade {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Cinematic media layers                                                    */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* Slow drift keeps a still frame feeling alive. Video needs no extra motion. */
+  .media-drift {
+    animation: hero-drift 24s var(--ease-in-out) infinite alternate;
+    will-change: transform;
+  }
+
+  /* Radial falloff towards the edges of the frame. */
+  .overlay-vignette {
+    background: radial-gradient(
+      118% 88% at 55% 42%,
+      transparent 34%,
+      rgba(5, 5, 5, 0.22) 70%,
+      rgba(5, 5, 5, 0.6) 100%
+    );
+  }
+
+  /* Fine film grain — pure CSS, no asset request. */
+  .overlay-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.055;
+    mix-blend-mode: overlay;
+  }
+
+  /* Fallback backdrop when no hero video or image has been supplied yet. */
+  .overlay-placeholder {
+    background:
+      radial-gradient(
+        62% 48% at 70% 26%,
+        rgba(255, 255, 255, 0.22) 0%,
+        rgba(255, 255, 255, 0.05) 45%,
+        transparent 72%
+      ),
+      radial-gradient(
+        48% 40% at 26% 74%,
+        rgba(255, 255, 255, 0.12) 0%,
+        transparent 68%
+      ),
+      linear-gradient(155deg, #16161a 0%, #0b0b0d 48%, #000 100%);
+  }
+
+  /* Thin travelling line under the scroll indicator. */
+  .scroll-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--foreground);
+    animation: scroll-line 2.4s var(--ease-in-out) infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-drift,
+  .scroll-line::after {
+    animation: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Hero display type                                                         */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(56px, 17vw, 96px);
+    line-height: 0.88;
+    letter-spacing: var(--tracking-display);
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  @media (width >= 768px) {
+    .hero-title {
+      font-size: clamp(72px, 10vw, 180px);
+      line-height: 0.86;
     }
   }
 }
