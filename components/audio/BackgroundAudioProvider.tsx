@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { claimAudio, getAudioOwner, releaseAudio, subscribeAudioOwner } from "@/lib/audio-bus";
 
 type BackgroundAudioEngine = {
   src: string | null;
@@ -24,6 +25,9 @@ const BackgroundAudioContext = createContext<BackgroundAudioEngine | null>(null)
  * ever plays audibly on its own. The single volume control is what unmutes
  * it, and clicking it is a real user gesture, so this never fights (or
  * quietly relies on) an autoplay-with-sound policy.
+ *
+ * The Music section plays the same catalogue, so both share an audio bus:
+ * whichever source the visitor starts last is the one they hear.
  */
 export function BackgroundAudioProvider({
   src,
@@ -46,6 +50,19 @@ export function BackgroundAudioProvider({
     });
   }, [src]);
 
+  // The Music section took over — go silent without touching the visitor's
+  // own preference, so the icon still reflects what they last chose.
+  useEffect(() => {
+    return subscribeAudioOwner((owner) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      if (owner === "music") {
+        audio.muted = true;
+        setIsMuted(true);
+      }
+    });
+  }, []);
+
   function toggle() {
     const audio = audioRef.current;
     if (!audio) return;
@@ -54,8 +71,13 @@ export function BackgroundAudioProvider({
     audio.muted = nextMuted;
     setIsMuted(nextMuted);
 
-    if (!nextMuted && audio.paused) {
-      void audio.play().catch(() => setIsMuted(true));
+    if (!nextMuted) {
+      // Unmuting here is an explicit choice, so take the bus back; the Music
+      // player is listening and will pause itself.
+      claimAudio("background");
+      if (audio.paused) void audio.play().catch(() => setIsMuted(true));
+    } else if (getAudioOwner() === "background") {
+      releaseAudio("background");
     }
   }
 

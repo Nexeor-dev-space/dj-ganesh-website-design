@@ -437,3 +437,285 @@
     cursor: auto;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Section 03 — The Music                                                     */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* Movement hands over to sound: a thin line that breathes across the top
+     of the section, echoing the map's horizon without another background. */
+  .pulse-line {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.12) 22%,
+      var(--accent) 50%,
+      rgba(255, 255, 255, 0.12) 78%,
+      transparent 100%
+    );
+    opacity: 0.5;
+    animation: pulse-breathe 6s var(--ease-in-out) infinite;
+  }
+
+  @keyframes pulse-breathe {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Cover art eases in whenever the active track changes. */
+  .artwork-swap {
+    animation: artwork-in 700ms var(--ease-out) both;
+  }
+
+  @keyframes artwork-in {
+    from {
+      opacity: 0;
+      transform: scale(1.06);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Barely-there accent bloom around the artwork while a track plays. */
+  .artwork-glow {
+    background: radial-gradient(
+      120% 90% at 50% 100%,
+      rgba(184, 255, 102, 0.16) 0%,
+      transparent 62%
+    );
+  }
+
+  /* Transport ------------------------------------------------------------- */
+
+  .play-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--foreground);
+    transition:
+      border-color 240ms var(--ease-out),
+      color 240ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+
+  .play-button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.06);
+  }
+
+  .transport-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px minimum touch target, without a visible box that size. */
+    width: 44px;
+    height: 44px;
+    margin-inline: -12px;
+    color: rgba(255, 255, 255, 0.55);
+    transition: color 200ms var(--ease-out);
+  }
+
+  .transport-button:hover {
+    color: var(--foreground);
+  }
+
+  /* Progress -------------------------------------------------------------- */
+
+  .progress-thumb {
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .progress-track:hover .progress-thumb,
+  .progress-track:focus-visible .progress-thumb {
+    opacity: 1;
+  }
+
+  /* Track list ------------------------------------------------------------ */
+
+  .track-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: var(--space-md);
+    /* Comfortably past a 44px touch target at every width. */
+    padding-block: var(--space-md);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    transition: border-color 240ms var(--ease-out);
+  }
+
+  .track-row:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .track-row:hover,
+  .track-row[data-active="true"] {
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .track-row__index {
+    display: flex;
+    width: 26px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.35);
+    transition: color 240ms var(--ease-out);
+  }
+
+  .track-row:hover .track-row__index,
+  .track-row[data-active="true"] .track-row__index {
+    color: var(--accent);
+  }
+
+  .track-row__title {
+    display: block;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.82);
+    transition: color 240ms var(--ease-out);
+    /* Wrap to a second line rather than truncating — the longer titles lose
+       their ending otherwise on narrow screens. Two lines is the ceiling, so
+       the row can never open up indefinitely. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  .track-row:hover .track-row__title,
+  .track-row[data-active="true"] .track-row__title {
+    color: var(--foreground);
+  }
+
+  .track-row[data-active="true"] .track-row__title {
+    color: var(--accent);
+  }
+
+  .track-row__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.38);
+    min-width: 0;
+  }
+
+  .track-row__tag {
+    flex-shrink: 0;
+  }
+
+  .track-row__time {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.32);
+  }
+
+  .track-row__icon {
+    display: flex;
+    width: 22px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    color: rgba(255, 255, 255, 0.25);
+    transition: color 240ms var(--ease-out);
+  }
+
+  .track-row:hover .track-row__icon,
+  .track-row[data-active="true"] .track-row__icon {
+    color: var(--accent);
+  }
+
+  @media (width >= 768px) {
+    .track-row__title {
+      font-size: 14px;
+    }
+  }
+
+  /* Three-bar equaliser shown in place of the index on the playing row. */
+  .eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 11px;
+  }
+
+  .eq > span {
+    display: block;
+    width: 2px;
+    height: 100%;
+    background-color: var(--accent);
+    transform-origin: bottom;
+    animation: eq-bounce 900ms var(--ease-in-out) infinite alternate;
+  }
+
+  .eq > span:nth-child(2) {
+    animation-delay: 180ms;
+  }
+
+  .eq > span:nth-child(3) {
+    animation-delay: 360ms;
+  }
+
+  @keyframes eq-bounce {
+    from {
+      transform: scaleY(0.28);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-line,
+  .artwork-swap,
+  .eq > span {
+    animation: none;
+  }
+
+  .artwork-swap {
+    opacity: 1;
+    transform: none;
+  }
+
+  .eq > span {
+    transform: scaleY(0.6);
+  }
+
+  .play-button:hover {
+    transform: none;
+  }
+}
