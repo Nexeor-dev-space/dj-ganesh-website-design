@@ -310,11 +310,17 @@
 
 @layer components {
   /* One unbroken line at every width — the size is tuned so the lockup
-     always fits the container gutters without wrapping or overflowing. */
+     always fits the container gutters without wrapping or overflowing.
+     Consul's glyphs measure ~25% wider per unit of font-size than the
+     Space Grotesk fallback, so every clamp tier below is that same shape
+     scaled down (×0.8) rather than reused as-is — reusing the old numbers
+     clips the line at narrow widths. */
   .hero-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(46px, 17vw, 100px); /* mobile */
+    /* Consul ships one weight only; falling back to the bold display face
+       (rather than faking bold on Consul) if it hasn't loaded yet. */
+    font-family: var(--font-consul), var(--font-display);
+    font-weight: 400;
+    font-size: clamp(37px, 13.6vw, 80px); /* mobile */
     line-height: 0.85;
     letter-spacing: -0.045em;
     text-transform: uppercase;
@@ -323,14 +329,14 @@
 
   @media (width >= 768px) {
     .hero-title {
-      font-size: clamp(70px, 12vw, 140px); /* tablet */
+      font-size: clamp(56px, 9.6vw, 112px); /* tablet */
       line-height: 0.82;
     }
   }
 
   @media (width >= 1280px) {
     .hero-title {
-      font-size: clamp(90px, 13vw, 220px); /* desktop */
+      font-size: clamp(72px, 10.4vw, 176px); /* desktop */
       line-height: 0.82;
     }
   }
