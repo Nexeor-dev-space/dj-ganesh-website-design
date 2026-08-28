@@ -1,16 +1,38 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 
-/**
- * The hero mix for the in-page sound toggle.
- *
- * Drop a client-supplied file at this exact path and the control activates on
- * the next build; until then it renders disabled rather than pointing at a
- * filename that does not exist.
- */
-export const heroAudioSrc = "/audio/hero-mix.mp3";
+const AUDIO_DIR = "audio";
+const AUDIO_EXTENSIONS = [".mp3", ".m4a", ".ogg", ".wav"];
 
+/**
+ * Preferred hero mixes, in order. The first name that actually exists in
+ * `public/audio` wins; if none match, the first audio file found is used.
+ * Nothing here is assumed to exist — the directory is the source of truth.
+ */
+const PREFERRED_HERO_MIXES = ["hero-mix", "hero", "openformat", "bollywood"];
+
+/** Every audio file present in `public/audio`, as public URLs. */
+export function listAudioSources(): string[] {
+  const dir = path.join(process.cwd(), "public", AUDIO_DIR);
+  if (!existsSync(dir)) return [];
+
+  return readdirSync(dir)
+    .filter((file) => AUDIO_EXTENSIONS.includes(path.extname(file).toLowerCase()))
+    .sort()
+    .map((file) => `/${AUDIO_DIR}/${file}`);
+}
+
+/**
+ * The mix the hero should offer. Returns null when no audio has been supplied
+ * yet, so callers can render a disabled control instead of a broken one.
+ */
 export function resolveHeroAudio(): string | null {
-  const onDisk = path.join(process.cwd(), "public", heroAudioSrc);
-  return existsSync(onDisk) ? heroAudioSrc : null;
+  const sources = listAudioSources();
+  if (sources.length === 0) return null;
+
+  const preferred = PREFERRED_HERO_MIXES.map((name) =>
+    sources.find((src) => path.basename(src, path.extname(src)) === name),
+  ).find(Boolean);
+
+  return preferred ?? sources[0];
 }

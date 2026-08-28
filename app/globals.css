@@ -364,3 +364,27 @@
     transform: none;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Interaction layer                                                         */
+/*  The native cursor is hidden only while the custom cursor is mounted, and  */
+/*  only on wide precise-pointer screens. Touch and reduced-motion visitors    */
+/*  keep the system cursor untouched.                                          */
+/* -------------------------------------------------------------------------- */
+
+@media (width >= 1024px) and (hover: hover) and (pointer: fine) {
+  html[data-custom-cursor="on"],
+  html[data-custom-cursor="on"] body,
+  html[data-custom-cursor="on"] a,
+  html[data-custom-cursor="on"] button {
+    cursor: none;
+  }
+
+  /* Text entry keeps a real caret — never take that away. */
+  html[data-custom-cursor="on"] input,
+  html[data-custom-cursor="on"] textarea,
+  html[data-custom-cursor="on"] select,
+  html[data-custom-cursor="on"] [contenteditable="true"] {
+    cursor: auto;
+  }
+}
