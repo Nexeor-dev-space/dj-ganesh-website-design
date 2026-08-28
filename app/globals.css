@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+/* -------------------------------------------------------------------------- */
+/*  Design tokens                                                             */
+/*  Single source of truth for the DJ Ganesh website. Change values here —    */
+/*  never hardcode colours or spacing inside sections.                        */
+/* -------------------------------------------------------------------------- */
+
+:root {
+  /* Colour — premium near-black foundation */
+  --background: #050505;
+  --surface: #0a0a0a;
+  --foreground: #ffffff;
+  --muted-foreground: rgba(255, 255, 255, 0.65);
+  --border: rgba(255, 255, 255, 0.12);
+
+  /* Layout */
+  --container-max-width: 1440px;
+  --container-padding-mobile: 20px;
+  --container-padding-desktop: clamp(24px, 4vw, 64px);
+  --container-breakpoint: 640px;
+
+  /* Spacing scale — 8 / 16 / 24 / 32 / 48 / 64 / 96 / 120 / 160 */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 120px;
+  --space-5xl: 160px;
+
+  /* Typography */
+  --font-size-base: 16px;
+  --line-height-base: 1.6;
+}
+
+/* Expose the tokens to Tailwind: bg-background, text-muted-foreground,
+   border-border, py-3xl, gap-md, max-w-container, … */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+  --spacing-3xl: var(--space-3xl);
+  --spacing-4xl: var(--space-4xl);
+  --spacing-5xl: var(--space-5xl);
+
+  --container-page: var(--container-max-width);
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Base / reset                                                              */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* `clip` prevents accidental horizontal scroll without breaking sticky. */
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Container system — one horizontal rhythm for the whole site               */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin-inline: auto;
+    padding-inline: var(--container-padding-mobile);
+  }
+
+  @media (width >= 640px) {
+    .container-page {
+      padding-inline: var(--container-padding-desktop);
+    }
+  }
+}
