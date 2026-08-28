@@ -1,14 +1,10 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { HeroBackground } from "@/components/hero/HeroBackground";
-import { HeroSoundToggle } from "@/components/hero/HeroSoundToggle";
-import { resolveHeroAudio } from "@/lib/media";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 export function Hero() {
-  const audioSrc = resolveHeroAudio();
-
   return (
     <section
       id="hero"
@@ -66,11 +62,9 @@ export function Hero() {
 
       {/* Utility rail — deliberately quiet */}
       <Container
-        className="reveal-fade relative z-10 flex items-center justify-between gap-md pb-lg md:pb-xl"
+        className="reveal-fade relative z-10 flex items-center justify-end gap-md pb-lg md:pb-xl"
         style={delay(1200)}
       >
-        <HeroSoundToggle src={audioSrc} />
-
         <a
           href="#about"
           className="group hidden items-center gap-md text-[10px] font-light uppercase tracking-[0.24em] text-white/45 transition-colors duration-200 hover:text-accent sm:flex"
