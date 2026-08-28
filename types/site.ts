@@ -10,3 +10,11 @@ export type NavLink = {
   label: string;
   href: string;
 };
+
+export type SocialLink = {
+  /** Accessible name, e.g. "Instagram". */
+  label: string;
+  href: string;
+  /** Key into the icon map in `components/navigation/SocialIcon.tsx`. */
+  icon: "instagram" | "youtube";
+};

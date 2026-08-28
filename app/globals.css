@@ -19,9 +19,9 @@
 
   /* Layout */
   --container-max-width: 1440px;
-  --container-padding-mobile: 20px;
-  --container-padding-tablet: 32px;
-  --container-padding-desktop: clamp(24px, 4vw, 64px);
+  --container-padding-mobile: 16px;
+  --container-padding-tablet: 24px;
+  --container-padding-desktop: clamp(20px, 2.4vw, 40px);
 
   /* Spacing scale — 8 / 16 / 24 / 32 / 48 / 64 / 96 / 120 / 160 */
   --space-xs: 8px;
@@ -311,17 +311,34 @@
     );
   }
 
-  /* Fine film grain — pure CSS, no asset request. */
+  /* Coarse film grain — pure CSS, no asset request. Sits above both the
+     desaturated base and the colour trail, so the whole frame shares one
+     texture rather than the revealed colour looking cleaner than its
+     surroundings. */
   .overlay-grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5;
     mix-blend-mode: overlay;
   }
 
-  /* Grade for the supplied banner: deeper blacks, lifted grays, more bite.
-     Applied in CSS only — public/images/banner-bg.png is never modified. */
+  /* Grade for the supplied banner: fully desaturated and pushed well down, so
+     the type reads cleanly and the colour trail pops hard against it. Applied
+     in CSS only — the source PNG is never modified. */
   .hero-photo {
-    filter: grayscale(1) contrast(1.14);
+    filter: grayscale(1) contrast(1.16) brightness(0.5);
+  }
+
+  /* Colour plume buffer (see ColourPlume). Left untouched by any grade on the
+     frame beneath it, so the plume reveals that frame's true colour. Runs on
+     touch as well as pointer devices — only reduced-motion opts out. */
+  .plume-canvas {
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plume-canvas {
+      display: none;
+    }
   }
 
   /* Thin travelling line under the scroll indicator. */
@@ -439,39 +456,165 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Section shell — shared by every section after the hero                     */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .section-block {
+    padding-block: clamp(90px, 12vw, 180px);
+    background-color: var(--background);
+  }
+
+  /* Editorial section heading — same family and rhythm as the hero lockup. */
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(44px, 11vw, 120px);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
+
+  /* Scroll-triggered entrance. The section root flips `data-visible` once. */
+  .reveal-scroll {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+
+  [data-visible="true"] .reveal-scroll {
+    animation: reveal-up 900ms var(--ease-out) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-scroll,
+  [data-visible="true"] .reveal-scroll {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Global Reach — atmosphere behind the tour map                             */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* Scanlines instead of a survey grid: a CRT/console texture that reads as
+     signal rather than graph paper. They drift slowly so the field breathes. */
+  .global-scan {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.035) 0px,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 5px
+    );
+    mask-image: radial-gradient(78% 66% at 50% 46%, #000 15%, transparent 100%);
+    animation: global-scan-drift 9s linear infinite;
+  }
+
+  /* Slow radar sweep passing over the map. */
+  .global-sweep {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: conic-gradient(
+      from 0deg at 50% 48%,
+      transparent 0deg,
+      rgba(184, 255, 102, 0.09) 22deg,
+      transparent 58deg,
+      transparent 360deg
+    );
+    mask-image: radial-gradient(46% 44% at 50% 48%, #000 0%, transparent 100%);
+    animation: global-sweep-spin 14s linear infinite;
+  }
+
+  @keyframes global-scan-drift {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 0 5px;
+    }
+  }
+
+  @keyframes global-sweep-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .global-scan,
+    .global-sweep {
+      animation: none;
+    }
+
+    .global-sweep {
+      opacity: 0.5;
+    }
+  }
+
+  /* Faint accent haze centred on the map. */
+  .global-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      52% 40% at 50% 48%,
+      rgba(184, 255, 102, 0.07) 0%,
+      rgba(184, 255, 102, 0.02) 40%,
+      transparent 72%
+    );
+  }
+
+  /* The city card: in flow under the map on phones, floated at the map's
+     anchor point from `md` up. Positioning lives here rather than inline so
+     the anchor coordinates only ever apply at desktop widths. */
+  .tour-card {
+    z-index: 20;
+    animation: reveal-fade 320ms var(--ease-out) both;
+  }
+
+  @media (width >= 768px) {
+    .tour-card {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .tour-card[data-anchored="true"] {
+      right: auto;
+      left: var(--card-x);
+      top: var(--card-y);
+      transform: translate(var(--card-shift), -50%);
+      transition:
+        left 260ms var(--ease-out),
+        top 260ms var(--ease-out);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-card {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Section 03 — The Music                                                     */
 /* -------------------------------------------------------------------------- */
 
 @layer components {
-  /* Movement hands over to sound: a thin line that breathes across the top
-     of the section, echoing the map's horizon without another background. */
-  .pulse-line {
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(255, 255, 255, 0.12) 22%,
-      var(--accent) 50%,
-      rgba(255, 255, 255, 0.12) 78%,
-      transparent 100%
-    );
-    opacity: 0.5;
-    animation: pulse-breathe 6s var(--ease-in-out) infinite;
-  }
-
-  @keyframes pulse-breathe {
-    0%,
-    100% {
-      opacity: 0.25;
-    }
-    50% {
-      opacity: 0.7;
-    }
-  }
-
   /* Cover art eases in whenever the active track changes. */
   .artwork-swap {
     animation: artwork-in 700ms var(--ease-out) both;
@@ -700,7 +843,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse-line,
   .artwork-swap,
   .eq > span {
     animation: none;
@@ -717,5 +859,513 @@
 
   .play-button:hover {
     transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Section 04 — My Story                                                      */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* Three stacked lines, a step down from the section titles above so the
+     portrait keeps the visual weight. */
+  .story-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(38px, 8vw, 84px);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  /* The portrait grade: held back deliberately — desaturated, not black and
+     white, with a little more bite. Applied in CSS only; the file on disk is
+     never altered. */
+  .story-photo {
+    filter: saturate(0.62) contrast(1.08) brightness(0.94);
+    transform: scale(1);
+    transition:
+      transform 900ms var(--ease-out),
+      filter 600ms var(--ease-out);
+  }
+
+  .group:hover .story-photo {
+    filter: saturate(0.72) contrast(1.14) brightness(0.97);
+    transform: scale(1.02);
+  }
+
+  /* Grain over the portrait, a touch more present on hover. */
+  .story-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    transition: opacity 600ms var(--ease-out);
+  }
+
+  .group:hover .story-grain {
+    opacity: 0.1;
+  }
+
+  /* Barely-there accent light behind the portrait. */
+  .story-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      44% 46% at 28% 52%,
+      rgba(184, 255, 102, 0.05) 0%,
+      transparent 70%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-photo,
+  .story-grain {
+    transition: none;
+  }
+
+  .group:hover .story-photo {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Legacy — the career archive                                               */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* A shade under the site's near-black, so the archive reads as the darkest
+     room on the page. */
+  .archive-section {
+    background-color: #030303;
+  }
+
+  .archive-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      58% 42% at 72% 12%,
+      rgba(184, 255, 102, 0.045) 0%,
+      transparent 68%
+    );
+  }
+
+  /* ---- The rail of years ------------------------------------------------ */
+
+  /* Hidden on phones, where the blocks already stack into a list and a
+     six-column rail would only crush the labels. */
+  .archive-line {
+    position: relative;
+    display: none;
+    grid-template-columns: repeat(6, 1fr);
+    padding-top: 3px;
+  }
+
+  @media (width >= 768px) {
+    .archive-line {
+      display: grid;
+    }
+  }
+
+  /* The connecting line, drawn in once the section arrives. */
+  .archive-line::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  [data-visible="true"] .archive-line::before {
+    animation: archive-draw 900ms var(--ease-out) 240ms both;
+  }
+
+  @keyframes archive-draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .archive-node {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .archive-node__dot {
+    width: 7px;
+    height: 7px;
+    margin-top: -3px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background-color: #030303;
+    transition:
+      background-color 320ms var(--ease-out),
+      border-color 320ms var(--ease-out),
+      box-shadow 320ms var(--ease-out);
+  }
+
+  .archive-node[data-active="true"] .archive-node__dot {
+    border-color: var(--accent);
+    background-color: var(--accent);
+    box-shadow: 0 0 14px rgba(184, 255, 102, 0.55);
+  }
+
+  .archive-node__year {
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    color: rgba(255, 255, 255, 0.3);
+    transition: color 320ms var(--ease-out);
+  }
+
+  .archive-node[data-active="true"] .archive-node__year {
+    color: var(--accent);
+  }
+
+  /* ---- The grid --------------------------------------------------------- */
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background-color: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .archive-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .archive-grid {
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: minmax(196px, auto);
+    }
+  }
+
+  /* ---- One block -------------------------------------------------------- */
+
+  /* Hairlines come from the grid's own 1px gap showing through, so the archive
+     reads as one ruled sheet rather than a row of separate cards.
+     Every hover treatment below is repeated for `:focus-within`, so tabbing
+     through the archive lights each block up exactly as pointing at it does. */
+  .archive-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    background-color: #060606;
+    transition: background-color 400ms var(--ease-out);
+  }
+
+  .archive-card:hover,
+  .archive-card:focus-within,
+  .archive-card[data-open="true"] {
+    background-color: #0b0b0b;
+  }
+
+  .archive-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    filter: grayscale(0.2) contrast(1.04) brightness(0.62);
+    transition:
+      opacity 700ms var(--ease-out),
+      filter 700ms var(--ease-out);
+  }
+
+  /* Keeps the copy legible over the frame at every size. */
+  .archive-card__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(3, 3, 3, 0.88) 0%,
+      rgba(3, 3, 3, 0.7) 46%,
+      rgba(3, 3, 3, 0.86) 100%
+    );
+  }
+
+  .archive-card:hover .archive-card__media,
+  .archive-card:focus-within .archive-card__media,
+  .archive-card[data-open="true"] .archive-card__media {
+    opacity: 0.55;
+    filter: grayscale(0) contrast(1.04) brightness(0.68);
+  }
+
+  .archive-card__heading {
+    display: flex;
+    margin: 0;
+    flex: 1;
+    font: inherit;
+  }
+
+  /* Compact on phones, where six blocks stack into one column and every
+     spare pixel is scroll; roomier as the grid opens up. */
+  .archive-card__toggle {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    text-align: left;
+  }
+
+  .archive-card__toggle:focus-visible {
+    outline-offset: -4px;
+  }
+
+  @media (width >= 768px) {
+    .archive-card__toggle {
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .archive-card__toggle {
+      padding: var(--space-xl);
+    }
+  }
+
+  .archive-card__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  .archive-card__year {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 5vw, 40px);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: rgba(255, 255, 255, 0.9);
+    transition: color 320ms var(--ease-out);
+  }
+
+  .archive-card[data-feature="true"] .archive-card__year {
+    font-size: clamp(38px, 6vw, 64px);
+  }
+
+  .archive-card:hover .archive-card__year,
+  .archive-card:focus-within .archive-card__year,
+  .archive-card[data-open="true"] .archive-card__year {
+    color: var(--accent);
+  }
+
+  .archive-card__count {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.24);
+  }
+
+  /* Pushed to the foot of the block, so the years line up along the top edge
+     and the titles along the bottom whatever height a block ends up. */
+  .archive-card__body {
+    display: block;
+    margin-top: auto;
+  }
+
+  .archive-card__rule {
+    display: block;
+    width: 24px;
+    height: 1px;
+    margin-bottom: var(--space-sm);
+    background-color: var(--border-strong);
+    transition:
+      width 480ms var(--ease-out),
+      background-color 320ms var(--ease-out);
+  }
+
+  .archive-card:hover .archive-card__rule,
+  .archive-card:focus-within .archive-card__rule,
+  .archive-card[data-open="true"] .archive-card__rule {
+    width: 64px;
+    background-color: var(--accent);
+  }
+
+  .archive-card__title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.16;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+    text-wrap: balance;
+  }
+
+  @media (width >= 1024px) {
+    .archive-card__title {
+      font-size: 20px;
+    }
+
+    .archive-card[data-feature="true"] .archive-card__title {
+      font-size: 28px;
+    }
+  }
+
+  .archive-card__lede {
+    display: block;
+    margin-top: var(--space-sm);
+    max-width: 46ch;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.62;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media (width >= 1024px) {
+    .archive-card__lede {
+      font-size: 14px;
+    }
+  }
+
+  .archive-card__cue {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.28);
+    transition: color 320ms var(--ease-out);
+  }
+
+  .archive-card:hover .archive-card__cue,
+  .archive-card:focus-within .archive-card__cue,
+  .archive-card[data-open="true"] .archive-card__cue {
+    color: var(--accent);
+  }
+
+  .archive-card__cue-mark {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .archive-card__panel {
+    position: relative;
+    z-index: 1;
+    padding: 0 var(--space-md) var(--space-md);
+    animation: reveal-fade 420ms var(--ease-out) both;
+  }
+
+  @media (width >= 768px) {
+    .archive-card__panel {
+      padding: 0 var(--space-lg) var(--space-lg);
+    }
+  }
+
+  @media (width >= 1024px) {
+    .archive-card__panel {
+      padding: 0 var(--space-xl) var(--space-xl);
+    }
+  }
+
+  .archive-card__panel p {
+    margin: 0;
+    max-width: 52ch;
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-md);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.72);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-line::before,
+  [data-visible="true"] .archive-line::before {
+    animation: none;
+    transform: none;
+  }
+
+  .archive-card,
+  .archive-card__media,
+  .archive-card__rule,
+  .archive-card__year,
+  .archive-card__cue,
+  .archive-node__dot,
+  .archive-node__year {
+    transition: none;
+  }
+
+  .archive-card__panel {
+    animation: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Shared page frame — one plume behind every section below the banner       */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .plume-region {
+    position: relative;
+  }
+
+  /* Spans the whole region; the frame inside it is only ever one screen tall,
+     so the canvas stays viewport-sized however long the page grows.
+
+     `z-index: 5` is what lets one layer serve every section: it clears the
+     sections' own opaque backgrounds (positioned, but z-index auto, so they
+     paint at 0) while staying under their content, which every section puts
+     inside a `relative z-10` container. The sections therefore stay flat dark
+     by default — the frame only exists where the flame has burned. */
+  .plume-region__layer {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .plume-region__frame {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
+
+  /* Grain rides over the reveal rather than under it, the way it does in the
+     hero, so the burned-in frame carries the same texture as the rest of the
+     page. Still below the sections' own content. */
+  .plume-region .overlay-grain {
+    z-index: 6;
+  }
+
+  /* Held just short of opaque, so the flame reads faintly through the archive
+     blocks instead of stopping dead at their edges. */
+  .plume-region .archive-card {
+    background-color: rgba(6, 6, 6, 0.86);
+  }
+
+  .plume-region .archive-card:hover,
+  .plume-region .archive-card:focus-within,
+  .plume-region .archive-card[data-open="true"] {
+    background-color: rgba(11, 11, 11, 0.88);
   }
 }

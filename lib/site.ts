@@ -1,4 +1,4 @@
-import type { SiteConfig } from "@/types/site";
+import type { SiteConfig, SocialLink } from "@/types/site";
 
 /**
  * Single source of truth for site-wide copy, navigation and links.
@@ -19,3 +19,9 @@ export const navLinks = [
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ] as const;
+
+/** Profiles shown in the navigation rail. */
+export const socialLinks = [
+  { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
+  { label: "YouTube", href: "https://youtube.com", icon: "youtube" },
+] as const satisfies readonly SocialLink[];

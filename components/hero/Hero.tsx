@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { HeroBackground } from "@/components/hero/HeroBackground";
+import { SoundToggle } from "@/components/audio/SoundToggle";
+import { FitText } from "@/components/hero/FitText";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -13,9 +15,14 @@ export function Hero() {
     >
       <HeroBackground />
 
+      {/* Volume control — clear of the navigation above and the lockup below. */}
+      <Container className="pointer-events-none absolute inset-x-0 top-[84px] z-20 flex justify-end md:top-[108px]">
+        <SoundToggle className="pointer-events-auto reveal [--reveal-delay:1100ms]" />
+      </Container>
+
       {/* The lockup sits low and left, in the darkest part of the frame and
           well clear of his face and hands. */}
-      <Container className="relative z-10 flex flex-1 flex-col justify-end pt-5xl pb-xl">
+      <Container className="relative z-10 flex flex-1 flex-col justify-end pt-5xl pb-lg">
         <p
           className="reveal text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
           style={delay(650)}
@@ -23,9 +30,9 @@ export function Hero() {
           BollyAfro Pioneer
         </p>
 
-        <h1 id="hero-title" className="hero-title mt-md md:mt-lg">
+        <h1 id="hero-title" className="hero-title mt-md md:mt-lg text-accent">
           <span className="line-mask">
-            <span style={delay(350)}>DJ Ganesh</span>
+            <FitText style={delay(350)}>DJ Ganesh</FitText>
           </span>
         </h1>
 
@@ -58,20 +65,6 @@ export function Hero() {
             Listen to Music
           </a>
         </div>
-      </Container>
-
-      {/* Utility rail — deliberately quiet */}
-      <Container
-        className="reveal-fade relative z-10 flex items-center justify-end gap-md pb-lg md:pb-xl"
-        style={delay(1200)}
-      >
-        <a
-          href="#about"
-          className="group hidden items-center gap-md text-[10px] font-light uppercase tracking-[0.24em] text-white/45 transition-colors duration-200 hover:text-accent sm:flex"
-        >
-          Scroll to explore
-          <span className="scroll-line relative block h-8 w-px bg-white/15" aria-hidden />
-        </a>
       </Container>
     </section>
   );

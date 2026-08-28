@@ -49,9 +49,6 @@ export function MusicSection() {
         data-visible={visible}
         className="section-block relative overflow-hidden"
       >
-        {/* Movement → sound: the map hands over to a waveform. */}
-        <div className="pulse-line" aria-hidden />
-
         <Container className="relative z-10">
           <p
             className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"

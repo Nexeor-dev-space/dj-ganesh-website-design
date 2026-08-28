@@ -3,8 +3,9 @@
 import { useBackgroundAudio } from "@/components/audio/BackgroundAudioProvider";
 
 /**
- * Top-right volume control for the background mix. It only ever mutes or
- * unmutes — the mix keeps looping either way, so there is no restart glitch
+ * The volume control for the background mix — a single floating button that
+ * sits under the navigation, over the hero frame. It only ever mutes or
+ * unmutes: the mix keeps looping either way, so there is no restart glitch
  * when the visitor turns it back on.
  */
 export function SoundToggle({ className }: { className?: string }) {
@@ -24,8 +25,10 @@ export function SoundToggle({ className }: { className?: string }) {
             : "Mute background music"
       }
       className={[
-        "flex h-10 w-10 items-center justify-center rounded-xl text-white/70 transition-colors duration-200",
-        "hover:bg-white/10 hover:text-accent disabled:cursor-not-allowed disabled:text-white/25 disabled:hover:bg-transparent",
+        "flex h-12 w-12 items-center justify-center rounded-full border border-white/20",
+        "bg-background/30 text-white/75 backdrop-blur-sm transition-colors duration-200 md:h-14 md:w-14",
+        "hover:border-accent/60 hover:bg-background/50 hover:text-accent",
+        "disabled:cursor-not-allowed disabled:text-white/25 disabled:hover:border-white/20 disabled:hover:bg-background/30",
         className,
       ]
         .filter(Boolean)
@@ -34,7 +37,7 @@ export function SoundToggle({ className }: { className?: string }) {
       <svg
         viewBox="0 0 24 24"
         aria-hidden
-        className="h-[18px] w-[18px]"
+        className="h-6 w-6 md:h-7 md:w-7"
         fill="none"
         stroke="currentColor"
         strokeWidth={1.8}
