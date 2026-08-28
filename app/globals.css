@@ -267,10 +267,10 @@
   /* Radial falloff towards the edges of the frame. */
   .overlay-vignette {
     background: radial-gradient(
-      105% 78% at 52% 34%,
-      transparent 26%,
-      rgba(5, 5, 5, 0.3) 64%,
-      rgba(5, 5, 5, 0.82) 100%
+      112% 84% at 52% 34%,
+      transparent 34%,
+      rgba(5, 5, 5, 0.16) 68%,
+      rgba(5, 5, 5, 0.58) 100%
     );
   }
 
@@ -284,7 +284,7 @@
   /* Grade for the supplied banner: deeper blacks, lifted grays, more bite.
      Applied in CSS only — public/images/banner-bg.png is never modified. */
   .hero-photo {
-    filter: grayscale(1) contrast(1.18) brightness(0.94);
+    filter: grayscale(1) contrast(1.14);
   }
 
   /* Thin travelling line under the scroll indicator. */
@@ -309,26 +309,29 @@
 /* -------------------------------------------------------------------------- */
 
 @layer components {
+  /* One unbroken line at every width — the size is tuned so the lockup
+     always fits the container gutters without wrapping or overflowing. */
   .hero-title {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(58px, 17vw, 100px); /* mobile */
-    line-height: 0.82;
+    font-size: clamp(46px, 17vw, 100px); /* mobile */
+    line-height: 0.85;
     letter-spacing: -0.045em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   @media (width >= 768px) {
     .hero-title {
       font-size: clamp(70px, 12vw, 140px); /* tablet */
-      line-height: 0.8;
+      line-height: 0.82;
     }
   }
 
   @media (width >= 1280px) {
     .hero-title {
       font-size: clamp(90px, 13vw, 220px); /* desktop */
-      line-height: 0.8;
+      line-height: 0.82;
     }
   }
 

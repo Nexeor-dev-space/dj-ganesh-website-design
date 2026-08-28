@@ -27,13 +27,15 @@ export function HeroBackground() {
       </div>
 
       {/* 1 — overall darkening; the DJ must stay clearly readable */}
-      <div className="absolute inset-0 bg-[rgba(5,5,5,0.3)]" />
+      <div className="absolute inset-0 bg-[rgba(5,5,5,0.14)]" />
       {/* 2 — bottom-to-top black, where the lockup and utility rail sit */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 via-30% to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 via-32% to-transparent" />
       {/* 3 — top scrim, keeps the navigation legible */}
-      <div className="absolute inset-x-0 top-0 h-[30%] bg-gradient-to-b from-background/80 to-transparent" />
-      {/* 4 — weight down the left column, the typography's home */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-transparent to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-[28%] bg-gradient-to-b from-background/55 to-transparent" />
+      {/* 4 — a dark pool in the lower-left corner, exactly where the lockup
+              lives. Fades out before it reaches his face or the right side, so
+              the photograph stays open. */}
+      <div className="absolute inset-0 bg-[radial-gradient(90%_72%_at_-8%_100%,rgba(5,5,5,0.9)_0%,rgba(5,5,5,0.45)_42%,transparent_74%)]" />
       {/* 5 — vignette */}
       <div className="overlay-vignette absolute inset-0" />
       {/* 6 — film grain */}

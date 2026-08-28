@@ -29,10 +29,7 @@ export function Hero() {
 
         <h1 id="hero-title" className="hero-title mt-md md:mt-lg">
           <span className="line-mask">
-            <span style={delay(350)}>DJ</span>
-          </span>
-          <span className="line-mask">
-            <span style={delay(450)}>Ganesh</span>
+            <span style={delay(350)}>DJ Ganesh</span>
           </span>
         </h1>
 
@@ -40,7 +37,7 @@ export function Hero() {
           className="reveal mt-lg text-[11px] font-light uppercase tracking-[0.22em] text-white/60 md:mt-xl md:text-[12px]"
           style={delay(800)}
         >
-          India&apos;s #1 Celebrity &amp; Wedding DJ
+          Est. 1998 · Mumbai, India
         </p>
 
         <div className="reveal mt-xl flex flex-col items-start gap-lg sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2xl sm:gap-y-md"
