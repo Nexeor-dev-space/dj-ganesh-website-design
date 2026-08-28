@@ -3,7 +3,7 @@ import Image from "next/image";
 /**
  * The hero photograph.
  *
- * `public/images/banner-bg-2.png` is the fixed visual identity of the first
+ * `public/images/banner-bg-3.png` is the fixed visual identity of the first
  * viewport — it is never swapped, altered on disk, or filtered. No overlay,
  * grade, or darkening sits on top of it.
  *
@@ -19,7 +19,7 @@ export function HeroBackground() {
       <div className="hero-reveal absolute inset-0">
         <div className="media-drift absolute inset-0">
           <Image
-            src="/images/banner-bg-2.png"
+            src="/images/banner-bg-3.png"
             alt=""
             fill
             priority
