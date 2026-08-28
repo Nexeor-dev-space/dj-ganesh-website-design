@@ -213,6 +213,19 @@
     }
   }
 
+  /* One-shot zoom-out-and-settle on load, layered under `.media-drift`'s
+     continuous ambient scale rather than replacing it. */
+  @keyframes hero-reveal-zoom {
+    from {
+      opacity: 0;
+      transform: scale(1.15);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
   @keyframes scroll-line {
     0% {
       transform: scaleY(0);
@@ -264,6 +277,30 @@
     will-change: transform;
   }
 
+  /* Plays once on mount: the frame settles in from a slight zoom-in rather
+     than appearing at rest. */
+  .hero-reveal {
+    animation: hero-reveal-zoom 1800ms var(--ease-out) both;
+    transform-origin: center;
+  }
+
+  /* Pins the photograph to the viewport while the hero's own one-screen
+     height scrolls past, so it holds still rather than scrolling with the
+     rest of the page — like a projection the content passes in front of.
+     Skipped below 1024px: `position: fixed` backgrounds are unreliable on
+     mobile browsers (the address bar resizing the visual viewport causes
+     visible jumps), so phones just get the ordinary in-flow background. */
+  .hero-bg-pin {
+    position: absolute;
+    inset: 0;
+  }
+
+  @media (width >= 1024px) and (pointer: fine) {
+    .hero-bg-pin {
+      position: fixed;
+    }
+  }
+
   /* Radial falloff towards the edges of the frame. */
   .overlay-vignette {
     background: radial-gradient(
@@ -301,6 +338,12 @@
   .media-drift,
   .scroll-line::after {
     animation: none;
+  }
+
+  .hero-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
