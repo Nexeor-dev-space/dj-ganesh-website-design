@@ -59,8 +59,9 @@ export function Footer() {
   // staying inside the frame. Pointer-precise devices only, and never against
   // a reduced-motion preference; without it the still simply scrolls along.
   useEffect(() => {
+    const footer = footerRef.current;
     const frame = frameRef.current;
-    if (!frame) return;
+    if (!footer || !frame) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -70,8 +71,11 @@ export function Footer() {
 
     const apply = () => {
       raf = null;
-      // Cancelling the frame's own offset leaves the still at viewport zero.
-      const { top } = frame.getBoundingClientRect();
+      // Measured on the footer, never on the layer being moved: the still
+      // carries the pin as a transform, so reading its own rect would feed
+      // the offset back into itself and the picture would drift instead of
+      // holding still.
+      const { top } = footer.getBoundingClientRect();
       frame.style.setProperty("--pin", `${-top}px`);
     };
 
@@ -121,48 +125,57 @@ export function Footer() {
       ref={footerRef}
       id="footer"
       data-visible={visible}
+      /* Scopes the plume to the footer: it sits outside the page's shared
+         plume region, and the picture now runs the whole way down. */
+      data-plume-region
       className="footer relative overflow-hidden"
     >
-      {/* The frame — full-bleed, breaking the container on purpose. */}
+      {/* The picture is the footer's ground, not a band across the top of it:
+          it runs behind the name, the index and the credit line alike, so
+          there is no flat black panel under the photograph.
+
+          Everything the eye reads as "the picture" lives in this one layer —
+          still, grade, grain and the wash — and the whole layer is what gets
+          parked at the viewport. That is the rule an earlier draft broke: it
+          pinned the still but left the edge gradient behind, so a dark band
+          slid across a photograph that was standing still, and that is what
+          read as a shadow passing over the footer. Nothing may sit between
+          the footer and this layer again. */}
+      {/* No `reveal-scroll` here, ever: that animation owns `transform` with
+          `both` fill, which silently outranks the pin below it — the picture
+          then sits with the footer and the parallax does nothing. The layer
+          arrives on opacity alone (see `globals.css`), which cannot collide
+          with the pin. */}
       <div
         ref={frameRef}
         data-cursor="explore"
-        /* Scopes the plume to this frame: the footer sits outside the page's
-           shared plume region, so without it there is no bounds element. */
-        data-plume-region
-        className="footer-frame reveal-scroll group"
-        style={delay(0)}
+        className="footer-frame__still group"
       >
-        {/* Everything the eye reads as "the picture" lives in this one layer —
-            still, grade, grain and the wash that holds the name off it — and
-            the whole layer is what gets parked at the viewport. That is the
-            rule the earlier draft broke: it pinned the still but left the
-            edge gradient with the frame, so a dark band slid across a
-            photograph that was standing still, and that is what read as a
-            shadow passing over the footer. Nothing may sit between the frame
-            and this layer again. */}
-        <div className="footer-frame__still">
-          {/* The same treatment as the banner: graded to black and white, with
-              the pointer's plume burning the original colour back through. */}
-          <ColourPlume
-            src={footerImage.src}
-            alt={footerImage.alt}
-            className="footer-frame__media absolute inset-0"
-            /* The frame is far wider than the portrait, so on desktop only a
-               narrow band of it shows: held high enough to keep his head and
-               the lit room behind him, rather than cropping to the shirt. */
-            imageClassName="hero-photo object-cover object-[50%_30%] sm:object-[50%_20%] lg:object-[50%_14%]"
-            sizes="100vw"
-          />
+        {/* The same treatment as the banner: graded to black and white, with
+            the pointer's plume burning the original colour back through. */}
+        <ColourPlume
+          src={footerImage.src}
+          alt={footerImage.alt}
+          className="footer-frame__media absolute inset-0"
+          /* The frame is far wider than the portrait, so on desktop only a
+             narrow band of it shows: held high enough to keep his head and
+             the lit room behind him, rather than cropping to the shirt. */
+          imageClassName="hero-photo object-cover object-[50%_30%] sm:object-[50%_20%] lg:object-[50%_14%]"
+          sizes="100vw"
+        />
 
-          <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
+        <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
 
-          {/* Even, and part of the picture rather than laid over the frame:
-              the name is set in the accent at banner scale across the foot of
-              this photograph, and needs the ground under it held down. */}
-          <div className="footer-frame__wash" aria-hidden />
-        </div>
+        {/* Even, never ramped: a gradient here would be a band with a
+            position, and this layer travels — which is exactly what used to
+            read as a shadow. Flat, it cannot. It holds the whole footer down
+            far enough for the index and the credit line to read on it. */}
+        <div className="footer-frame__wash" aria-hidden />
       </div>
+
+      {/* Reserves the height the picture needs above the name — the layer
+          above is positioned, so it takes no space of its own. */}
+      <div className="footer-frame" aria-hidden />
 
       {/* The name, straddling the frame's bottom edge. */}
       <Container className="relative z-10">

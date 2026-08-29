@@ -209,14 +209,17 @@
 /* -------------------------------------------------------------------------- */
 
 @layer components {
+  /* Travel enough to read as an arrival rather than a settle: 24px was below
+     the threshold where the eye registers the movement as intentional, so
+     sections simply appeared. The slight scale gives the lift a direction. */
   @keyframes reveal-up {
     from {
       opacity: 0;
-      transform: translate3d(0, 24px, 0);
+      transform: translate3d(0, 46px, 0) scale(0.985);
     }
     to {
       opacity: 1;
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0) scale(1);
     }
   }
 
@@ -272,7 +275,7 @@
   }
 
   .reveal {
-    animation: reveal-up 900ms var(--ease-out) both;
+    animation: reveal-up 1000ms var(--ease-out) both;
     animation-delay: var(--reveal-delay, 0ms);
     will-change: transform, opacity;
   }
@@ -539,13 +542,15 @@
   }
 
   /* Scroll-triggered entrance. The section root flips `data-visible` once. */
+  /* Matches the keyframe's start exactly, so nothing jumps at the moment the
+     animation is attached. */
   .reveal-scroll {
     opacity: 0;
-    transform: translate3d(0, 24px, 0);
+    transform: translate3d(0, 46px, 0) scale(0.985);
   }
 
   [data-visible="true"] .reveal-scroll {
-    animation: reveal-up 900ms var(--ease-out) both;
+    animation: reveal-up 1000ms var(--ease-out) both;
     animation-delay: var(--reveal-delay, 0ms);
   }
 }
@@ -1401,13 +1406,10 @@
     }
   }
 
-  /* Same family as the banner and the footer, lifted. Those two are full-bleed
-     fields sitting behind large type, so they are graded down hard; this frame
-     is the subject, and at `brightness(0.5)` the fade over it left almost
-     nothing to see. */
-  .story-frame .hero-photo {
-    filter: grayscale(1) contrast(1.12) brightness(0.82);
-  }
+  /* The banner's grade exactly — `.hero-photo`, unmodified, so the portrait
+     reads as the same photograph treatment as the first screen and the
+     footer rather than a lighter cousin of it. The fade below is pulled back
+     to suit: at this brightness the old wash left almost nothing of him. */
 
   /* The frame's inner edges dissolve into the page rather than stopping at a
      hard line, so the photograph feels lit rather than pasted on. */
@@ -1418,14 +1420,14 @@
     background:
       linear-gradient(
         to top,
-        rgba(5, 5, 5, 0.85) 0%,
-        rgba(5, 5, 5, 0.15) 34%,
-        transparent 62%
+        rgba(5, 5, 5, 0.66) 0%,
+        rgba(5, 5, 5, 0.08) 30%,
+        transparent 54%
       ),
       linear-gradient(
         to right,
-        rgba(5, 5, 5, 0.7) 0%,
-        transparent 26%
+        rgba(5, 5, 5, 0.5) 0%,
+        transparent 22%
       );
   }
 
@@ -2777,13 +2779,12 @@
     padding-bottom: clamp(40px, 5vw, 72px);
   }
 
-  /* Full-bleed: the frame breaks the container on purpose, while everything
-     below it keeps the site's gutters. */
+  /* A spacer, nothing more: it reserves the run of photograph above the name.
+     The picture itself is positioned against the footer and covers all of it,
+     so the two must not be the same element. */
   .footer-frame {
-    position: relative;
     width: 100%;
     height: clamp(340px, 62vh, 620px);
-    overflow: hidden;
   }
 
   /* The picture: a screen tall rather than frame-tall, and parked at the
@@ -2799,13 +2800,25 @@
 
      It carries no transition: a pinned frame has to track the scroll exactly
      rather than ease towards it. */
+  /* Arrives on opacity only. Nothing here may animate `transform`: the pin is
+     a transform, and an animation with `both` fill would outrank it. */
   .footer-frame__still {
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out);
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 100vh;
+    /* A screen tall so the pin always has picture to show, but never shorter
+       than the footer — without the second term, a footer taller than the
+       viewport ends in a black strip wherever the pin is off: touch devices,
+       and anyone who has asked for reduced motion. */
+    height: max(100vh, 100%);
     transform: translate3d(0, var(--pin, 0px), 0) scale(1.03);
+  }
+
+  [data-visible="true"] .footer-frame__still {
+    opacity: 1;
   }
 
   /* The grade comes from `.hero-photo`, shared with the banner, and the
@@ -2823,7 +2836,9 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-color: rgba(5, 5, 5, 0.42);
+    /* Deeper than it was: the picture now runs under the index and the credit
+       line, not just behind the name. */
+    background-color: rgba(5, 5, 5, 0.58);
   }
 
   /* The name, pulled up so it straddles the frame's bottom edge. */
@@ -2913,6 +2928,8 @@
 
   /* No pin: the still scrolls with the footer like any other picture. */
   .footer-frame__still {
+    opacity: 1;
+    transition: none;
     transform: scale(1.03);
   }
 }

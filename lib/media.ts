@@ -23,19 +23,15 @@ export function listAudioSources(): string[] {
 }
 
 /**
- * Temporary kill switch: the supplied mixes in `public/audio` are corrupted,
- * so the site ships silent rather than streaming a broken file. The files are
- * left in place — set this back to `false` once a good mix is dropped in.
- */
-const BACKGROUND_AUDIO_DISABLED = true;
-
-/**
- * The mix the hero should offer. Returns null when no audio has been supplied
- * yet, so callers can render a disabled control instead of a broken one.
+ * The mix the site opens with. Returns null only when no audio has been
+ * supplied at all, so callers can render a disabled control rather than a
+ * broken one.
+ *
+ * A kill switch used to sit here, on the grounds that the supplied mixes were
+ * corrupt. They are not: all four decode cleanly (2:22 to 4:43, 256–320kbps)
+ * and play in the Tracks section. All it did was silence the background mix.
  */
 export function resolveHeroAudio(): string | null {
-  if (BACKGROUND_AUDIO_DISABLED) return null;
-
   const sources = listAudioSources();
   if (sources.length === 0) return null;
 
