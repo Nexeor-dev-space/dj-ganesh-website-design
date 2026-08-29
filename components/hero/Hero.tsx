@@ -58,10 +58,20 @@ export function Hero() {
             </span>
           </a>
 
+          {/* Secondary to the booking link, but still a link: at 45% white it
+              sat on the photograph's own mid-greys and disappeared into them.
+              It keeps its rank by having no rule under it and no arrow — the
+              accent play mark is what earns it back. */}
           <a
             href="#music"
-            className="text-[11px] font-light uppercase tracking-[0.24em] text-white/45 transition-colors duration-300 hover:text-accent md:text-[12px]"
+            className="group flex items-center gap-sm pb-sm text-[11px] font-light uppercase tracking-[0.24em] text-white/75 transition-colors duration-300 hover:text-accent md:text-[12px]"
           >
+            <span
+              aria-hidden
+              className="inline-block text-[8px] leading-none text-accent transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 motion-reduce:transition-none"
+            >
+              &#9654;
+            </span>
             Listen to Music
           </a>
         </div>
