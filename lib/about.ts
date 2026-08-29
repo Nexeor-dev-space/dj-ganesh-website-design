@@ -1,15 +1,18 @@
-import type { StoryFact } from "@/types/about";
+import type { CareerStat } from "@/types/about";
 
 /**
  * Section 04 — My Story.
  *
  * The copy is the client's existing bio, carried over from `index.html`
  * without embellishment: no awards, no collaborations, no milestones beyond
- * what that paragraph already states. The three facts below are drawn from
- * the same sentences rather than added to them.
+ * what that paragraph already states.
+ *
+ * `careerStats` is the exception, and the only figures on the page that did
+ * not come from that file — they were supplied directly by the client. Treat
+ * them as the client's to change, and do not infer new ones from them.
  */
 
-export const aboutSectionLabel = "04 — My Story";
+export const aboutSectionLabel = "My Story";
 
 /** Set in three lines so the accent can fall on BOLLYAFRO alone. */
 export const aboutHeading = ["The", "BollyAfro", "Pioneer"] as const;
@@ -22,16 +25,28 @@ export const aboutStory = [
 /** The three strands of the BollyAfro sound, named in the bio. */
 export const soundStrands = ["Bollywood", "Afrobeats", "House"] as const;
 
-export const storyFacts: readonly StoryFact[] = [
-  { value: "1998", label: "Started in Mumbai" },
-  { value: "45+", label: "Countries" },
-  { value: "2026", label: "World Tour" },
+/** The year the story starts, printed on the stage frame. */
+export const careerStart = "1998";
+
+/**
+ * The career in four figures. Supplied by the client.
+ *
+ * `28` is the span from {@link careerStart} to the 2026 tour the rest of the
+ * section is written around, so the three numbers stay consistent with each
+ * other; it is written out rather than computed from today's date, which
+ * would drift away from that framing.
+ */
+export const careerStats: readonly CareerStat[] = [
+  { value: 28, label: "Years behind the decks" },
+  { value: 5000, suffix: "+", label: "Gigs played" },
+  { value: 45, suffix: "+", label: "Countries toured" },
+  { value: 246, suffix: "K", label: "Followers" },
 ] as const;
 
-/** The portrait the original bio section used. */
+/** The stage frame this section closes around. */
 export const aboutPortrait = {
-  src: "/images/dj-ganesh-real.jpg",
-  alt: "DJ Ganesh behind the decks",
+  src: "/images/about.jpg",
+  alt: "DJ Ganesh performing behind the decks, his name on the screen behind him",
 };
 
 export const aboutCta = {

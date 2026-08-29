@@ -1,40 +1,51 @@
-import { tourCities } from "@/lib/tour";
-
-type CityListProps = {
-  activeCity: string | null;
-  onHover: (city: string | null) => void;
-  onSelect: (city: string) => void;
-};
+import { bookingEmail, findShow, tourCities } from "@/lib/tour";
 
 /**
- * The full footprint as an editorial run of city names — not navigation.
- * Each name is a button so the map is reachable by keyboard and by touch.
+ * The full run of cities.
+ *
+ * Set loose rather than boxed: a grid of bordered cards each carrying its own
+ * enquiry link read as a data table, and repeated the same call to action nine
+ * times over. The names simply run on now, a dated city takes the accent, and
+ * the enquiry is made once at the end where it means something.
+ *
+ * Each name used to print its latitude and longitude underneath. The bearings
+ * were real, carried from the tour data, but they read as a coordinate dump
+ * rather than as places — so the names now stand on their own and the only
+ * mark beside one is "Home".
  */
-export function CityList({ activeCity, onHover, onSelect }: CityListProps) {
+export function CityList() {
   return (
-    <ul className="flex flex-wrap items-baseline gap-x-lg gap-y-sm md:gap-x-2xl">
-      {tourCities.map((city) => {
-        const isActive = activeCity === city.name;
+    <>
+      <ul className="footprint">
+        {tourCities.map((city) => {
+          const show = findShow(city.name);
 
-        return (
-          <li key={city.name}>
-            <button
-              type="button"
-              aria-pressed={isActive}
-              onMouseEnter={() => onHover(city.name)}
-              onMouseLeave={() => onHover(null)}
-              onFocus={() => onHover(city.name)}
-              onBlur={() => onHover(null)}
-              onClick={() => onSelect(city.name)}
-              className={`font-display text-[20px] font-bold uppercase leading-tight tracking-[-0.02em] transition-colors duration-300 hover:text-accent md:text-[28px] ${
-                isActive ? "text-accent" : "text-white/35"
-              }`}
+          return (
+            <li
+              key={city.name}
+              className="footprint__city"
+              data-booked={Boolean(show)}
             >
-              {city.name}
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+              <span className="footprint__name">
+                {city.name}
+                {city.hub ? <span className="footprint__hub">Home</span> : null}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <p className="footprint__enquiry">
+        <span>Not on the list?</span>
+        <a
+          href={`mailto:${bookingEmail}?subject=${encodeURIComponent(
+            "Booking enquiry — Global World Tour 2026",
+          )}`}
+        >
+          Bring DJ Ganesh to your city
+          <span aria-hidden>→</span>
+        </a>
+      </p>
+    </>
   );
 }

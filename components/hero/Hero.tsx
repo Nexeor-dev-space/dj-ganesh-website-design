@@ -32,7 +32,7 @@ export function Hero() {
 
         <h1 id="hero-title" className="hero-title mt-md md:mt-lg text-accent">
           <span className="line-mask">
-            <FitText style={delay(350)}>DJ Ganesh</FitText>
+            <FitText className="grain-text" style={delay(350)}>DJ Ganesh</FitText>
           </span>
         </h1>
 

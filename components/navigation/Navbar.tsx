@@ -61,7 +61,7 @@ export function Navbar() {
                     aria-label={social.label}
                     className="flex h-10 w-10 items-center justify-center rounded-xl text-white/70 transition-colors duration-200 hover:bg-white/10 hover:text-accent"
                   >
-                    <SocialIcon name={social.icon} className="h-[18px] w-[18px]" />
+                    <SocialIcon name={social.icon} className="h-5 w-auto" />
                   </a>
                 </li>
               ))}
@@ -140,7 +140,7 @@ export function Navbar() {
                   aria-label={social.label}
                   className="flex h-11 w-11 items-center justify-center rounded-xl border border-border text-white/70 transition-colors duration-200 hover:border-accent hover:text-accent"
                 >
-                  <SocialIcon name={social.icon} className="h-5 w-5" />
+                  <SocialIcon name={social.icon} className="h-[22px] w-auto" />
                 </a>
               </li>
             ))}

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArchiveLine } from "@/components/legacy/ArchiveLine";
+import { ArchiveEntry } from "@/components/legacy/ArchiveEntry";
 import { Container } from "@/components/layout/Container";
-import { MilestoneCard } from "@/components/legacy/MilestoneCard";
 import {
   archiveCount,
+  archiveSpan,
   legacyHeading,
   legacySectionLabel,
   milestones,
@@ -13,30 +13,29 @@ import {
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
-/** Stagger between milestone blocks, in ms. */
-const STEP = 80;
+/** Stagger between rows, in ms. */
+const STEP = 70;
 
 /**
  * Section 05 — Legacy.
  *
- * After the person comes the career. The six milestones the client's own
- * `index.html` records are laid out as an archive rather than a timeline:
- * blocks of different weight on one asymmetric grid, tied together by a thin
- * rail of years above them, each opening to a further line when asked.
+ * After the person comes the career, kept as a ledger: six full-width rows
+ * down one spine, in chronological order, each year set against the line with
+ * the entry reading across the page from it.
  *
- * Two pieces of state, both shallow: which block is open (a click, and only
- * one at a time, so the counter beside the heading has something to name) and
- * which is under the pointer or focus ring. Hover wins for the rail's glow
- * while it lasts, so the year lights up as you sweep across the grid.
+ * A grid of cells was the wrong shape for this content. Six near-identical
+ * blocks gave the eye no order to read them in — 1998 sat beside 2022 with
+ * nothing to say which came first — and every entry claimed the same weight.
+ * A column of rows carries the chronology in the layout itself, which is why
+ * nothing has to be drawn on top to explain it.
+ *
+ * Every line is still printed, so there is nothing to open and no state to
+ * hold: pointing at a row lights the run of spine above it, back to where the
+ * career started. That is a `:has()` selector in CSS, not a component.
  */
 export function LegacySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-
-  const activeId = hoveredId ?? openId;
-  const openIndex = milestones.findIndex((milestone) => milestone.id === openId);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -88,49 +87,27 @@ export function LegacySection() {
             {legacyHeading[1]}
           </h2>
 
-          {/* Names the open block when there is one, the size of the archive
-              when there isn't. `aria-live` keeps that change audible without
-              moving focus. */}
+          {/* The size and span of the archive. Static: with nothing to
+              select there is no active row for it to name. */}
           <p
-            className="reveal-scroll text-[10px] font-light uppercase tracking-[0.28em] text-white/40 md:text-right md:text-[11px]"
+            className="reveal-scroll text-[10px] font-light uppercase tracking-[0.28em] text-white/55 md:text-right md:text-[11px]"
             style={delay(160)}
-            aria-live="polite"
           >
-            {openIndex >= 0 ? (
-              <>
-                <span className="text-accent">
-                  {String(openIndex + 1).padStart(2, "0")}
-                </span>
-                {` / ${String(archiveCount).padStart(2, "0")} — ${milestones[openIndex].year}`}
-              </>
-            ) : (
-              `${archiveCount} Milestones · 1998 — 2026`
-            )}
+            {`${archiveCount} Milestones · ${archiveSpan}`}
           </p>
         </div>
 
-        <div className="reveal-scroll mt-2xl md:mt-3xl" style={delay(240)}>
-          <ArchiveLine milestones={milestones} activeId={activeId} />
-        </div>
-
-        <div className="archive-grid mt-lg md:mt-xl">
+        <ol className="archive-ledger mt-2xl md:mt-3xl">
           {milestones.map((milestone, index) => (
-            <MilestoneCard
+            <ArchiveEntry
               key={milestone.id}
               milestone={milestone}
               index={index}
               total={archiveCount}
-              open={openId === milestone.id}
-              onToggle={() =>
-                setOpenId((current) =>
-                  current === milestone.id ? null : milestone.id,
-                )
-              }
-              onHover={setHoveredId}
-              delay={320 + index * STEP}
+              delay={240 + index * STEP}
             />
           ))}
-        </div>
+        </ol>
       </Container>
     </section>
   );

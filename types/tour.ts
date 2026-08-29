@@ -1,13 +1,10 @@
-/** A location on the tour map. */
+/** A city on the tour. */
 export type TourCity = {
   name: string;
   lat: number;
   lng: number;
-  /** Home base — rendered slightly larger than the rest. */
+  /** Home base — called out on its card in the footprint. */
   hub?: boolean;
-  /** Label nudge in px, used to fan out the tight India cluster. */
-  labelDx?: number;
-  labelDy?: number;
 };
 
 /** An announced 2026 date. Cities without one fall back to an enquiry. */
