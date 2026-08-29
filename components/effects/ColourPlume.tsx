@@ -64,6 +64,21 @@ type ColourPlumeProps = {
   imageClassName?: string;
   priority?: boolean;
   sizes?: string;
+  /**
+   * What the plume's size is measured against.
+   *
+   * `layer` keeps it proportionate to the frame it burns in, which is right
+   * for a full-bleed background. `viewport` sizes it as though the frame were
+   * the width of the screen — for a framed image that should still carry the
+   * same fire as the banner, rather than a scaled-down copy of it.
+   */
+  sizing?: "layer" | "viewport";
+  /**
+   * Describes the frame where it carries meaning, as the footer's does.
+   * Left empty the layer stays decorative and out of the accessibility tree,
+   * which is what a full-bleed background wants.
+   */
+  alt?: string;
 };
 
 /**
@@ -92,6 +107,8 @@ export function ColourPlume({
   imageClassName,
   priority,
   sizes = "100vw",
+  sizing = "layer",
+  alt = "",
 }: ColourPlumeProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -121,7 +138,7 @@ export function ColourPlume({
         root.closest("[data-plume-region]") ?? root.closest("section");
       const photo = root.querySelector("img");
       if (bounds && photo) {
-        stop = runColourPlume(canvas, bounds, photo, coarse.matches);
+        stop = runColourPlume(canvas, bounds, photo, coarse.matches, sizing);
       }
     };
 
@@ -134,13 +151,13 @@ export function ColourPlume({
       coarse.removeEventListener("change", sync);
       stop?.();
     };
-  }, []);
+  }, [sizing]);
 
   return (
-    <div ref={rootRef} className={className} aria-hidden>
+    <div ref={rootRef} className={className} aria-hidden={alt ? undefined : true}>
       <Image
         src={src}
-        alt=""
+        alt={alt}
         fill
         priority={priority}
         sizes={sizes}
@@ -209,6 +226,7 @@ function runColourPlume(
   bounds: Element,
   photo: HTMLImageElement,
   isTouch: boolean,
+  sizing: "layer" | "viewport",
 ): (() => void) | null {
   const ctx = canvas.getContext("2d");
   const mask = document.createElement("canvas");
@@ -228,8 +246,13 @@ function runColourPlume(
     height = canvas.clientHeight;
     if (!width || !height) return;
 
-    // Keep the plume proportionate to the frame it burns in.
-    scale = Math.min(1.5, Math.max(0.6, width / REFERENCE_WIDTH));
+    // Keep the plume proportionate to the frame it burns in — or to the
+    // screen, for a frame narrower than the page that should still carry the
+    // banner's fire rather than a shrunken copy of it. Measured off the layer,
+    // a 500px frame lands on the 0.6 floor while a full-bleed banner runs at
+    // 1.1, and the same effect reads at half the size in one and not the other.
+    const basis = sizing === "viewport" ? window.innerWidth : width;
+    scale = Math.min(1.5, Math.max(0.6, basis / REFERENCE_WIDTH));
 
     const dpr = Math.min(window.devicePixelRatio || 1, isTouch ? 1.5 : 2);
     canvas.width = Math.round(width * dpr);

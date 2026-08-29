@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { AboutImage } from "@/components/about/AboutImage";
+import { CareerStats } from "@/components/about/CareerStats";
 import {
   aboutCta,
   aboutHeading,
   aboutSectionLabel,
   aboutStory,
   soundStrands,
-  storyFacts,
 } from "@/lib/about";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -17,10 +17,10 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 /**
  * Section 04 — My Story.
  *
- * The spectacle of the globe and the deck gives way to the person: a portrait
- * holding the left of the spread with the heading stepped across its edge, and
- * the bio, its three dates and the booking line running down the right. On
- * phones the panel stacks — portrait first, then the story.
+ * The story runs down the left and the stage frame off the right edge of the
+ * screen, where it sticks while the text scrolls past it. The career figures
+ * close the spread as one ruled band rather than as cards — an editorial
+ * page, not an about box.
  */
 export function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -64,20 +64,18 @@ export function AboutSection() {
           {aboutSectionLabel}
         </p>
 
-        <div className="mt-xl grid gap-2xl md:mt-2xl lg:grid-cols-[46fr_54fr] lg:items-center lg:gap-2xl xl:gap-xl">
-          {/* Portrait — first in the flow, so it leads on phones too. */}
-          <div className="reveal-scroll sm:max-w-[440px] md:max-w-[520px] lg:max-w-[560px]" style={delay(120)}>
+        <div className="story-spread mt-xl md:mt-2xl">
+          {/* The frame leads on a phone, where a tall column of type before any
+              picture would read as a wall of text. */}
+          <div className="reveal-scroll order-1 lg:order-2" style={delay(200)}>
             <AboutImage />
           </div>
 
-          {/* Story — steps back over the portrait's edge from `lg` up. */}
-          <div className="lg:pt-2xl xl:relative xl:z-10">
+          <div className="order-2 lg:order-1">
             <h2
               id="about-title"
-              /* The one deliberate overlap: the heading alone steps back over
-                 the portrait's edge. Everything below it stays in column. */
-              className="story-title reveal-scroll xl:-ml-4xl"
-              style={delay(200)}
+              className="story-title reveal-scroll"
+              style={delay(120)}
             >
               {aboutHeading[0]}
               <br />
@@ -86,51 +84,40 @@ export function AboutSection() {
               {aboutHeading[2]}
             </h2>
 
-            <p
-              className="reveal-scroll mt-md text-[10px] font-light uppercase tracking-[0.28em] text-white/35 md:text-[11px]"
-              style={delay(260)}
-            >
-              {soundStrands.join(" / ")}
+            <p className="story-strands reveal-scroll mt-lg" style={delay(180)}>
+              {soundStrands.map((strand, index) => (
+                <span key={strand}>
+                  {index > 0 ? (
+                    <span aria-hidden className="mr-sm text-white/20">
+                      /
+                    </span>
+                  ) : null}
+                  {strand}
+                </span>
+              ))}
             </p>
 
-            <div className="max-w-[52ch]">
+            <div className="max-w-[54ch]">
               <p
-                className="reveal-scroll mt-xl text-[15px] leading-relaxed text-muted-foreground md:text-[17px]"
-                style={delay(340)}
+                className="reveal-scroll mt-xl text-[15px] leading-relaxed text-muted-foreground md:mt-2xl md:text-[17px]"
+                style={delay(260)}
               >
                 {aboutStory[0]}
               </p>
 
               <p
                 className="reveal-scroll mt-lg text-[15px] leading-relaxed text-foreground md:text-[17px]"
-                style={delay(400)}
+                style={delay(320)}
               >
                 {aboutStory[1]}
               </p>
             </div>
 
-            {/* Editorial metadata rather than statistic cards. */}
-            <dl
-              className="reveal-scroll mt-2xl grid grid-cols-3 gap-md border-t border-border pt-lg sm:flex sm:flex-wrap sm:items-start sm:gap-x-2xl sm:gap-y-lg"
-              style={delay(460)}
-            >
-              {storyFacts.map((fact) => (
-                <div key={fact.value} className="min-w-0 sm:min-w-[92px]">
-                  <dt className="font-display text-[24px] font-bold leading-none tracking-[-0.03em] sm:text-[26px] md:text-[32px]">
-                    {fact.value}
-                  </dt>
-                  <dd className="mt-xs text-[10px] font-light uppercase tracking-[0.24em] text-white/45">
-                    {fact.label}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
             <a
               href={aboutCta.href}
               data-cursor="book"
               className="reveal-scroll group mt-2xl inline-flex items-center gap-md border-b border-white/25 pb-sm text-[11px] font-light uppercase tracking-[0.24em] transition-colors duration-300 hover:border-accent hover:text-accent md:text-[12px]"
-              style={delay(540)}
+              style={delay(380)}
             >
               {aboutCta.label}
               <span
@@ -141,6 +128,11 @@ export function AboutSection() {
               </span>
             </a>
           </div>
+        </div>
+
+        {/* The career in figures, ruled across the foot of the spread. */}
+        <div className="reveal-scroll mt-2xl md:mt-3xl" style={delay(440)}>
+          <CareerStats />
         </div>
       </Container>
     </section>

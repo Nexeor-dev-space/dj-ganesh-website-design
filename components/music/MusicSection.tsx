@@ -2,19 +2,20 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { MusicPlayer } from "@/components/music/MusicPlayer";
 import { MusicProvider } from "@/components/music/MusicProvider";
-import { TrackList } from "@/components/music/TrackList";
-import { allReleasesUrl, musicSectionLabel } from "@/lib/music";
+import { NowPlayingBar } from "@/components/music/NowPlayingBar";
+import { TrackCarousel } from "@/components/music/TrackCarousel";
+import { allReleasesUrl, musicHeading, musicSectionLabel, tracks } from "@/data/tracks";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 /**
- * Section 03 — The Music.
+ * Section 03 — Tracks.
  *
- * Movement gives way to sound: a thin pulse line carries over from Global
- * Reach, then the deck itself — artwork and transport on the left, the four
- * releases listed on the right.
+ * The catalogue as a rack of CD cases rather than a list: the current release
+ * stands centred and full size, the rest step back and dim either side of it.
+ * Picking a case brings it to the centre and plays it; the transport sits as a
+ * single strip beneath, so the rack stays the subject.
  */
 export function MusicSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -58,35 +59,36 @@ export function MusicSection() {
           </p>
 
           <div className="mt-lg flex flex-col gap-lg md:mt-xl md:flex-row md:items-end md:justify-between md:gap-2xl">
-            <h2
-              id="music-title"
-              className="reveal-scroll section-title"
-              style={delay(80)}
-            >
-              The
+            <h2 id="music-title" className="reveal-scroll section-title" style={delay(80)}>
+              {musicHeading[0]}
               <br />
-              Music
+              {musicHeading[1]}
             </h2>
 
-            <a
-              href={allReleasesUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="reveal-scroll flex h-11 items-center self-start text-[10px] font-light uppercase tracking-[0.24em] text-white/50 transition-colors duration-200 hover:text-accent md:self-auto md:text-[11px]"
+            <div
+              className="reveal-scroll flex flex-col gap-xs md:items-end"
               style={delay(160)}
             >
-              All releases on YouTube <span aria-hidden>↗</span>
-            </a>
+              <p className="text-[10px] font-light uppercase tracking-[0.24em] text-white/35">
+                {tracks.length} tracks · Mixes &amp; mashups
+              </p>
+              <a
+                href={allReleasesUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-[10px] font-light uppercase tracking-[0.24em] text-white/50 transition-colors duration-200 hover:text-accent md:text-[11px]"
+              >
+                All releases on YouTube <span aria-hidden>↗</span>
+              </a>
+            </div>
           </div>
 
-          <div className="mt-2xl grid gap-2xl md:mt-3xl lg:grid-cols-[55fr_45fr] lg:gap-3xl">
-            <div className="reveal-scroll min-w-0" style={delay(240)}>
-              <MusicPlayer />
-            </div>
+          <div className="reveal-scroll mt-2xl md:mt-3xl" style={delay(240)}>
+            <TrackCarousel />
+          </div>
 
-            <div className="reveal-scroll min-w-0" style={delay(320)}>
-              <TrackList />
-            </div>
+          <div className="reveal-scroll mt-xl md:mt-2xl" style={delay(640)}>
+            <NowPlayingBar />
           </div>
         </Container>
       </section>

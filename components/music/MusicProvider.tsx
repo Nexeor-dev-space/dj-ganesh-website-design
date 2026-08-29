@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { claimAudio, releaseAudio, subscribeAudioOwner } from "@/lib/audio-bus";
-import { tracks } from "@/lib/music";
+import { tracks } from "@/data/tracks";
 import type { Track } from "@/types/music";
 
 const FFT_SIZE = 128;
