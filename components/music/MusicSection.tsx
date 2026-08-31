@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { MusicProvider } from "@/components/music/MusicProvider";
@@ -72,6 +73,14 @@ export function MusicSection() {
               <p className="text-[10px] font-light uppercase tracking-[0.24em] text-white/35">
                 {tracks.length} tracks · Mixes &amp; mashups
               </p>
+              {/* The section is discovery; the archive is the whole of it. */}
+              <Link
+                href="/music"
+                className="text-[10px] font-light uppercase tracking-[0.24em] text-white/50 transition-colors duration-200 hover:text-accent md:text-[11px]"
+              >
+                View the full archive <span aria-hidden>→</span>
+              </Link>
+
               <a
                 href={allReleasesUrl}
                 target="_blank"

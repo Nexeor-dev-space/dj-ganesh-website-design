@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { PlumeRegion } from "@/components/effects/PlumeRegion";
+import { SoundToggle } from "@/components/audio/SoundToggle";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -48,7 +50,23 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang={siteConfig.locale}
       className={`${inter.variable} ${consul.variable} ${laura.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {/* One hidden frame behind every route: nothing shows it until the
+            pointer's flame passes over it. It lives here rather than on the
+            home page so the effect is the site's, not one page's — the banner
+            and the footer keep their own regions, which take precedence
+            because `ColourPlume` resolves to the closest one. */}
+        <PlumeRegion src="/images/s-4.jpg">{children}</PlumeRegion>
+
+        {/* Fixed under the navigation on every page. Only the wrapper is
+            fixed; the button keeps the site's own gutter. Reserved for now —
+            see `SoundToggle` for why it isn't wired to anything. */}
+        <div className="sound-dock">
+          <div className="container-page flex justify-end">
+            <SoundToggle className="pointer-events-auto reveal [--reveal-delay:1100ms]" />
+          </div>
+        </div>
+      </body>
     </html>
   );
 }

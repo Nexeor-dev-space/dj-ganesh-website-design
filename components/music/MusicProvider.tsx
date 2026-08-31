@@ -10,7 +10,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { claimAudio, releaseAudio, subscribeAudioOwner } from "@/lib/audio-bus";
 import { tracks } from "@/data/tracks";
 import type { Track } from "@/types/music";
 
@@ -122,13 +121,9 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     const onPlay = () => {
       switchingRef.current = false;
       setIsPlaying(true);
-      claimAudio("music");
     };
-    // Hold the bus to the element's real state, so a pause from any source —
-    // not just our own button — hands the background mix back.
     const onPause = () => {
       setIsPlaying(false);
-      if (!switchingRef.current) releaseAudio("music");
     };
     const onTime = () => setCurrentTime(audio.currentTime);
     const onMeta = () => {
@@ -151,21 +146,13 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     };
   }, [currentTrack.id]);
 
-  // Someone else (the background mix) took the audio bus — stand down.
-  useEffect(() => {
-    return subscribeAudioOwner((owner) => {
-      if (owner !== "music") audioRef.current?.pause();
-    });
-  }, []);
-
-  // On unmount, stop the audio and drop the bus — but leave the graph intact.
-  // Closing the context or disconnecting the source would permanently silence
-  // the element, which survives remounts (Fast Refresh, Strict Mode).
+  // On unmount, stop the audio but leave the graph intact. Closing the
+  // context or disconnecting the source would permanently silence the
+  // element, which survives remounts (Fast Refresh, Strict Mode).
   useEffect(() => {
     const audio = audioRef.current;
     return () => {
       audio?.pause();
-      releaseAudio("music");
       analyserRef.current = null;
       contextRef.current = null;
     };
@@ -211,10 +198,9 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Claim the bus and start the audio before touching Web Audio, so the
-    // background mix ducks and the track plays even if the graph cannot be
-    // built. The visualiser is the only thing that suffers.
-    claimAudio("music");
+    // Start the audio before touching Web Audio, so the track plays even if
+    // the graph cannot be built. The visualiser is the only thing that
+    // suffers.
     const started = audio.play();
     ensureGraph();
     void started?.catch(() => setIsPlaying(false));
@@ -247,7 +233,6 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         playCurrent();
       } else {
         audio.pause();
-        releaseAudio("music");
       }
     },
     [currentIndex, playCurrent, select],

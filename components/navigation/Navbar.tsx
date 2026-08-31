@@ -1,17 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { SocialIcon } from "@/components/navigation/SocialIcon";
-import { navLinks, siteConfig, socialLinks } from "@/lib/site";
+import { bookingHref, navLinks, siteConfig, socialLinks } from "@/lib/site";
 
 /**
  * Fixed navigation bar: outlined wordmark on the left, social rail, a single
  * accent call-to-action and a hamburger that opens the full-screen menu.
  * Links live in the overlay so the bar itself stays quiet at every width.
+ *
+ * Every destination is a route, so they are `next/link` rather than plain
+ * anchors — the menu now moves between pages, and a full document load on each
+ * one would throw away the fonts, the audio and the rest of the shell. The
+ * page currently open is marked with `aria-current`, which is what the accent
+ * on it means.
  */
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   // Freeze the page behind the overlay and let Escape close it.
   useEffect(() => {
@@ -40,15 +49,15 @@ export function Navbar() {
           className="flex h-16 items-center justify-between gap-md md:h-20"
         >
           {/* Wordmark */}
-          <a
-            href="#hero"
+          <Link
+            href="/"
             aria-label={`${siteConfig.name} — home`}
             className="group inline-flex items-center px-4 py-2 transition-opacity duration-200 hover:opacity-80 md:px-6 md:py-2.5"
           >
             <span className="font-display text-[13px] font-bold uppercase leading-none tracking-[0.28em] md:text-[15px]">
               DJ<span className="text-accent">&nbsp;Ganesh</span>
             </span>
-          </a>
+          </Link>
 
           <div className="flex items-center gap-sm">
             <ul className="hidden items-center gap-xs sm:flex">
@@ -67,9 +76,9 @@ export function Navbar() {
               ))}
             </ul>
 
-            <a
-              href="#contact"
-              className="inline-flex h-10 items-center gap-xs rounded-full bg-accent px-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-background transition-opacity duration-200 hover:opacity-85 md:h-11 md:px-6"
+            <Link
+              href={bookingHref}
+              className="btn-sweep btn-sweep--onAccent inline-flex h-10 items-center gap-xs rounded-full bg-accent px-5 text-[12px] font-semibold uppercase tracking-[0.14em] md:h-11 md:px-6"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -83,7 +92,7 @@ export function Navbar() {
                 <path d="M4.8 19.5a7.2 7.2 0 0 1 14.4 0" strokeLinecap="round" />
               </svg>
               Book
-            </a>
+            </Link>
 
             <button
               type="button"
@@ -116,18 +125,28 @@ export function Navbar() {
       >
         <Container className="flex h-full flex-col justify-between py-2xl">
           <ul className="flex flex-col gap-md">
-            {navLinks.map((link, index) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="reveal font-display text-[36px] font-bold uppercase leading-[1.05] tracking-[-0.03em] transition-colors duration-200 hover:text-accent md:text-[64px]"
-                  style={{ "--reveal-delay": `${60 * index}ms` } as React.CSSProperties}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link, index) => {
+              const current =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href);
+
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={current ? "page" : undefined}
+                    className={`reveal font-display text-[36px] font-bold uppercase leading-[1.05] tracking-[-0.03em] transition-colors duration-200 hover:text-accent md:text-[64px] ${
+                      current ? "text-accent" : ""
+                    }`}
+                    style={{ "--reveal-delay": `${60 * index}ms` } as React.CSSProperties}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           <ul className="flex items-center gap-sm">

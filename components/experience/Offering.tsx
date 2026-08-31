@@ -36,7 +36,11 @@ export function Offering({ offering, crop, tilt, drift, delay }: OfferingProps) 
       {/* Three layers, as on the tour cards: the slot drops the card in, the
           tilt holds its angle and straightens on hover, the card itself lifts. */}
       <div className="offer-tilt">
-        <article className="offer-card" style={{ "--crop": crop } as CSSProperties}>
+        <article
+          data-sweep-host
+          className="offer-card"
+          style={{ "--crop": crop } as CSSProperties}
+        >
           <span className="offer-card__media" aria-hidden>
             <Image
               src="/images/s-1.jpg"
@@ -69,7 +73,7 @@ export function Offering({ offering, crop, tilt, drift, delay }: OfferingProps) 
             <a
               href={experienceCtaHref}
               data-cursor="book"
-              className="offer-card__cta"
+              className="offer-card__cta btn-sweep"
               aria-label={`${offering.cta} — ${offering.title}`}
             >
               {offering.cta}
