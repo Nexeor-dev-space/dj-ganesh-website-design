@@ -99,7 +99,7 @@ export function CallSection() {
         <a
           href={`mailto:${bookingEmail}`}
           data-cursor="book"
-          className="reveal-scroll call-cta"
+          className="reveal-scroll call-cta btn-sweep btn-sweep--onAccent"
           style={delay(220)}
         >
           {call.ctaLabel}

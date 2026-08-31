@@ -67,6 +67,7 @@ export function UpNext() {
                 angle and straightens on hover, the card itself lifts. */}
             <div className="show-card-tilt">
               <div
+                data-sweep-host
                 className="show-card"
                 style={
                   { "--crop": CROPS[index % CROPS.length] } as CSSProperties
@@ -99,7 +100,7 @@ export function UpNext() {
                   <span className="show-card__city">{show.city}</span>
                   <span className="show-card__venue">{show.venue}</span>
 
-                  <span className="show-card__cta" aria-hidden>
+                  <span className="show-card__cta btn-sweep" aria-hidden>
                     Get Tickets
                     <span className="show-card__arrow">→</span>
                   </span>

@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { HeroBackground } from "@/components/hero/HeroBackground";
-import { SoundToggle } from "@/components/audio/SoundToggle";
 import { FitText } from "@/components/hero/FitText";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -11,14 +10,12 @@ export function Hero() {
     <section
       id="hero"
       aria-labelledby="hero-title"
+      /* Its own region: the banner's plume answers to the banner, not to the
+         page-wide frame the layout wraps every route in. */
+      data-plume-region
       className="relative flex min-h-svh flex-col overflow-hidden"
     >
       <HeroBackground />
-
-      {/* Volume control — clear of the navigation above and the lockup below. */}
-      <Container className="pointer-events-none absolute inset-x-0 top-[84px] z-20 flex justify-end md:top-[108px]">
-        <SoundToggle className="pointer-events-auto reveal [--reveal-delay:1100ms]" />
-      </Container>
 
       {/* The lockup sits low and left, in the darkest part of the frame and
           well clear of his face and hands. */}

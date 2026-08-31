@@ -293,6 +293,49 @@ function runColourPlume(
     idle = 0;
   };
 
+  /**
+   * Regions nested inside this one, re-read at most once a frame.
+   *
+   * The list is not fixed for the layer's lifetime: the page-wide region wraps
+   * `children`, so it outlives navigation while the regions inside it come and
+   * go with the route. Reading it per frame rather than per pointer move keeps
+   * that correct without a DOM query on every move.
+   */
+  let nested: Element[] = [];
+  let nestedDirty = true;
+
+  const nestedRegions = () => {
+    if (nestedDirty) {
+      nested = Array.from(bounds.querySelectorAll("[data-plume-region]"));
+      nestedDirty = false;
+    }
+    return nested;
+  };
+
+  /**
+   * Whether a point belongs to a region nested inside this one.
+   *
+   * A nested region keeps its own photograph, so this plume has to stop at its
+   * edge. The banner is the case this exists for: it sits inside the page-wide
+   * region the layout wraps every route in, and the page's layer paints *over*
+   * the banner's own — so without this, the flame over the banner revealed the
+   * page's frame instead of the banner's, in the page frame's colours.
+   *
+   * Tested geometrically rather than from the event's target, because the
+   * things that sit over the banner — the fixed navigation, most of all — are
+   * not inside its region even though they are inside its frame.
+   */
+  const inNestedRegion = (clientX: number, clientY: number) =>
+    nestedRegions().some((region) => {
+      const r = region.getBoundingClientRect();
+      return (
+        clientX >= r.left &&
+        clientX <= r.right &&
+        clientY >= r.top &&
+        clientY <= r.bottom
+      );
+    });
+
   const onPointerMove = (event: PointerEvent) => {
     // On touch, only track while a finger is actually down; a stray hover from
     // a stylus proximity sensor shouldn't drive the plume.
@@ -305,7 +348,7 @@ function runColourPlume(
       event.clientY >= rect.top &&
       event.clientY <= rect.bottom;
 
-    if (!over) {
+    if (!over || inNestedRegion(event.clientX, event.clientY)) {
       driving = false;
       entering = true;
       return;
@@ -359,6 +402,7 @@ function runColourPlume(
 
   const tick = () => {
     frame = requestAnimationFrame(tick);
+    nestedDirty = true;
     if (!width || !height) return;
 
     time += 0.016;
@@ -370,10 +414,28 @@ function runColourPlume(
     // loop before the plume ever got going. Skipped once the region has scrolled
     // away, so an off-screen frame isn't burning frames on a phone.
     if (isTouch && sinceInput > AMBIENT_IDLE_FRAMES && boundsOnScreen()) {
-      aim(
-        width * (0.5 + 0.26 * Math.cos(time * 0.62)),
-        height * (0.55 + 0.15 * Math.sin(time * 0.94)),
-      );
+      const driftX = width * (0.5 + 0.26 * Math.cos(time * 0.62));
+      const driftY = height * (0.55 + 0.15 * Math.sin(time * 0.94));
+
+      // The drift has no pointer to tell it whose frame it is wandering over,
+      // so it asks. Without this the page-wide plume drifts across the banner
+      // on a phone and paints the page's frame over the banner's own — the
+      // same leak as above, arriving without anyone touching the screen.
+      const canvasRect = canvas.getBoundingClientRect();
+      const overNested =
+        canvasRect.width > 0 &&
+        canvasRect.height > 0 &&
+        inNestedRegion(
+          canvasRect.left + (driftX / width) * canvasRect.width,
+          canvasRect.top + (driftY / height) * canvasRect.height,
+        );
+
+      if (overNested) {
+        driving = false;
+        entering = true;
+      } else {
+        aim(driftX, driftY);
+      }
     }
 
     if (!driving && idle >= IDLE_FRAMES && particles.length === 0) return;

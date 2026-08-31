@@ -877,11 +877,11 @@
       color 320ms var(--ease-out);
   }
 
+  /* The fill arrives as the sweep panel (see `.btn-sweep`), so the card's
+     hover only has to hand it the border. */
   .show-card:hover .show-card__cta,
   .show-card:focus-within .show-card__cta {
     border-color: var(--accent);
-    background-color: var(--accent);
-    color: var(--background);
   }
 
   .show-card__arrow {
@@ -2269,11 +2269,10 @@
       color 320ms var(--ease-out);
   }
 
+  /* As on the tour cards: the sweep brings the fill. */
   .offer-card:hover .offer-card__cta,
   .offer-card:focus-within .offer-card__cta {
     border-color: var(--accent);
-    background-color: var(--accent);
-    color: var(--background);
   }
 
   .offer-card__arrow {
@@ -2394,8 +2393,7 @@
     );
     transition:
       border-color 400ms var(--ease-out),
-      background-color 400ms var(--ease-out),
-      transform 400ms var(--ease-out);
+      background-color 400ms var(--ease-out);
   }
 
   @media (width >= 768px) {
@@ -2405,11 +2403,13 @@
     }
   }
 
-  /* The one under the pointer comes forward while the run holds still. */
+  /* The one under the pointer comes forward while the run holds still — in
+     colour only. It used to lift 4px as well, but these cards are already
+     travelling sideways, and a card that rises as it passes reads as the run
+     jolting rather than as the card answering the pointer. */
   .reaction-card:hover {
     border-color: rgba(184, 255, 102, 0.4);
     background-color: rgba(184, 255, 102, 0.03);
-    transform: translateY(-4px);
   }
 
   .reaction-card__head {
@@ -2518,7 +2518,6 @@
     .reaction-card {
       flex: 1 1 280px;
       margin-right: 0;
-      transform: none;
     }
   }
 }
@@ -3541,6 +3540,26 @@
 }
 
 /* -------------------------------------------------------------------------- */
+/*  Sound toggle dock                                                         */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .sound-dock {
+    position: fixed;
+    inset-inline: 0;
+    top: 84px;
+    z-index: 30;
+    pointer-events: none;
+  }
+
+  @media (width >= 768px) {
+    .sound-dock {
+      top: 108px;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
 /*  Quick booking — the floating WhatsApp button                              */
 /* -------------------------------------------------------------------------- */
 
@@ -3681,6 +3700,1793 @@
 
   .whatsapp-fab:hover .whatsapp-fab__glyph,
   .whatsapp-fab:focus-visible .whatsapp-fab__glyph {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  /about — the artist story page                                            */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* One label style for the whole page, so every section opens the same way
+     the homepage's do. */
+  .about-label {
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  @media (width >= 768px) {
+    .about-label {
+      font-size: 11px;
+    }
+  }
+
+  /* ---- Opening frame ------------------------------------------------------ */
+
+  .about-hero {
+    /* Clears the fixed navigation, then holds the name well down the frame. */
+    padding-top: clamp(120px, 18vh, 200px);
+    padding-bottom: clamp(64px, 10vh, 120px);
+    background-color: var(--background);
+  }
+
+  @media (width >= 1024px) {
+    .about-hero {
+      padding-top: clamp(180px, 22vh, 260px);
+      padding-bottom: clamp(96px, 12vh, 160px);
+    }
+  }
+
+  /* The still is the section's ground, not a band across it. */
+  .about-hero__frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .about-hero__image {
+    filter: grayscale(1) contrast(1.1) brightness(0.62);
+  }
+
+  /* Holds the picture down far enough for the type to read on it, without
+     flattening it to black. */
+  .about-hero__fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(5, 5, 5, 0.82) 0%,
+      rgba(5, 5, 5, 0.58) 38%,
+      rgba(5, 5, 5, 0.86) 78%,
+      var(--background) 100%
+    );
+  }
+
+  .about-hero__name {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-laura), var(--font-display);
+    font-weight: 400;
+    font-size: clamp(46px, 12vw, 150px);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+  }
+
+  .about-hero__statement {
+    margin: var(--space-xl) 0 0;
+    max-width: 18ch;
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3.4vw, 44px);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    color: rgba(255, 255, 255, 0.94);
+    text-wrap: balance;
+  }
+
+  .about-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm) var(--space-xl);
+    margin-top: var(--space-xl);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  @media (width >= 768px) {
+    .about-hero__meta {
+      font-size: 11px;
+    }
+  }
+
+  .about-hero__strands {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .about-hero__since {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .about-hero__lede {
+    margin: var(--space-lg) 0 0;
+    max-width: 46ch;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .about-hero__lede {
+      font-size: 17px;
+    }
+  }
+
+  /* ---- The story ---------------------------------------------------------- */
+
+  .about-story__spread {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  @media (width >= 1024px) {
+    .about-story__spread {
+      grid-template-columns: minmax(0, 34fr) minmax(0, 66fr);
+      gap: var(--space-3xl);
+      align-items: start;
+    }
+  }
+
+  .about-story__text {
+    max-width: 54ch;
+  }
+
+  .about-story__paragraph {
+    font-size: clamp(17px, 1.9vw, 22px);
+    line-height: 1.62;
+    color: rgba(255, 255, 255, 0.66);
+  }
+
+  .about-story__paragraph + .about-story__paragraph {
+    margin-top: var(--space-lg);
+  }
+
+  /* The closing line is the one that carries the present tense. */
+  .about-story__paragraph--close {
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  /* The career in figures, ruled across the foot of the spread. */
+  .about-figures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-lg) var(--space-md);
+    margin: var(--space-3xl) 0 0;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .about-figures {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-xl);
+      margin-top: var(--space-4xl);
+    }
+  }
+
+  .about-figure__value {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .about-figure__suffix {
+    color: var(--accent);
+  }
+
+  .about-figure__label {
+    margin: var(--space-sm) 0 0;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* ---- Two frames and the sound ------------------------------------------- */
+
+  .about-visual__spread {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  @media (width >= 1024px) {
+    .about-visual__spread {
+      grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+      gap: var(--space-3xl);
+      align-items: center;
+    }
+  }
+
+  /* The pair: the portrait leads, the deck shot steps over its lower corner. */
+  .about-visual__frames {
+    position: relative;
+    padding-bottom: clamp(56px, 12vw, 110px);
+  }
+
+  .about-visual__portrait {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .about-visual__decks {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 46%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  }
+
+  @media (width >= 1024px) {
+    .about-visual__decks {
+      /* Steps off the portrait's edge, into the gutter between the columns. */
+      right: calc(-1 * var(--space-2xl));
+      width: 52%;
+    }
+  }
+
+  /* Held in black and white, with no hover grade of its own: the plume is
+     what brings the colour back now, and a frame that also desaturated under
+     the pointer would be two reveals answering the same gesture. */
+  .about-visual__image {
+    filter: grayscale(1) contrast(1.08);
+  }
+
+  .about-visual__strands {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    font-family: var(--font-display);
+    font-size: clamp(30px, 4.6vw, 62px);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .about-visual__strand:nth-child(2) {
+    color: var(--accent);
+  }
+
+  .about-visual__slash {
+    margin-inline: var(--space-sm);
+    color: rgba(255, 255, 255, 0.2);
+  }
+
+  .about-visual__line {
+    margin: var(--space-xl) 0 0;
+    max-width: 34ch;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Selected nights ---------------------------------------------------- */
+
+  .about-more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    align-self: flex-start;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 240ms var(--ease-out);
+  }
+
+  .about-more:hover {
+    color: var(--accent);
+  }
+
+  @media (width >= 768px) {
+    .about-more {
+      font-size: 11px;
+    }
+  }
+
+  .about-nights {
+    display: grid;
+    gap: 0;
+    margin: var(--space-2xl) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width >= 768px) {
+    .about-nights {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: var(--space-3xl);
+    }
+  }
+
+  .about-night {
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--border);
+    transition: border-color 400ms var(--ease-out);
+  }
+
+  .about-night:hover {
+    border-color: rgba(184, 255, 102, 0.4);
+  }
+
+  @media (width >= 768px) {
+    .about-night {
+      padding: var(--space-xl) var(--space-lg) var(--space-lg) 0;
+    }
+
+    .about-night + .about-night {
+      padding-left: var(--space-lg);
+      border-left: 1px solid var(--border);
+    }
+  }
+
+  .about-night__year {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    color: var(--accent);
+  }
+
+  .about-night__title {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.2vw, 26px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .about-night__lede {
+    margin: var(--space-sm) 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* ---- Hand-off to booking ------------------------------------------------ */
+
+  .about-outro {
+    padding-block: clamp(64px, 8vw, 120px);
+    background-color: var(--background);
+  }
+
+  .about-outro__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .about-outro__row {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-2xl);
+    }
+  }
+
+  /* Deliberately below section-title scale: this is a hand-off, not a pitch. */
+  .about-outro__question {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.4vw, 30px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .about-outro__cta {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    transition:
+      color 240ms var(--ease-out),
+      border-color 240ms var(--ease-out);
+  }
+
+  .about-outro__cta:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  /music — the listening archive                                            */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* Shared eyebrow for the page's four sections. */
+  .music-label {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  @media (width >= 768px) {
+    .music-label {
+      font-size: 11px;
+    }
+  }
+
+  /* ---- 01 The way in ----------------------------------------------------- */
+
+  /* Clears the fixed navigation, and deliberately short of a full screen: the
+     first pressing should already be on its way up as this is read. */
+  .music-hero {
+    padding-block: clamp(120px, 15vh, 200px) clamp(48px, 6vw, 88px);
+    background-color: var(--background);
+  }
+
+  .music-hero__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      58% 52% at 22% 34%,
+      rgba(184, 255, 102, 0.06) 0%,
+      transparent 70%
+    );
+  }
+
+  /* The page's own name, in the section face at banner scale. */
+  .music-hero__title {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-consul), var(--font-display);
+    font-weight: 400;
+    font-size: clamp(64px, 17vw, 200px);
+    line-height: 0.82;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .music-hero__statement {
+    margin: var(--space-lg) 0 0;
+    max-width: 24ch;
+    font-size: clamp(20px, 2.6vw, 34px);
+    font-weight: 300;
+    line-height: 1.28;
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.9);
+    text-wrap: balance;
+  }
+
+  .music-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm) var(--space-xl);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  @media (width >= 768px) {
+    .music-hero__meta {
+      justify-content: space-between;
+      font-size: 11px;
+    }
+  }
+
+  .music-hero__strands {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .music-hero__count {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.38);
+  }
+
+  /* ---- 03 The archive ---------------------------------------------------- */
+
+  .music-archive__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  @media (width >= 768px) {
+    .music-archive__head {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .music-archive__note {
+    margin: 0;
+    max-width: 30ch;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  @media (width >= 768px) {
+    .music-archive__note {
+      text-align: right;
+    }
+  }
+
+  .music-archive__list {
+    margin: var(--space-2xl) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .music-archive__list {
+      margin-top: var(--space-3xl);
+    }
+  }
+
+  /* ---- One entry in the archive ------------------------------------------
+
+     Each release is its own card: the pressing beside the catalogue number,
+     the title at display scale, the credit and the transport. This replaced a
+     compact index sitting under a single large feature, where the disc on
+     screen was always a different track from the row being read.            */
+
+  .track-card {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: center;
+    padding-block: clamp(32px, 5vw, 56px);
+    border-bottom: 1px solid var(--border);
+    transition: border-color 400ms var(--ease-out);
+  }
+
+  @media (width >= 768px) {
+    .track-card {
+      grid-template-columns: clamp(150px, 22vw, 260px) minmax(0, 1fr);
+      gap: clamp(28px, 4vw, 64px);
+    }
+  }
+
+  .track-card[data-current] {
+    border-color: rgba(184, 255, 102, 0.28);
+  }
+
+  /* Square, and never wider than its column. */
+  .track-card__disc {
+    position: relative;
+    width: min(62vw, 260px);
+    aspect-ratio: 1;
+    justify-self: center;
+    transition: transform 520ms var(--ease-out);
+  }
+
+  @media (width >= 768px) {
+    .track-card__disc {
+      width: 100%;
+      justify-self: start;
+    }
+  }
+
+  .track-card:hover .track-card__disc {
+    transform: scale(1.02);
+  }
+
+  .track-card__index {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .track-card__rule {
+    display: block;
+    width: clamp(24px, 4vw, 56px);
+    height: 1px;
+    background-color: rgba(184, 255, 102, 0.4);
+  }
+
+  .track-card__title {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(26px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    text-wrap: balance;
+    transition: color 320ms var(--ease-out);
+  }
+
+  .track-card:hover .track-card__title,
+  .track-card[data-current] .track-card__title {
+    color: var(--foreground);
+  }
+
+  .track-card[data-playing] .track-card__title {
+    color: var(--accent);
+  }
+
+  .track-card__artist {
+    margin: var(--space-md) 0 0;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .track-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md) var(--space-xl);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+  }
+
+  /* Outlined by default, filled only on the track being played — four cards
+     must not show four loud green buttons at once. */
+  .track-card__play {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 46px;
+    padding: 0 var(--space-lg) 0 var(--space-xs);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    transition:
+      background-color 240ms var(--ease-out),
+      border-color 240ms var(--ease-out),
+      color 240ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+
+  .track-card__play:hover,
+  .track-card__play:focus-visible {
+    transform: translateY(-2px);
+  }
+
+  .track-card[data-current] .track-card__play {
+    border-color: var(--accent);
+    background-color: var(--accent);
+    color: #050505;
+    /* Already filled, so its sweep inverts — dark panel, accent label, the
+       same way the navigation's Book pill does. */
+    --sweep-bg: #050505;
+    --sweep-ink: var(--accent);
+  }
+
+  /* The rule above is more specific than `.btn-sweep:hover`, so without this
+     the label kept its resting dark ink and vanished into the dark panel the
+     moment it arrived — a button that read as empty on hover. */
+  .track-card[data-current] .track-card__play:hover,
+  .track-card[data-current] .track-card__play:focus-visible {
+    color: var(--sweep-ink);
+  }
+
+  .track-card__play-glyph {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .track-card[data-current] .track-card__play-glyph {
+    background-color: rgba(5, 5, 5, 0.14);
+  }
+
+  .track-card__play-glyph svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .track-card__time {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .track-card__link {
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 200ms var(--ease-out);
+  }
+
+  .track-card__link:hover,
+  .track-card__link:focus-visible {
+    color: var(--accent);
+  }
+
+  /* ---- 04 The way out ---------------------------------------------------- */
+
+  /* Carries the foot of the page: the transport docks over this section, so
+     the padding below is what keeps the link clear of it. */
+  .music-continue {
+    padding-block: clamp(64px, 7vw, 120px) clamp(150px, 16vh, 220px);
+    background-color: var(--background);
+    border-top: 1px solid var(--border);
+  }
+
+  .music-continue__title {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(26px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .music-continue__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 44px;
+    margin-top: var(--space-xl);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-strong);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+    transition:
+      color 240ms var(--ease-out),
+      border-color 240ms var(--ease-out);
+  }
+
+  .music-continue__link:hover,
+  .music-continue__link:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .music-continue__arrow {
+    display: inline-block;
+    transition: transform 240ms var(--ease-out);
+  }
+
+  .music-continue__link:hover .music-continue__arrow,
+  .music-continue__link:focus-visible .music-continue__arrow {
+    transform: translate(3px, -3px);
+  }
+
+  /* ---- The docked transport ---------------------------------------------- */
+
+  /* Below the navigation's full-screen menu (z-40), above the page. Slides up
+     out of the foot of the viewport the first time something is played. */
+  .music-dock {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 30;
+    padding: 0 var(--container-padding) max(var(--space-md), env(safe-area-inset-bottom));
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(110%);
+    transition:
+      opacity 420ms var(--ease-out),
+      transform 420ms var(--ease-out);
+  }
+
+  .music-dock[data-open="true"] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .music-dock__panel {
+    max-width: var(--container-max-width);
+    margin-inline: auto;
+    padding: 0 var(--space-md) var(--space-sm);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(8, 8, 8, 0.92);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  @media (width >= 768px) {
+    .music-dock__panel {
+      padding: 0 var(--space-lg) var(--space-md);
+    }
+  }
+
+  /* The bar brings its own top rule; inside the panel that would double up
+     with the border. */
+  .music-dock__panel .now-playing {
+    border-top: 0;
+    padding-top: var(--space-md);
+  }
+}
+
+/* Compact on phones: the same transport, with the air between its three rows
+   taken out, so the dock covers a fifth of a small screen rather than a
+   quarter of it.
+
+   Unlayered on purpose. The gap and the scrubber's top margin are Tailwind
+   utilities on the bar itself, and a utility layer wins over `components`
+   whatever the specificity — so an override for them has to sit outside every
+   layer to land. */
+@media (width < 768px) {
+  .music-dock__panel .now-playing {
+    padding-top: var(--space-sm);
+  }
+
+  .music-dock__panel .now-playing > div:first-child {
+    row-gap: var(--space-xs);
+  }
+
+  .music-dock__panel .progress-track {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-dock,
+  .track-card,
+  .track-card__disc,
+  .track-card__title,
+  .track-card__play,
+  .music-continue__arrow {
+    transition: none;
+  }
+
+  .music-dock:not([data-open="true"]) {
+    transform: none;
+    visibility: hidden;
+  }
+
+  .track-card:hover .track-card__disc {
+    transform: none;
+  }
+
+  .track-card__play:hover,
+  .track-card__play:focus-visible {
+    transform: none;
+  }
+
+  .music-continue__link:hover .music-continue__arrow,
+  .music-continue__link:focus-visible .music-continue__arrow {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Button sweep — one hover for every call to action                         */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* A panel wipes across the button from the left while the label and its
+     arrow drift after it, and the ink flips to read on the new ground.
+     Modelled on the reference the client sent, rebuilt in CSS: the panel is a
+     scaled pseudo-element rather than an animated width, so it composites on
+     the GPU instead of laying out on every frame.
+
+     Each button sets the two colours it sweeps to:
+       --sweep-bg   the panel that arrives
+       --sweep-ink  what the label becomes once it has
+     The defaults suit a dark or outlined button; an accent-filled one inverts
+     them. */
+  .btn-sweep {
+    --sweep-bg: var(--accent);
+    --sweep-ink: #050505;
+    --sweep-drift: 4px;
+
+    position: relative;
+    /* Keeps the panel inside this button's own stacking context, so a
+       negative z-index cannot fall behind the section it sits on. */
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      color 320ms var(--ease-out),
+      border-color 320ms var(--ease-out),
+      transform 260ms var(--ease-out),
+      box-shadow 260ms var(--ease-out);
+  }
+
+  .btn-sweep::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--sweep-bg);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 460ms var(--ease-out);
+  }
+
+  .btn-sweep:hover::before,
+  .btn-sweep:focus-visible::before,
+  /* Card CTAs answer to the card, not only to themselves: the whole card is
+     the hover target, and the button is what it lights up. */
+  [data-sweep-host]:hover .btn-sweep::before,
+  [data-sweep-host]:focus-within .btn-sweep::before {
+    transform: scaleX(1);
+  }
+
+  .btn-sweep:hover,
+  .btn-sweep:focus-visible,
+  [data-sweep-host]:hover .btn-sweep,
+  [data-sweep-host]:focus-within .btn-sweep {
+    border-color: var(--sweep-bg);
+    color: var(--sweep-ink);
+  }
+
+  /* The contents float after the panel — the drift the reference gives its
+     label and arrow. Staggered a touch behind the wipe so they read as being
+     carried by it rather than moving with it. */
+  .btn-sweep > * {
+    transition: transform 460ms var(--ease-out);
+    transition-delay: 60ms;
+  }
+
+  .btn-sweep:hover > *,
+  .btn-sweep:focus-visible > *,
+  [data-sweep-host]:hover .btn-sweep > *,
+  [data-sweep-host]:focus-within .btn-sweep > * {
+    transform: translateX(var(--sweep-drift));
+  }
+
+  /* Already filled in the accent: the panel arriving is the dark, and the
+     label lifts to the accent to stay legible on it. */
+  .btn-sweep--onAccent {
+    --sweep-bg: #050505;
+    --sweep-ink: var(--accent);
+    /* Owns the resting ink too: a Tailwind colour utility on the element
+       would outrank the hover rule below and leave the label unreadable once
+       the dark panel arrived. */
+    color: #050505;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-sweep,
+  .btn-sweep::before,
+  .btn-sweep > * {
+    transition: none;
+  }
+
+  /* The colour change still carries the state; nothing travels. */
+  .btn-sweep:hover > *,
+  .btn-sweep:focus-visible > *,
+  [data-sweep-host]:hover .btn-sweep > *,
+  [data-sweep-host]:focus-within .btn-sweep > * {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Archive controls — filter and search on /music                            */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .controls-bar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    /* Own margin now: these used to sit in a section of their own, and on the
+       archive they carry the gap between the heading and the first row. */
+    margin-top: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .controls-bar {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2xl);
+    }
+  }
+
+  .controls-cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+  }
+
+  /* Editorial, not pills: a label with a rule that fills in when active. */
+  .controls-cat {
+    position: relative;
+    /* Comfortably past a touch target without a visible box that size. */
+    min-height: 44px;
+    padding-block: var(--space-xs);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 240ms var(--ease-out);
+  }
+
+  .controls-cat::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 10px;
+    height: 1px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms var(--ease-out);
+  }
+
+  .controls-cat:hover {
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  /* State is carried by the rule and the text weight, not colour alone. */
+  .controls-cat[data-active] {
+    color: var(--accent);
+  }
+
+  .controls-cat[data-active]::after {
+    transform: scaleX(1);
+  }
+
+  .controls-search {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  @media (width >= 768px) {
+    .controls-search {
+      width: clamp(200px, 26vw, 300px);
+    }
+  }
+
+  .controls-search__input {
+    width: 100%;
+    min-height: 44px;
+    background: none;
+    border: 0;
+    padding: 0 0 var(--space-xs);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .controls-search__input::placeholder {
+    color: rgba(255, 255, 255, 0.34);
+  }
+
+  .controls-search__rule {
+    display: block;
+    height: 1px;
+    background-color: var(--border-strong);
+    transition: background-color 240ms var(--ease-out);
+  }
+
+  /* The accent underline is a second cue, not the only one: the global
+     `:focus-visible` ring is left in place so focus is never signalled by
+     colour alone. */
+  .controls-search__input:focus + .controls-search__rule {
+    background-color: var(--accent);
+  }
+
+  .archive-empty {
+    padding-block: clamp(48px, 8vw, 96px);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.44);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .controls-cat::after {
+    transition: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Contact / Booking page                                                    */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  /* ---- The opening ------------------------------------------------------- */
+
+  /* Clears the fixed navigation, and holds more air beneath it than any
+     section on the home page: this is a page that opens on a statement. */
+  .contact-hero {
+    padding-top: clamp(140px, 20vw, 260px);
+    padding-bottom: clamp(72px, 10vw, 140px);
+    background-color: var(--background);
+  }
+
+  .contact-hero__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      52% 48% at 22% 34%,
+      rgba(184, 255, 102, 0.07) 0%,
+      transparent 70%
+    );
+  }
+
+  .contact-hero__eyebrow {
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .contact-hero__title {
+    margin: clamp(20px, 3vw, 36px) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 8.4vw, 118px);
+    font-weight: 700;
+    line-height: 0.94;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .contact-hero__line {
+    display: block;
+  }
+
+  .contact-hero__line:last-child {
+    color: var(--accent);
+  }
+
+  .contact-hero__lede {
+    margin: clamp(24px, 4vw, 48px) 0 0;
+    max-width: 52ch;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .contact-hero__eyebrow {
+      font-size: 11px;
+    }
+
+    .contact-hero__lede {
+      font-size: 16px;
+    }
+  }
+
+  /* ---- Shared page headings ---------------------------------------------- */
+
+  .contact-heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(26px, 3.4vw, 40px);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .contact-heading--lead {
+    font-size: clamp(30px, 4.6vw, 56px);
+  }
+
+  /* ---- The enquiry ------------------------------------------------------- */
+
+  .contact-enquiry {
+    background-color: var(--surface);
+  }
+
+  .contact-enquiry__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      48% 44% at 78% 18%,
+      rgba(184, 255, 102, 0.05) 0%,
+      transparent 70%
+    );
+  }
+
+  .contact-enquiry__spread {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  @media (width >= 1024px) {
+    .contact-enquiry__spread {
+      grid-template-columns: 34fr 66fr;
+      align-items: start;
+      gap: var(--space-3xl);
+    }
+
+    /* Holds the heading in view while the form scrolls beside it. */
+    .contact-enquiry__intro {
+      position: sticky;
+      top: 132px;
+    }
+  }
+
+  .contact-enquiry__lede {
+    margin: var(--space-lg) 0 0;
+    max-width: 38ch;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Fields ------------------------------------------------------------ */
+
+  .enquiry-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+  }
+
+  @media (width >= 768px) {
+    .enquiry-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-lg) var(--space-xl);
+    }
+
+    .enquiry-field[data-wide] {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .enquiry-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .enquiry-field__label {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 240ms var(--ease-out);
+  }
+
+  .enquiry-field:focus-within .enquiry-field__label {
+    color: var(--accent);
+  }
+
+  .enquiry-field__optional {
+    color: rgba(255, 255, 255, 0.28);
+  }
+
+  /* Editorial rather than boxed: a rule under the text, nothing around it. */
+  .enquiry-input {
+    width: 100%;
+    margin-top: var(--space-sm);
+    /* Comfortably past a touch target at every width. */
+    min-height: 48px;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    padding: 0 0 var(--space-sm);
+    background-color: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--foreground);
+    transition:
+      border-color 280ms var(--ease-out),
+      box-shadow 280ms var(--ease-out);
+    /* iOS zooms any field under 16px on focus; 15px plus this keeps the type
+       at the size it is drawn without the page jumping. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .enquiry-input::placeholder {
+    color: rgba(255, 255, 255, 0.26);
+  }
+
+  .enquiry-input:hover {
+    border-color: var(--border-strong);
+  }
+
+  .enquiry-input:focus,
+  .enquiry-input:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    /* A line rather than a halo: the rule thickens, nothing glows. */
+    box-shadow: 0 1px 0 0 var(--accent);
+  }
+
+  .enquiry-field[data-invalid] .enquiry-input {
+    border-color: rgba(255, 138, 128, 0.75);
+  }
+
+  .enquiry-input--area {
+    min-height: 148px;
+    padding-top: var(--space-sm);
+    line-height: 1.7;
+    resize: vertical;
+  }
+
+  /* The date control's own icon is a browser part; this keeps it legible on a
+     dark ground rather than leaving a black-on-black glyph. */
+  .enquiry-input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.45;
+    cursor: pointer;
+  }
+
+  .enquiry-input[type="date"]:focus::-webkit-calendar-picker-indicator {
+    opacity: 0.8;
+  }
+
+  .enquiry-select {
+    position: relative;
+    display: block;
+  }
+
+  .enquiry-select select {
+    appearance: none;
+    padding-right: var(--space-lg);
+    cursor: pointer;
+  }
+
+  .enquiry-select option {
+    background-color: var(--surface);
+    color: var(--foreground);
+  }
+
+  .enquiry-select__arrow {
+    position: absolute;
+    right: 0;
+    bottom: var(--space-sm);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+  }
+
+  .enquiry-field__error {
+    display: block;
+    min-height: 1rem;
+    margin-top: var(--space-xs);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: rgb(255, 138, 128);
+  }
+
+  /* ---- Submit ------------------------------------------------------------ */
+
+  .enquiry-form__failed {
+    margin: var(--space-lg) 0 0;
+    font-size: 13px;
+    font-weight: 300;
+    color: rgb(255, 138, 128);
+  }
+
+  .enquiry-submit {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    min-height: 58px;
+    margin-top: var(--space-2xl);
+    border-radius: 999px;
+    padding-inline: var(--space-2xl);
+    background-color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #050505;
+    transition:
+      transform 260ms var(--ease-out),
+      box-shadow 260ms var(--ease-out);
+  }
+
+  @media (width >= 640px) {
+    .enquiry-submit {
+      width: auto;
+    }
+  }
+
+  .enquiry-submit:hover,
+  .enquiry-submit:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 46px rgba(184, 255, 102, 0.22);
+  }
+
+  .enquiry-submit__arrow {
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .enquiry-submit:hover .enquiry-submit__arrow,
+  .enquiry-submit:focus-visible .enquiry-submit__arrow {
+    transform: translateX(6px);
+  }
+
+  /* ---- Sent -------------------------------------------------------------- */
+
+  .enquiry-done {
+    border: 1px solid rgba(184, 255, 102, 0.3);
+    padding: clamp(28px, 5vw, 56px);
+    background-color: rgba(184, 255, 102, 0.04);
+  }
+
+  .enquiry-done:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .enquiry-done__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(26px, 3.6vw, 40px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .enquiry-done__lede {
+    margin: var(--space-md) 0 0;
+    max-width: 46ch;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted-foreground);
+  }
+
+  .enquiry-done__again {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--space-lg);
+    border-bottom: 1px solid var(--border-strong);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    transition:
+      color 240ms var(--ease-out),
+      border-color 240ms var(--ease-out);
+  }
+
+  .enquiry-done__again:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ---- Direct contact ---------------------------------------------------- */
+
+  .contact-direct {
+    background-color: var(--background);
+  }
+
+  .contact-direct__spread {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  @media (width >= 900px) {
+    .contact-direct__spread {
+      grid-template-columns: 60fr 40fr;
+      gap: var(--space-3xl);
+    }
+  }
+
+  .contact-desks {
+    margin: var(--space-xl) 0 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-desk {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    border-bottom: 1px solid var(--border);
+    padding-block: var(--space-lg);
+  }
+
+  @media (width >= 640px) {
+    .contact-desk {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-lg);
+    }
+  }
+
+  .contact-desk__label {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .contact-desk__value {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin: 0;
+  }
+
+  @media (width >= 640px) {
+    .contact-desk__value {
+      align-items: flex-end;
+      text-align: right;
+    }
+  }
+
+  .contact-desk__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--foreground);
+    word-break: break-word;
+    transition: color 240ms var(--ease-out);
+  }
+
+  @media (width >= 768px) {
+    .contact-desk__link {
+      font-size: 17px;
+    }
+  }
+
+  .contact-desk__link:hover {
+    color: var(--accent);
+  }
+
+  .contact-desk__note {
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .contact-social {
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .contact-social__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    min-height: 62px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.86);
+    transition: color 240ms var(--ease-out);
+  }
+
+  @media (width >= 768px) {
+    .contact-social__link {
+      font-size: 20px;
+    }
+  }
+
+  .contact-social__link:hover {
+    color: var(--accent);
+  }
+
+  .contact-social__arrow {
+    color: rgba(255, 255, 255, 0.35);
+    transition:
+      transform 280ms var(--ease-out),
+      color 240ms var(--ease-out);
+  }
+
+  .contact-social__link:hover .contact-social__arrow {
+    transform: translateX(6px);
+    color: var(--accent);
+  }
+
+  /* ---- The last word ----------------------------------------------------- */
+
+  .contact-final {
+    background-color: #030303;
+    padding-bottom: clamp(120px, 15vw, 220px);
+  }
+
+  .contact-final__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      50% 46% at 68% 60%,
+      rgba(184, 255, 102, 0.06) 0%,
+      transparent 70%
+    );
+  }
+
+  .contact-note {
+    max-width: 58ch;
+    border-left: 1px solid var(--accent);
+    padding-left: var(--space-lg);
+  }
+
+  .contact-note__title {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .contact-note__copy {
+    margin: var(--space-md) 0 0;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted-foreground);
+  }
+
+  .contact-final__title {
+    margin: clamp(56px, 9vw, 120px) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(38px, 7.6vw, 104px);
+    font-weight: 700;
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .contact-final__line {
+    display: block;
+  }
+
+  .contact-final__lede {
+    margin: var(--space-lg) 0 0;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .contact-final__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-md);
+    min-height: 44px;
+    margin-top: var(--space-2xl);
+    border-bottom: 1px solid var(--border-strong);
+    padding-bottom: var(--space-sm);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    transition:
+      color 240ms var(--ease-out),
+      border-color 240ms var(--ease-out);
+  }
+
+  .contact-final__cta:hover,
+  .contact-final__cta:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .contact-final__arrow {
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .contact-final__cta:hover .contact-final__arrow,
+  .contact-final__cta:focus-visible .contact-final__arrow {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enquiry-submit,
+  .enquiry-submit__arrow,
+  .contact-social__arrow,
+  .contact-final__arrow {
+    transition: none;
+  }
+
+  .enquiry-submit:hover,
+  .enquiry-submit:focus-visible {
+    transform: none;
+  }
+
+  .enquiry-submit:hover .enquiry-submit__arrow,
+  .contact-social__link:hover .contact-social__arrow,
+  .contact-final__cta:hover .contact-final__arrow {
     transform: none;
   }
 }

@@ -23,13 +23,14 @@ export function listAudioSources(): string[] {
 }
 
 /**
- * The mix the site opens with. Returns null only when no audio has been
- * supplied at all, so callers can render a disabled control rather than a
- * broken one.
+ * A mix to hand the interaction sandbox (`/dev/interactions`), which needs
+ * some audio to exercise the analyser against. Returns null when no audio has
+ * been supplied at all, so callers can render a disabled control rather than
+ * a broken one.
  *
- * A kill switch used to sit here, on the grounds that the supplied mixes were
- * corrupt. They are not: all four decode cleanly (2:22 to 4:43, 256–320kbps)
- * and play in the Tracks section. All it did was silence the background mix.
+ * The site itself no longer plays anything on arrival — the background mix
+ * and its switch were removed. The Tracks player is the only audio a visitor
+ * hears, and it reads `data/tracks.ts` rather than this.
  */
 export function resolveHeroAudio(): string | null {
   const sources = listAudioSources();
