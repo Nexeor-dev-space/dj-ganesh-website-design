@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { usePrefersReducedMotion } from "@/components/interactions/environment";
-import { call, callVideo } from "@/data/call";
+import { call } from "@/data/call";
 import { bookingEmail } from "@/lib/tour";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -11,23 +10,17 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 /**
  * The closing call.
  *
- * A full-bleed band of footage with the question over it — the one place on
- * the page that plays a moving picture, held right before the footer so the
- * last thing a visitor passes is an invitation.
+ * The question, centred on the page's own black, held right before the footer
+ * so the last thing a visitor passes is an invitation.
  *
- * The file is 8MB, so it is not something to hand every visitor on sight: the
- * `<source>` is only attached once the band is within a screen of the
- * viewport, and playback stops the moment it leaves. Reduced motion never
- * loads it at all — the band keeps its dark ground and reads exactly the same.
+ * It used to play a band of footage behind the type. That is gone, and with it
+ * an 8MB download, the observer that deferred it, and the scrim that existed
+ * only to hold the type off a moving crowd — the band reads the same without
+ * any of it.
  */
 export function CallSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [visible, setVisible] = useState(false);
-  /** Flips once the band is near enough to be worth the download. */
-  const [loadVideo, setLoadVideo] = useState(false);
-
-  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -36,28 +29,18 @@ export function CallSection() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setVisible(true);
-
-          const video = videoRef.current;
-          if (reducedMotion || !video) return;
-
           if (entry.isIntersecting) {
-            setLoadVideo(true);
-            // A background video that cannot play is not an error worth
-            // surfacing — the band reads the same without it.
-            void video.play().catch(() => {});
-          } else {
-            video.pause();
+            setVisible(true);
+            observer.disconnect();
           }
         });
       },
-      // A screen of margin, so the first frame is ready before it is needed.
-      { threshold: 0.01, rootMargin: "100% 0px" },
+      { threshold: 0.15 },
     );
 
     observer.observe(section);
     return () => observer.disconnect();
-  }, [reducedMotion]);
+  }, []);
 
   return (
     <section
@@ -67,24 +50,7 @@ export function CallSection() {
       data-visible={visible}
       className="call-section relative overflow-hidden"
     >
-      <div className="call-media" aria-hidden>
-        {reducedMotion ? null : (
-          <video
-            ref={videoRef}
-            className="call-video"
-            muted
-            loop
-            playsInline
-            preload="none"
-            tabIndex={-1}
-          >
-            {loadVideo ? <source src={callVideo} type="video/mp4" /> : null}
-          </video>
-        )}
-
-        <div className="call-scrim" />
-        <div className="overlay-grain absolute inset-0" />
-      </div>
+      <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
 
       <Container className="call-inner relative z-10">
         <h2 id="call-title" className="reveal-scroll call-title" style={delay(0)}>

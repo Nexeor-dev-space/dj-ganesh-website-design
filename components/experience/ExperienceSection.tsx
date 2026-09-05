@@ -15,22 +15,17 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 const STEP = 110;
 
 /**
- * Where each card samples the shared texture, and how it sits once it lands —
- * the same hand-laid treatment the tour dates use, held a shade flatter
- * because these cards are taller and a steeper angle would close the gaps.
- */
-const CROPS = ["24% 30%", "72% 62%", "40% 84%"] as const;
-const TILTS = ["-1.4deg", "1deg", "-0.8deg"] as const;
-const DRIFTS = ["0px", "14px", "-6px"] as const;
-
-/**
  * The Experience — the three things he is booked for.
  *
- * Three cards, on the same stock the tour dates are printed on: texture
- * behind, an accent badge, the title at display scale, what the booking
- * includes, and a pill out to the booking section. No photographs — the only
- * images the client's own file carries here are generated stock, and a
- * picture of somebody else is worse than none.
+ * The one centred section on the page, as the client's own file sets it: the
+ * label over the title over three equal plates, symmetrical rather than
+ * ranged left. Everything else on the site is left-aligned, which is what
+ * makes centring this one read as a deliberate stop rather than a default.
+ *
+ * The three cards carry no photograph. The only images the source has here are
+ * generated stock, and a picture of somebody else is worse than none — so the
+ * cards are told apart by their numbers, each set twice: once legibly in the
+ * accent, once as a ghost across the card's corner.
  */
 export function ExperienceSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -67,41 +62,34 @@ export function ExperienceSection() {
       <div className="experience-glow" aria-hidden />
 
       <Container className="relative z-10">
-        <p
-          className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
-          style={delay(0)}
-        >
-          {experienceSectionLabel}
-        </p>
+        <div className="experience-head">
+          <p
+            className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
+            style={delay(0)}
+          >
+            {experienceSectionLabel}
+          </p>
 
-        <div className="mt-lg flex flex-col gap-md md:mt-xl md:flex-row md:items-end md:justify-between md:gap-2xl">
+          {/* One line, and the second word carries the accent — the two words
+              are a single phrase here, not a two-line break like the ranged
+              headings elsewhere. */}
           <h2
             id="experience-title"
-            className="reveal-scroll section-title"
+            className="reveal-scroll section-title experience-title"
             style={delay(80)}
           >
-            {experienceHeading[0]}
-            <br />
-            {experienceHeading[1]}
+            {experienceHeading[0]}{" "}
+            <span className="experience-title__accent">
+              {experienceHeading[1]}
+            </span>
           </h2>
-
-          <p
-            className="reveal-scroll text-[10px] font-light uppercase tracking-[0.28em] text-white/45 md:max-w-[34ch] md:text-right md:text-[11px]"
-            style={delay(160)}
-          >
-            Weddings · Residencies · Live shows — every one of them ends at the
-            same booking form.
-          </p>
         </div>
 
-        <ul className="offer-cards">
+        <ul className="exp-cards">
           {offerings.map((offering, index) => (
             <Offering
               key={offering.id}
               offering={offering}
-              crop={CROPS[index % CROPS.length]}
-              tilt={TILTS[index % TILTS.length]}
-              drift={DRIFTS[index % DRIFTS.length]}
               delay={240 + index * STEP}
             />
           ))}

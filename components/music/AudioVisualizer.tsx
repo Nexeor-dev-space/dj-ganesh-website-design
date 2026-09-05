@@ -31,7 +31,7 @@ export function AudioVisualizer({ className }: { className?: string }) {
     const heights = new Array<number>(BAR_COUNT).fill(IDLE_HEIGHT);
     const bands = new Uint8Array(BAND_COUNT);
     const styles = getComputedStyle(document.documentElement);
-    const accent = styles.getPropertyValue("--accent").trim() || "#b8ff66";
+    const accent = styles.getPropertyValue("--accent").trim() || "#ffd500";
 
     let width = 0;
     let height = 0;

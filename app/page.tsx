@@ -3,7 +3,9 @@ import { BookingSection } from "@/components/booking/BookingSection";
 import { CallSection } from "@/components/call/CallSection";
 import { WhatsAppFab } from "@/components/booking/WhatsAppFab";
 import { Footer } from "@/components/footer/Footer";
+import { GallerySection } from "@/components/gallery/GallerySection";
 import { ExperienceSection } from "@/components/experience/ExperienceSection";
+import { FollowSection } from "@/components/follow/FollowSection";
 import { GlobalReach } from "@/components/global-reach/GlobalReach";
 import { Hero } from "@/components/hero/Hero";
 import { StagesSection } from "@/components/stages/StagesSection";
@@ -31,7 +33,12 @@ export default function HomePage() {
         <StatementSection />
         <LegacySection />
         {/* The record, then what can actually be booked from it. */}
+        <GallerySection />
         <ExperienceSection />
+
+        {/* The accounts, asked for while the room is still talking about him
+            rather than at the very end. */}
+        <FollowSection />
         <TestimonialsSection />
 
         {/* The question, over footage — asked first, so the booking room

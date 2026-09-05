@@ -1,33 +1,28 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ColourPlume } from "@/components/effects/ColourPlume";
 import { Container } from "@/components/layout/Container";
 import { FitText } from "@/components/hero/FitText";
 import { FooterNavigation } from "@/components/footer/FooterNavigation";
 import { SocialLinks } from "@/components/footer/SocialLinks";
-import {
-  footerContactEmail,
-  footerCopyright,
-  footerImage,
-  footerStatement,
-} from "@/data/footer";
+import { footerCopyright, footerStatement } from "@/data/footer";
 import { siteConfig } from "@/lib/site";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 /**
- * The last frame.
+ * The close.
  *
- * A full-bleed performance still fading into the page's own black, with the
- * name set oversized across the seam so photograph and type share an edge.
- * Everything else — two accounts, the section index, the credit line — sits
- * quietly beneath it. No newsletter, no second booking pitch: the Booking
- * section has already made that ask, and the site simply ends here.
+ * The name at page scale on the site's own black, then the four columns, the
+ * accounts and the credit line. It used to carry a full-bleed performance
+ * still, pinned to the viewport so the footer rode up over it; both the
+ * picture and the pin are gone, and the type stands on the ground alone.
+ *
+ * No newsletter, no second booking pitch: the Booking section has already
+ * made that ask, and the site simply ends here.
  */
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
-  const frameRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -50,71 +45,6 @@ export function Footer() {
     return () => observer.disconnect();
   }, []);
 
-  // The still holds at the viewport while the footer rides up over it: it is
-  // a screen tall and moves by exactly the frame's own offset each scroll, so
-  // it stays parked while the window travels across it.
-  //
-  // Done here rather than with `position: fixed`, which ancestor `overflow`
-  // does not clip — a fixed still would spill over the whole page instead of
-  // staying inside the frame. Pointer-precise devices only, and never against
-  // a reduced-motion preference; without it the still simply scrolls along.
-  useEffect(() => {
-    const footer = footerRef.current;
-    const frame = frameRef.current;
-    if (!footer || !frame) return;
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
-
-    let raf: number | null = null;
-    let running = false;
-
-    const apply = () => {
-      raf = null;
-      // Measured on the footer, never on the layer being moved: the still
-      // carries the pin as a transform, so reading its own rect would feed
-      // the offset back into itself and the picture would drift instead of
-      // holding still.
-      const { top } = footer.getBoundingClientRect();
-      frame.style.setProperty("--pin", `${-top}px`);
-    };
-
-    const onScroll = () => {
-      if (raf === null) raf = requestAnimationFrame(apply);
-    };
-
-    const sync = () => {
-      const wanted = fine.matches && !reduced.matches;
-      if (wanted === running) return;
-
-      running = wanted;
-      if (wanted) {
-        window.addEventListener("scroll", onScroll, { passive: true });
-        // The pin is an offset in pixels, so a resize invalidates it just as
-        // a scroll does — without this it holds a figure measured against the
-        // old viewport until the next scroll.
-        window.addEventListener("resize", onScroll, { passive: true });
-        apply();
-      } else {
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onScroll);
-        frame.style.removeProperty("--pin");
-      }
-    };
-
-    sync();
-    reduced.addEventListener("change", sync);
-    fine.addEventListener("change", sync);
-
-    return () => {
-      reduced.removeEventListener("change", sync);
-      fine.removeEventListener("change", sync);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf !== null) cancelAnimationFrame(raf);
-    };
-  }, []);
-
   function backToTop() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
@@ -125,59 +55,8 @@ export function Footer() {
       ref={footerRef}
       id="footer"
       data-visible={visible}
-      /* Scopes the plume to the footer: it sits outside the page's shared
-         plume region, and the picture now runs the whole way down. */
-      data-plume-region
       className="footer relative overflow-hidden"
     >
-      {/* The picture is the footer's ground, not a band across the top of it:
-          it runs behind the name, the index and the credit line alike, so
-          there is no flat black panel under the photograph.
-
-          Everything the eye reads as "the picture" lives in this one layer —
-          still, grade, grain and the wash — and the whole layer is what gets
-          parked at the viewport. That is the rule an earlier draft broke: it
-          pinned the still but left the edge gradient behind, so a dark band
-          slid across a photograph that was standing still, and that is what
-          read as a shadow passing over the footer. Nothing may sit between
-          the footer and this layer again. */}
-      {/* No `reveal-scroll` here, ever: that animation owns `transform` with
-          `both` fill, which silently outranks the pin below it — the picture
-          then sits with the footer and the parallax does nothing. The layer
-          arrives on opacity alone (see `globals.css`), which cannot collide
-          with the pin. */}
-      <div
-        ref={frameRef}
-        data-cursor="explore"
-        className="footer-frame__still group"
-      >
-        {/* The same treatment as the banner: graded to black and white, with
-            the pointer's plume burning the original colour back through. */}
-        <ColourPlume
-          src={footerImage.src}
-          alt={footerImage.alt}
-          className="footer-frame__media absolute inset-0"
-          /* The frame is far wider than the portrait, so on desktop only a
-             narrow band of it shows: held high enough to keep his head and
-             the lit room behind him, rather than cropping to the shirt. */
-          imageClassName="hero-photo object-cover object-[50%_30%] sm:object-[50%_20%] lg:object-[50%_14%]"
-          sizes="100vw"
-        />
-
-        <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
-
-        {/* Even, never ramped: a gradient here would be a band with a
-            position, and this layer travels — which is exactly what used to
-            read as a shadow. Flat, it cannot. It holds the whole footer down
-            far enough for the index and the credit line to read on it. */}
-        <div className="footer-frame__wash" aria-hidden />
-      </div>
-
-      {/* Reserves the height the picture needs above the name — the layer
-          above is positioned, so it takes no space of its own. */}
-      <div className="footer-frame" aria-hidden />
-
-      {/* The name, straddling the frame's bottom edge. */}
       <Container className="relative z-10">
         <h2
           className="footer-name reveal-scroll text-accent"
@@ -191,43 +70,28 @@ export function Footer() {
           </span>
         </h2>
 
-        <div className="mt-2xl flex flex-col gap-2xl md:mt-3xl md:flex-row md:items-start md:justify-between md:gap-3xl">
-          <div className="reveal-scroll" style={delay(220)}>
-            <FooterNavigation />
-          </div>
-
-          <div className="reveal-scroll md:text-right" style={delay(300)}>
-            <p className="text-[10px] font-light uppercase tracking-[0.34em] text-accent">
-              {footerStatement}
-            </p>
-            <SocialLinks className="mt-md flex flex-col gap-sm md:items-end" />
-          </div>
+        {/* Four columns, then the rail, then the credit line — the client's
+            own footer, in that order. */}
+        <div className="reveal-scroll footer-index" style={delay(220)}>
+          <FooterNavigation />
         </div>
 
-        <div
-          className="reveal-scroll mt-3xl flex flex-col gap-md border-t border-border pt-lg sm:flex-row sm:items-center sm:justify-between"
-          style={delay(380)}
-        >
-          <p className="text-[10px] font-light uppercase tracking-[0.18em] text-white/35">
-            {footerCopyright}
-          </p>
-
-          <div className="flex flex-col items-start gap-md sm:flex-row sm:items-center sm:gap-xl">
-            <a
-              href={`mailto:${footerContactEmail}`}
-              className="footer-link text-white/40"
-            >
-              {footerContactEmail}
-            </a>
-
-            <button type="button" onClick={backToTop} className="footer-link group">
-              Back to top
-              <span aria-hidden className="footer-link__arrow">
-                ↑
-              </span>
-            </button>
-          </div>
+        <div className="reveal-scroll footer-rail" style={delay(300)}>
+          <p className="footer-rail__statement">{footerStatement}</p>
+          <SocialLinks />
         </div>
+
+        <div className="reveal-scroll footer-bar" style={delay(380)}>
+          <p className="footer-bar__credit">{footerCopyright}</p>
+
+          <button type="button" onClick={backToTop} className="footer-link group">
+            Back to top
+            <span aria-hidden className="footer-link__arrow">
+              ↑
+            </span>
+          </button>
+        </div>
+
       </Container>
     </footer>
   );

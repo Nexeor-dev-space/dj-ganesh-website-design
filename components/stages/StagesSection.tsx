@@ -20,10 +20,15 @@ const DURATIONS = [46, 56, 50];
 /**
  * Stages — the rooms behind the residency.
  *
- * The one inverted section on the site: the page's near-black gives way to a
- * full field of the brand's green, with every room name printed on it in
- * solid ink. Three rows travelling in alternating directions, no photograph
- * and no outlined type — the wall of names is the image.
+ * The darkest band on the page: the ground drops below the page's own black
+ * and the room names come up out of it in white. Three rows travelling in
+ * alternating directions, no photograph and no outlined type — the wall of
+ * names is the image.
+ *
+ * It was the site's one inverted section, a full field of the brand green with
+ * every name in ink. Turned dark it stops shouting over the sections either
+ * side of it, and the accent goes back to being an accent: the eyebrow, the
+ * separators between names, and whichever name the pointer stops the wall on.
  *
  * Announced dates live in section 02 with their own ticket links, so this
  * band deliberately carries none; the only way out is the enquiry.
@@ -60,7 +65,10 @@ export function StagesSection() {
       data-visible={visible}
       className="stages-section relative overflow-hidden"
     >
-      {/* The site's own grain, retuned for a light ground — see globals.css. */}
+      <div className="stages-glow" aria-hidden />
+
+      {/* The site's own grain, laid over the type as well as the ground — see
+          globals.css. */}
       <div
         className="overlay-grain pointer-events-none absolute inset-0"
         aria-hidden

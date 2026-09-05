@@ -1,51 +1,66 @@
-import { bookingEmail, findShow, tourCities } from "@/lib/tour";
+"use client";
+
+import { findShow, tourCities } from "@/lib/tour";
+
+type CityListProps = {
+  activeCity: string | null;
+  onHover: (city: string | null) => void;
+  onSelect: (city: string) => void;
+};
 
 /**
- * The full run of cities.
+ * The nine cities, set as one run beneath the globe.
  *
- * Set loose rather than boxed: a grid of bordered cards each carrying its own
- * enquiry link read as a data table, and repeated the same call to action nine
- * times over. The names simply run on now, a dated city takes the accent, and
- * the enquiry is made once at the end where it means something.
+ * This is the globe's accessible twin, not a second navigation: every marker
+ * on the sphere is reachable here as a real button, so the section works by
+ * keyboard and on a screen reader, and on a phone — where a 6px marker is not
+ * a realistic target — it is the primary way in. Focusing a name lights its
+ * marker exactly as hovering one does, which is what makes tabbing through
+ * the list spin the globe.
  *
- * Each name used to print its latitude and longitude underneath. The bearings
- * were real, carried from the tour data, but they read as a coordinate dump
- * rather than as places — so the names now stand on their own and the only
- * mark beside one is "Home".
+ * Set loose, with a small accent dot ahead of each name, the way the client's
+ * own strip reads. No borders, no cells: the globe is the picture here and
+ * this row is its caption.
  */
-export function CityList() {
+export function CityList({ activeCity, onHover, onSelect }: CityListProps) {
   return (
-    <>
-      <ul className="footprint">
-        {tourCities.map((city) => {
-          const show = findShow(city.name);
+    <ul className="city-run">
+      {tourCities.map((city) => {
+        const show = findShow(city.name);
 
-          return (
-            <li
-              key={city.name}
-              className="footprint__city"
+        return (
+          <li key={city.name}>
+            <button
+              type="button"
+              className="city-run__city"
+              data-active={activeCity === city.name}
               data-booked={Boolean(show)}
+              /* The globe already carries this city's date and venue; the
+                 label says which cities have one so the strip is readable
+                 without the globe. */
+              aria-label={
+                show
+                  ? `View the ${city.name} show, ${show.day} ${show.month} 2026 at ${show.venue}`
+                  : `View shows in ${city.name} — no date announced`
+              }
+              aria-pressed={activeCity === city.name}
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") onHover(city.name);
+              }}
+              onPointerLeave={(event) => {
+                if (event.pointerType === "mouse") onHover(null);
+              }}
+              onFocus={() => onHover(city.name)}
+              onBlur={() => onHover(null)}
+              onClick={() => onSelect(city.name)}
             >
-              <span className="footprint__name">
-                {city.name}
-                {city.hub ? <span className="footprint__hub">Home</span> : null}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-
-      <p className="footprint__enquiry">
-        <span>Not on the list?</span>
-        <a
-          href={`mailto:${bookingEmail}?subject=${encodeURIComponent(
-            "Booking enquiry — Global World Tour 2026",
-          )}`}
-        >
-          Bring DJ Ganesh to your city
-          <span aria-hidden>→</span>
-        </a>
-      </p>
-    </>
+              <span className="city-run__dot" aria-hidden />
+              {city.name}
+              {city.hub ? <span className="city-run__hub">Home</span> : null}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

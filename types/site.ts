@@ -16,5 +16,5 @@ export type SocialLink = {
   label: string;
   href: string;
   /** Key into the icon map in `components/navigation/SocialIcon.tsx`. */
-  icon: "instagram" | "youtube";
+  icon: "instagram" | "youtube" | "email";
 };

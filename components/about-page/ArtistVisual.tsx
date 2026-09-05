@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { ColourPlume } from "@/components/effects/ColourPlume";
+import Image from "next/image";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutFrames, aboutPageLabels, aboutStatement } from "@/data/about-page";
@@ -18,10 +18,7 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * they are set at display scale rather than padded out with invented
  * influences.
  *
- * Both frames carry the banner's treatment: graded to black and white, with
- * the pointer's plume burning the original colour back through whichever one
- * it is over. `data-plume-region` scopes each flame to its own frame, so the
- * two never reveal each other where they overlap.
+ * Both frames carry the banner's treatment: graded to black and white.
  */
 export function ArtistVisual() {
   const [ref, visible] = useSectionVisible<HTMLElement>();
@@ -38,37 +35,30 @@ export function ArtistVisual() {
           <div className="about-visual__frames">
             <div
               data-cursor="explore"
-              data-plume-region
               className="reveal-scroll about-visual__portrait"
               style={delay(0)}
             >
-              <ColourPlume
+              <Image
                 src={aboutFrames.portrait.src}
                 alt={aboutFrames.portrait.alt}
-                className="absolute inset-0"
-                imageClassName="about-visual__image object-cover object-[50%_28%]"
+                fill
+                className="about-visual__image object-cover object-[50%_28%]"
                 sizes="(min-width: 1024px) 44vw, 100vw"
-                /* Measured against the screen rather than the frame: sized
-                   against itself, a frame this size would burn a flame half
-                   the banner's. */
-                sizing="viewport"
               />
               <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
             </div>
 
             <div
               data-cursor="explore"
-              data-plume-region
               className="reveal-scroll about-visual__decks"
               style={delay(160)}
             >
-              <ColourPlume
+              <Image
                 src={aboutFrames.decks.src}
                 alt={aboutFrames.decks.alt}
-                className="absolute inset-0"
-                imageClassName="about-visual__image object-cover object-[52%_42%]"
+                fill
+                className="about-visual__image object-cover object-[52%_42%]"
                 sizes="(min-width: 1024px) 26vw, 60vw"
-                sizing="viewport"
               />
               <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
             </div>
