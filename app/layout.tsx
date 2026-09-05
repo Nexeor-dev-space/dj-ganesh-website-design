@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { DM_Serif_Display, Inter } from "next/font/google";
 import localFont from "next/font/local";
-import { PlumeRegion } from "@/components/effects/PlumeRegion";
-import { SoundToggle } from "@/components/audio/SoundToggle";
+import { CustomCursor } from "@/components/interactions/CustomCursor";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -10,6 +9,17 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+// The quote face on the wall of love. The client's own site sets its
+// testimonials in DM Serif Display, and the italic is the whole character of
+// that block — nothing already loaded here has a serif to stand in for it.
+const dmSerif = DM_Serif_Display({
+  subsets: ["latin"],
+  display: "swap",
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
 });
 
 // Section headings — a single client-supplied weight, so no bold/italic
@@ -48,24 +58,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={siteConfig.locale}
-      className={`${inter.variable} ${consul.variable} ${laura.variable}`}
+      className={`${inter.variable} ${consul.variable} ${laura.variable} ${dmSerif.variable}`}
     >
       <body>
-        {/* One hidden frame behind every route: nothing shows it until the
-            pointer's flame passes over it. It lives here rather than on the
-            home page so the effect is the site's, not one page's — the banner
-            and the footer keep their own regions, which take precedence
-            because `ColourPlume` resolves to the closest one. */}
-        <PlumeRegion src="/images/s-4.jpg">{children}</PlumeRegion>
+        {children}
 
-        {/* Fixed under the navigation on every page. Only the wrapper is
-            fixed; the button keeps the site's own gutter. Reserved for now —
-            see `SoundToggle` for why it isn't wired to anything. */}
-        <div className="sound-dock">
-          <div className="container-page flex justify-end">
-            <SoundToggle className="pointer-events-auto reveal [--reveal-delay:1100ms]" />
-          </div>
-        </div>
+        {/* The site's own cursor — a ring and a dot, on every route. Wide
+            precise-pointer screens only; it renders nothing anywhere else. */}
+        <CustomCursor />
       </body>
     </html>
   );

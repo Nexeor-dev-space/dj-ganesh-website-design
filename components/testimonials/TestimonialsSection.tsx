@@ -1,39 +1,43 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { Testimonial } from "@/components/testimonials/Testimonial";
-import {
-  testimonials,
-  testimonialsHeading,
-  testimonialsSectionLabel,
-} from "@/lib/testimonials";
+import { testimonials } from "@/lib/testimonials";
+import { wallRow } from "@/lib/wall";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
+/** How long each quote holds before the next one takes over. */
+const QUOTE_INTERVAL = 6000;
+
+/** Three rows, drifting at different speeds so the wall never reads as a grid. */
+const ROWS = [0, 1, 2];
+
 /**
- * Section 07 — Testimonials.
+ * Section 07 — the Wall of Love.
  *
- * The career is on record; this is what it felt like from the floor — and the
- * floor does not hold still, so neither does this. The quotes run as a band
- * across the full width of the page, right to left, forever: the heading stays
- * in the container, the run breaks out of it and dissolves at both edges, so
- * the section reads as something passing through rather than a list that ends.
+ * Built to the composition of the client's own site: three rows of circular
+ * frames drifting behind a dark centre, with one quote at a time held over
+ * them. The rows are tilted back a little and dimmed, so they read as a room
+ * rather than as a gallery, and the vignette is what makes the quote legible
+ * without stopping the movement behind it.
  *
- * There is still nothing to operate. The band is not a slider — no arrows, no
- * dots, no timer, no state beyond whether the section has been seen. It slows
- * to a stop under the pointer instead, which is the only control three short
- * quotes need, and the card under the pointer is the one that comes forward.
+ * The rows carry his own event photography. The original wall was built from
+ * `i.pravatar.cc` — placeholder portraits of people with no connection to the
+ * artist, presented as his audience — and that is the one thing here not
+ * carried over. See `lib/wall.ts`.
  *
- * The quotes are rendered twice. The track travels exactly half its width and
- * starts over, which is seamless only because both halves are identical — the
- * spacing lives inside each card rather than in a flex `gap`, so the two ends
- * meet without half a gap between them. The second run is `aria-hidden`, so
- * each voice is announced once.
+ * The quotes rotate on a timer rather than on a control: three lines is not a
+ * carousel, and the wall behind them is already moving. It pauses under the
+ * pointer so a quote can be finished, and the whole rotation stops for anyone
+ * who has asked for less motion — the first quote simply stays.
  */
 export function TestimonialsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -55,7 +59,16 @@ export function TestimonialsSection() {
     return () => observer.disconnect();
   }, []);
 
-  const places = testimonials.map((voice) => voice.location).join(" · ");
+  useEffect(() => {
+    if (!visible || paused) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const id = window.setInterval(
+      () => setActive((current) => (current + 1) % testimonials.length),
+      QUOTE_INTERVAL,
+    );
+    return () => window.clearInterval(id);
+  }, [visible, paused]);
 
   return (
     <section
@@ -63,61 +76,66 @@ export function TestimonialsSection() {
       id="testimonials"
       aria-labelledby="testimonials-title"
       data-visible={visible}
-      className="section-block reaction-section relative overflow-hidden"
+      className="wall relative overflow-hidden"
     >
-      <div className="reaction-glow" aria-hidden />
-      <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
-
       <Container className="relative z-10">
-        <p
-          className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
-          style={delay(0)}
-        >
-          {testimonialsSectionLabel}
+        <h2 id="testimonials-title" className="wall__title reveal-scroll" style={delay(0)}>
+          Wall of Love
+        </h2>
+        <p className="wall__sub reveal-scroll" style={delay(80)}>
+          5000+ events · half a million dancers · one dance floor at a time
         </p>
-
-        <div className="mt-lg flex flex-col gap-md md:mt-xl md:flex-row md:items-end md:justify-between md:gap-2xl">
-          <h2
-            id="testimonials-title"
-            className="reveal-scroll section-title"
-            style={delay(80)}
-          >
-            {testimonialsHeading[0]}
-            <br />
-            {testimonialsHeading[1]}
-          </h2>
-
-          {/* Built from the quotes themselves rather than restated. */}
-          <p
-            className="reveal-scroll text-[10px] font-light uppercase tracking-[0.28em] text-white/55 md:text-right md:text-[11px]"
-            style={delay(160)}
-          >
-            {places}
-          </p>
-        </div>
       </Container>
 
-      {/* Out of the container and across the whole page: the run has no left
-          or right edge of its own, it only fades out of one. */}
       <div
-        className="reveal-scroll reaction-run relative z-10"
-        style={delay(240)}
+        className="wall__stage reveal-scroll"
+        style={delay(160)}
+        onPointerEnter={() => setPaused(true)}
+        onPointerLeave={() => setPaused(false)}
       >
-        <div className="reaction-run__viewport">
-          <div className="reaction-run__track">
-            {[0, 1].map((copy) => (
-              <ul
-                key={copy}
-                className="reaction-run__half"
-                /* The second run exists only to close the loop. */
-                aria-hidden={copy === 1 || undefined}
-              >
-                {testimonials.map((testimonial) => (
-                  <Testimonial key={testimonial.id} testimonial={testimonial} />
-                ))}
-              </ul>
-            ))}
-          </div>
+        <div className="wall__rows" aria-hidden>
+          {ROWS.map((row) => (
+            <div key={row} className="wall__row" data-row={row}>
+              {/* Twice, so the drift loops without a seam. */}
+              {[0, 1].map((copy) => (
+                <div key={copy} className="wall__half">
+                  {wallRow(row).map((tile) => (
+                    <span key={`${copy}-${tile.key}`} className="wall__tile">
+                      <Image
+                        src={tile.src}
+                        alt=""
+                        fill
+                        sizes="96px"
+                        className="wall__tile-img"
+                      />
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Darkens the middle so the quote reads, and lets the wall show at the
+            edges where nothing is set over it. */}
+        <div className="wall__vignette" aria-hidden />
+
+        <div className="wall__quotes" aria-live="polite">
+          {testimonials.map((testimonial, index) => (
+            <blockquote
+              key={testimonial.id}
+              className="wall__quote"
+              data-active={index === active}
+              /* Only the one on show is in the accessibility tree; the other
+                 two are stacked underneath it, not stated. */
+              aria-hidden={index === active ? undefined : true}
+            >
+              <p>&ldquo;{testimonial.quote}&rdquo;</p>
+              <cite>
+                {testimonial.author} · {testimonial.location}
+              </cite>
+            </blockquote>
+          ))}
         </div>
       </div>
     </section>

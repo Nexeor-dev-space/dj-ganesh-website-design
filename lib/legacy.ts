@@ -8,14 +8,16 @@ import type { Milestone } from "@/types/legacy";
  * `.milestone__more` line. Nothing has been added — no extra awards, festivals,
  * names or figures — and no wording has been changed.
  *
- * The order is strictly chronological. The archive is read as a spine of years
- * running down the page, so anything else looks like a mistake in the data:
- * the 1998 origin still opens and the 2026 tour still closes, and the four
- * entries between them now sit in the order they happened.
+ * The order is the client's own, carried over from that file rather than
+ * re-sorted: the award opens, the origin closes. It is not chronological, and
+ * that is deliberate — the section is a wall of tiles, not a timeline down a
+ * spine, so the eye reads it in reading order and the year on each tile is
+ * what places it. The two tiles the source gives a photograph to are the first
+ * and the last, which is what sets the wall's diagonal.
  *
- * No entry carries photography of its own. The page's shared frame
- * (`PlumeRegion`) is the only image below the banner, and the archive is
- * deliberately transparent so the flame reveals it straight through the rows.
+ * The two photographs are the client's own frames, from the gallery entries
+ * those tiles pointed at — held locally rather than pulled from YouTube's
+ * The wall carries no photography: every tile is type on black.
  */
 
 export const legacySectionLabel = "Legacy";
@@ -25,13 +27,6 @@ export const legacyHeading = ["The", "Archive"] as const;
 
 export const milestones: readonly Milestone[] = [
   {
-    id: "origin",
-    year: "1998",
-    title: "Where It All Started",
-    lede: "TGIF Bangalore. Club Prive Mumbai. 28 years on the decks.",
-    more: "From Thursday nights at TGIF Bangalore to Club Prive Mumbai, and everything since.",
-  },
-  {
     id: "taj",
     year: "2022",
     title: "Best Wedding DJ, Taj Mahal Palace",
@@ -39,18 +34,18 @@ export const milestones: readonly Milestone[] = [
     more: "A six-hour set the Taj ballroom danced through from start to finish.",
   },
   {
-    id: "karan-johar",
-    year: "2022",
-    title: "Karan Johar's 50th Birthday",
-    lede: "The night that put him on every Bollywood producer's speed dial.",
-    more: "A Bollywood-only guest list and a floor that ran till sunrise.",
-  },
-  {
     id: "ambani",
     year: "2023",
     title: "The Ambani Events",
     lede: "Isha Ambani's engagement. Anant Ambani's pre-wedding. India's biggest private stages.",
     more: "The most private, highest-profile rooms in the country, where the music cannot miss.",
+  },
+  {
+    id: "karan-johar",
+    year: "2022",
+    title: "Karan Johar's 50th Birthday",
+    lede: "The night that put him on every Bollywood producer's speed dial.",
+    more: "A Bollywood-only guest list and a floor that ran till sunrise.",
   },
   {
     id: "a-list",
@@ -66,10 +61,22 @@ export const milestones: readonly Milestone[] = [
     lede: "Mumbai to Goa to Dubai to London. BollyAfro goes international.",
     more: "Four countries and counting, from Bastian Mumbai to London's SeventySeven.",
   },
+  {
+    id: "origin",
+    year: "1998",
+    title: "Where It All Started",
+    lede: "TGIF Bangalore. Club Prive Mumbai. 28 years on the decks.",
+    more: "From Thursday nights at TGIF Bangalore to Club Prive Mumbai, and everything since.",
+  },
 ];
 
 /** Small editorial counter beside the heading. */
 export const archiveCount = milestones.length;
 
-/** The span the archive covers, built from the entries rather than restated. */
-export const archiveSpan = `${milestones[0].year} — ${milestones[milestones.length - 1].year}`;
+/**
+ * The span the archive covers, built from the entries rather than restated.
+ * Read as the earliest and latest year present, not the first and last tile —
+ * the wall is not in chronological order, so position says nothing about date.
+ */
+const years = milestones.map((milestone) => Number(milestone.year));
+export const archiveSpan = `${Math.min(...years)} — ${Math.max(...years)}`;

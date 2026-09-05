@@ -12,9 +12,6 @@ export type PointerState = {
   /** Latest viewport coordinates. */
   x: number;
   y: number;
-  /** Pixels per frame, smoothed — drives the knob's rotation. */
-  vx: number;
-  vy: number;
   /** False before the first move, and while the pointer is outside the window. */
   visible: boolean;
   /** Whether the pointer is over something the cursor should react to. */
@@ -24,17 +21,12 @@ export type PointerState = {
 const state: PointerState = {
   x: 0,
   y: 0,
-  vx: 0,
-  vy: 0,
   visible: false,
   target: "default",
 };
 
 const subscribers = new Set<() => void>();
 
-let lastX = 0;
-let lastY = 0;
-let lastTime = 0;
 let listening = false;
 
 const INTERACTIVE_SELECTOR = 'a, button, input, select, textarea, [data-cursor], [role="button"]';
@@ -52,18 +44,6 @@ function resolveTarget(node: EventTarget | null): PointerTargetKind {
 }
 
 function onPointerMove(event: PointerEvent) {
-  const now = event.timeStamp;
-  const elapsed = lastTime ? Math.max(now - lastTime, 1) : 16;
-
-  // Normalise to "pixels per 16ms frame" so velocity is refresh-rate agnostic.
-  const frames = elapsed / 16;
-  const instantVx = (event.clientX - lastX) / frames;
-  const instantVy = (event.clientY - lastY) / frames;
-
-  // Light smoothing keeps the rotation from twitching on jittery input.
-  state.vx += (instantVx - state.vx) * 0.35;
-  state.vy += (instantVy - state.vy) * 0.35;
-
   state.x = event.clientX;
   state.y = event.clientY;
   state.target = resolveTarget(event.target);
@@ -72,16 +52,10 @@ function onPointerMove(event: PointerEvent) {
     state.visible = true;
     notify();
   }
-
-  lastX = event.clientX;
-  lastY = event.clientY;
-  lastTime = now;
 }
 
 function onPointerLeave() {
   state.visible = false;
-  state.vx = 0;
-  state.vy = 0;
   notify();
 }
 
@@ -106,10 +80,7 @@ function stopListening() {
   document.removeEventListener("pointerleave", onPointerLeave);
   window.removeEventListener("blur", onPointerLeave);
 
-  lastTime = 0;
   state.visible = false;
-  state.vx = 0;
-  state.vy = 0;
 }
 
 /**
@@ -130,10 +101,4 @@ export function subscribeToPointer(onVisibilityChange: () => void): () => void {
 /** Live pointer state. Read it inside an animation frame; never mutate it. */
 export function readPointer(): Readonly<PointerState> {
   return state;
-}
-
-/** Velocity decays on its own so the knob settles when the pointer stops. */
-export function decayPointerVelocity(factor: number) {
-  state.vx *= factor;
-  state.vy *= factor;
 }

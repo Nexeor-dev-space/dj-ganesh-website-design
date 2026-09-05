@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { TrackRow } from "@/components/music-page/TrackRow";
+import { ArchiveCard } from "@/components/music-page/ArchiveCard";
 import { useMusicPlayer } from "@/components/music/MusicProvider";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { musicPageLabels } from "@/data/music-page";
@@ -15,16 +15,19 @@ import {
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
-/** Stagger between rows, in ms. */
-const STEP = 70;
+/** Stagger between cards, in ms. */
+const STEP = 90;
 
 /**
  * 03 — The archive.
  *
- * Every track on the site as a ruled index, with the category chips and the
- * search field that used to live on a separate Downloads page above it. That
- * page listed the same four tracks with the same controls in a different
- * layout; there is one archive, and this is it.
+ * Every track on the site as a grid of release cards — the same card the
+ * homepage section uses, so a visitor who followed "the full archive" down
+ * from there lands on the records they were just looking at rather than a
+ * second design of them. The category chips and the search field above it
+ * came from a separate Downloads page that listed these same four tracks with
+ * the same controls in a different layout; there is one archive, and this is
+ * it.
  *
  * Filtering is presentational only: the player still holds the full running
  * order, so a row's index — and what Next plays after it — is its position in
@@ -113,13 +116,13 @@ export function MusicArchive() {
         </p>
 
         {shown.length > 0 ? (
-          <ul className="music-archive__list">
+          <ul className="releases__grid music-archive__grid">
             {shown.map((track, position) => (
-              <TrackRow
+              <ArchiveCard
                 key={track.id}
                 track={track}
-                /* The player's own index, not the filtered one: the row has to
-                   play the right track however the archive is narrowed. */
+                /* The player's own index, not the filtered one: the card has
+                   to play the right track however the archive is narrowed. */
                 index={tracks.findIndex((entry) => entry.id === track.id)}
                 delay={240 + position * STEP}
               />

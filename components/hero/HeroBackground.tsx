@@ -1,33 +1,35 @@
-import { ColourPlume } from "@/components/effects/ColourPlume";
-
 /**
- * The hero photograph.
+ * The banner's video background.
  *
- * `public/images/bg-banner-3.png` is the fixed visual identity of the first
- * viewport — it is never altered on disk. It renders dark, desaturated and
- * grainy (`.hero-photo` + `.overlay-grain`), with `ColourPlume` painting the
- * same frame back in full colour wherever the pointer's flame has just passed.
+ * `public/videos/dj-ganesh.mp4` is the whole frame: full-bleed, `object-fit:
+ * cover`, and the only movement in the section — the old site's banner works
+ * the same way, so nothing is layered on top of it beyond what the copy needs
+ * to stay legible.
  *
- * On load the stack settles in from a slight zoom (`.hero-reveal`), then
- * drifts slowly forever after (`.media-drift`). From desktop widths with a
- * precise pointer, the whole layer pins to the viewport (`.hero-bg-pin`) so it
- * holds in place while the hero's one-screen height scrolls past, rather than
- * scrolling away with it.
+ * `poster` is deliberately absent: there is no still of this footage on disk,
+ * and pointing it at an unrelated photograph would flash a different image
+ * before the video arrives. The section's own dark ground covers that gap.
+ *
+ * Muted and `playsInline` are what let it start without being asked — a
+ * browser will refuse an autoplaying video with sound, and iOS will take a
+ * video without `playsInline` fullscreen rather than leaving it in the page.
  */
 export function HeroBackground() {
   return (
-    <div className="hero-bg-pin pointer-events-none overflow-hidden" aria-hidden>
-      <div className="hero-reveal absolute inset-0">
-        <ColourPlume
-          src="/images/bg-banner-3.png"
-          className="media-drift absolute inset-0"
-          /* Keeps his face in frame when the crop tightens on narrow screens. */
-          imageClassName="hero-photo object-cover object-[54%_18%] sm:object-[52%_22%] lg:object-center"
-          priority
-        />
+    <div className="hero-media" aria-hidden>
+      <video
+        className="hero-media__video"
+        src="/videos/dj-ganesh.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
 
-        <div className="overlay-grain absolute inset-0" />
-      </div>
+      {/* Only as much as the copy needs: weighted to the bottom, where the
+          lockup sits, so the footage stays visible through the middle. */}
+      <div className="hero-media__fade" />
     </div>
   );
 }

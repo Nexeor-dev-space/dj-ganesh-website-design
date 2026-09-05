@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { ColourPlume } from "@/components/effects/ColourPlume";
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
@@ -30,10 +29,7 @@ export function AboutHero() {
       data-visible={visible}
       className="about-hero relative overflow-hidden"
     >
-      {/* Scopes the plume to this frame. Without it the nearest region is the
-          site-wide one in the layout, and the flame would reveal that frame
-          instead of this photograph. */}
-      <div className="about-hero__frame" data-plume-region>
+      <div className="about-hero__frame">
         <Image
           src={aboutFrames.stage.src}
           alt={aboutFrames.stage.alt}
@@ -44,18 +40,6 @@ export function AboutHero() {
           className="about-hero__image object-cover object-[46%_34%] md:object-[48%_38%]"
         />
         <div className="about-hero__fade" aria-hidden />
-
-        {/* The colour pass, above the fade so the flame reveals the frame at
-            full strength rather than through 80% black. Its own copy of the
-            photograph is invisible — the canvas reads that element's pixels,
-            which CSS opacity does not touch — and carries the same crop, so
-            the two frames stay registered at every width. */}
-        <ColourPlume
-          src={aboutFrames.stage.src}
-          className="absolute inset-0"
-          imageClassName="opacity-0 object-cover object-[46%_34%] md:object-[48%_38%]"
-          sizes="100vw"
-        />
 
         <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
       </div>

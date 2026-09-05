@@ -1,5 +1,5 @@
 /**
- * The closing call — the video band before the footer.
+ * The closing call — the band before the footer.
  *
  * The copy is the booking block from `djganesh-v2/index.html`, carried over as
  * it stands: its heading, its sentence and the three agencies it names.
@@ -21,6 +21,3 @@ export const call = {
   ctaLabel: "Book DJ Ganesh",
   agencies: ["BMT Agency", "Black Hat Talent", "VStar Entertainment"] as const,
 };
-
-/** Background footage. Loaded only once the band is close to the viewport. */
-export const callVideo = "/videos/dj-ganesh.mp4";

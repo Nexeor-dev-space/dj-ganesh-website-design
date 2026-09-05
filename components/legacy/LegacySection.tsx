@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArchiveEntry } from "@/components/legacy/ArchiveEntry";
+import { MilestoneTile } from "@/components/legacy/MilestoneTile";
 import { Container } from "@/components/layout/Container";
 import {
   archiveCount,
@@ -19,19 +19,21 @@ const STEP = 70;
 /**
  * Section 05 — Legacy.
  *
- * After the person comes the career, kept as a ledger: six full-width rows
- * down one spine, in chronological order, each year set against the line with
- * the entry reading across the page from it.
+ * After the person comes the career, set as the client's own wall of tiles:
+ * three rows of three columns, with the first, fourth and last tile running
+ * double width so the nine cells fill exactly and no hole is left. The two
+ * tiles the source gives a photograph to are the first and the last, which
+ * puts a picture in the top-left and the bottom-right and sets the diagonal
+ * the wall reads along.
  *
- * A grid of cells was the wrong shape for this content. Six near-identical
- * blocks gave the eye no order to read them in — 1998 sat beside 2022 with
- * nothing to say which came first — and every entry claimed the same weight.
- * A column of rows carries the chronology in the layout itself, which is why
- * nothing has to be drawn on top to explain it.
+ * The tiles are divided by a hairline rather than boxed: the grid's own
+ * background shows through a one-pixel gap, so the mortar is the gap itself
+ * and no tile carries a border of its own.
  *
- * Every line is still printed, so there is nothing to open and no state to
- * hold: pointing at a row lights the run of spine above it, back to where the
- * career started. That is a `:has()` selector in CSS, not a component.
+ * Nothing here holds state. A tile answers the pointer — and the keyboard —
+ * with its own CSS, and the second line each tile keeps back is opened the
+ * same way. Below `md`, where there is no pointer to hover with, that line is
+ * simply printed.
  */
 export function LegacySection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -97,17 +99,18 @@ export function LegacySection() {
           </p>
         </div>
 
-        <ol className="archive-ledger mt-2xl md:mt-3xl">
+        <div className="legacy-wall mt-2xl md:mt-3xl">
           {milestones.map((milestone, index) => (
-            <ArchiveEntry
+            <MilestoneTile
               key={milestone.id}
               milestone={milestone}
-              index={index}
-              total={archiveCount}
+              /* 1st, 4th and 6th: the three double-width tiles that make the
+                 six entries fill a 3×3 grid exactly. */
+              wide={index === 0 || index === 3 || index === 5}
               delay={240 + index * STEP}
             />
           ))}
-        </ol>
+        </div>
       </Container>
     </section>
   );

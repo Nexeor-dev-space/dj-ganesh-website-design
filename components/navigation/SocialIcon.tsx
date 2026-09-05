@@ -42,6 +42,24 @@ export function SocialIcon({ name, className }: SocialIconProps) {
     );
   }
 
+  if (name === "email") {
+    return (
+      <svg
+        {...common}
+        /* Half the 2px stroke sits outside the 3→19 path bounds. */
+        viewBox="1 2.6 22 18.8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.7}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="m2.6 5.4 9.4 6.6 9.4-6.6" />
+      </svg>
+    );
+  }
+
   return (
     <svg {...common} viewBox="2 5 20 14" fill="currentColor">
       <path d="M21.6 7.2a2.5 2.5 0 0 0-1.75-1.77C18.28 5 12 5 12 5s-6.28 0-7.85.43A2.5 2.5 0 0 0 2.4 7.2 26.2 26.2 0 0 0 2 12a26.2 26.2 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.75 1.77C5.72 19 12 19 12 19s6.28 0 7.85-.43a2.5 2.5 0 0 0 1.75-1.77A26.2 26.2 0 0 0 22 12a26.2 26.2 0 0 0-.4-4.8ZM10.1 14.85v-5.7L15 12l-4.9 2.85Z" />

@@ -8,6 +8,13 @@ export type Track = {
   audio: string;
   /** External destination only; no embedded player. */
   youtubeId: string;
+  /**
+   * The release's own YouTube still — the artwork the client's own release
+   * cards used. Remote, so it can fail; `artwork` is what the card falls back
+   * to when it does.
+   */
+  thumbnail: string;
+  /** Local cover art, and the fallback when the YouTube still will not load. */
   artwork: string;
   /**
    * Public path (or external URL) of a real, downloadable file.

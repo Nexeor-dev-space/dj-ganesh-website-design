@@ -1,78 +1,79 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { HeroBackground } from "@/components/hero/HeroBackground";
-import { FitText } from "@/components/hero/FitText";
+import { SocialIcon } from "@/components/navigation/SocialIcon";
+import { bookingHref, socialLinks } from "@/lib/site";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
+/**
+ * The banner.
+ *
+ * Built to the composition of the client's own site: the footage runs behind
+ * the whole section, and the lockup sits centred on it in one column —
+ * kicker, name, line, the booking button, the profiles, and the scroll cue at
+ * the foot. That order is theirs; only the copy is this project's.
+ *
+ * Deliberately plainer than the sections below it: the name is set at a
+ * readable display size rather than stretched to the width of the screen, and
+ * the video is left to be the movement.
+ */
 export function Hero() {
   return (
     <section
       id="hero"
       aria-labelledby="hero-title"
-      /* Its own region: the banner's plume answers to the banner, not to the
-         page-wide frame the layout wraps every route in. */
-      data-plume-region
-      className="relative flex min-h-svh flex-col overflow-hidden"
+      className="hero relative flex min-h-svh flex-col overflow-hidden"
     >
       <HeroBackground />
 
-      {/* The lockup sits low and left, in the darkest part of the frame and
-          well clear of his face and hands. */}
-      <Container className="relative z-10 flex flex-1 flex-col justify-end pt-5xl pb-lg">
-        <p
-          className="reveal text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
-          style={delay(650)}
-        >
+      <Container className="hero__inner relative z-10">
+        <p className="hero__kicker reveal" style={delay(300)}>
           BollyAfro Pioneer
         </p>
 
-        <h1 id="hero-title" className="hero-title mt-md md:mt-lg text-accent">
-          <span className="line-mask">
-            <FitText className="grain-text" style={delay(350)}>DJ Ganesh</FitText>
-          </span>
+        <h1 id="hero-title" className="hero__title reveal" style={delay(400)}>
+          DJ Ganesh
         </h1>
 
-        <p
-          className="reveal mt-lg text-[11px] font-light uppercase tracking-[0.22em] text-white/60 md:mt-xl md:text-[12px]"
-          style={delay(800)}
-        >
+        <p className="hero__sub reveal" style={delay(500)}>
           Est. 1998 · Mumbai, India
         </p>
 
-        <div className="reveal mt-xl flex flex-col items-start gap-lg sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2xl sm:gap-y-md"
-          style={delay(950)}>
-          <a
-            href="#contact"
-            className="group flex items-center gap-md border-b border-white/25 pb-sm text-[11px] font-light uppercase tracking-[0.24em] transition-colors duration-300 hover:border-accent hover:text-accent md:text-[12px]"
-          >
+        <div className="hero__ctas reveal" style={delay(600)}>
+          <a href={bookingHref} className="hero__btn">
             Book DJ Ganesh
-            <span
-              aria-hidden
-              className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5 motion-reduce:transition-none"
-            >
-              &rarr;
-            </span>
           </a>
 
-          {/* Secondary to the booking link, but still a link: at 45% white it
-              sat on the photograph's own mid-greys and disappeared into them.
-              It keeps its rank by having no rule under it and no arrow — the
-              accent play mark is what earns it back. */}
-          <a
-            href="#music"
-            className="group flex items-center gap-sm pb-sm text-[11px] font-light uppercase tracking-[0.24em] text-white/75 transition-colors duration-300 hover:text-accent md:text-[12px]"
-          >
-            <span
-              aria-hidden
-              className="inline-block text-[8px] leading-none text-accent transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 motion-reduce:transition-none"
-            >
+          <a href="#music" className="hero__link">
+            <span aria-hidden className="hero__link-mark">
               &#9654;
             </span>
             Listen to Music
           </a>
         </div>
+
+        <ul className="hero__socials reveal" style={delay(700)}>
+          {socialLinks.map((social) => (
+            <li key={social.label}>
+              <a
+                href={social.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={social.label}
+              >
+                <SocialIcon name={social.icon} className="h-[18px] w-auto" />
+              </a>
+            </li>
+          ))}
+        </ul>
       </Container>
+
+      {/* Sits on the section rather than in the column, so it stays centred on
+          the frame however the lockup above it wraps. */}
+      <div className="hero__scroll reveal" style={delay(900)} aria-hidden>
+        <span className="hero__scroll-line" />
+      </div>
     </section>
   );
 }
