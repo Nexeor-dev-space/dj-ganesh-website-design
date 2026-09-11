@@ -3,7 +3,7 @@ import { DM_Serif_Display, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { CustomCursor } from "@/components/interactions/CustomCursor";
 import { siteConfig } from "@/lib/site";
-import "./globals.css";
+import "../globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ const dmSerif = DM_Serif_Display({
 // Section headings — a single client-supplied weight, so no bold/italic
 // variants are declared.
 const consul = localFont({
-  src: "../public/fonts/Consul.ttf",
+  src: "../../public/fonts/Consul.ttf",
   display: "swap",
   weight: "400",
   style: "normal",
@@ -35,7 +35,7 @@ const consul = localFont({
 // The name itself: the banner lockup and the footer signature. Also one
 // weight only.
 const laura = localFont({
-  src: "../public/fonts/LAURA.otf",
+  src: "../../public/fonts/LAURA.otf",
   display: "swap",
   weight: "400",
   style: "normal",
