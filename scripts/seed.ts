@@ -70,6 +70,10 @@ const {
 const ROOT = process.cwd()
 const pub = (p: string) => path.join(ROOT, 'public', p.replace(/^\//, ''))
 const lines = (a: readonly string[]) => a.map((line) => ({ line }))
+// Text-only mode: skip ALL media uploads/references so upload fields stay empty
+// and the frontend falls back to the committed /images and /videos files.
+// Used to seed environments (e.g. staging) whose media disk we can't populate.
+const TEXT_ONLY = process.env.SEED_TEXT_ONLY === '1'
 
 async function main() {
 const { getPayload } = await import('payload')
@@ -81,7 +85,8 @@ const counts: Record<string, number> = {}
 const mediaIds: Record<string, number | string> = {}
 const MIME: Record<string, string> = { '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4' }
 
-async function media(src: string, alt: string): Promise<number | string> {
+async function media(src: string, alt: string): Promise<number | string | undefined> {
+  if (TEXT_ONLY) return undefined
   const filename = path.basename(src)
   if (mediaIds[src]) return mediaIds[src]
   const found = await payload.find({
@@ -235,19 +240,21 @@ for (const [i, o] of offerings.entries()) {
   )
 }
 
-// ---------- Gallery album ----------
-await upsert(
-  'gallery',
-  { title: { equals: 'Live Sets' } },
-  {
-    title: 'Live Sets',
-    album: 'Live Sets',
-    images: galleryItems.map((it: any, i: number) => ({ image: galleryMedia[i], caption: it.alt })),
-    order: 0,
-    publishedStatus: true,
-    _status: 'published',
-  },
-)
+// ---------- Gallery album (requires images; skipped in text-only mode) ----------
+if (!TEXT_ONLY) {
+  await upsert(
+    'gallery',
+    { title: { equals: 'Live Sets' } },
+    {
+      title: 'Live Sets',
+      album: 'Live Sets',
+      images: galleryItems.map((it: any, i: number) => ({ image: galleryMedia[i], caption: it.alt })),
+      order: 0,
+      publishedStatus: true,
+      _status: 'published',
+    },
+  )
+}
 
 // ---------- Performance history (real tour data) ----------
 const perfImg = [artworkIds[1], artworkIds[0], galleryMedia[3], artworkIds[3]]
@@ -270,6 +277,7 @@ for (const [i, s] of tourShows.entries()) {
 }
 
 // ---------- Placeholder images on existing docs (client's own images) ----------
+if (!TEXT_ONLY) {
 const wall = (n: string) => mediaIds[`/images/wall/gallery-${n}.png`]
 const milestoneImg: Record<string, any> = {
   taj: wall('wedding'),
@@ -289,6 +297,7 @@ for (const [i, t] of testimonials.entries()) {
 const offeringImg = [wall('wedding'), artworkIds[2], aboutDecks]
 for (const [i, o] of offerings.entries()) {
   await upsert('experiences-services', { title: { equals: o.title } }, { image: offeringImg[i] })
+}
 }
 
 // ---------- Globals ----------
