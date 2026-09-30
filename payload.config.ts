@@ -1,5 +1,9 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+
+const configDir = path.dirname(fileURLToPath(import.meta.url))
 
 // Collections
 import Users from './src/collections/Users.ts'
@@ -30,7 +34,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL,
     },
+    // Dev auto-syncs the schema (push). Production ignores push and uses the
+    // committed migrations in ./src/migrations instead (run via `payload migrate`).
     push: true,
+    migrationDir: path.resolve(configDir, 'src/migrations'),
   }),
 
   // Admin panel configuration.
