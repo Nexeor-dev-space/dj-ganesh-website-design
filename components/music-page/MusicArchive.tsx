@@ -33,7 +33,9 @@ const STEP = 90;
  * order, so a row's index — and what Next plays after it — is its position in
  * the archive, not its position in the filtered view.
  */
-export function MusicArchive() {
+export function MusicArchive({
+  label = musicPageLabels.archive,
+}: { label?: string } = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
   const { tracks } = useMusicPlayer();
 
@@ -59,7 +61,7 @@ export function MusicArchive() {
         <div className="music-archive__head">
           <div>
             <p className="reveal-scroll music-label" style={delay(0)}>
-              {musicPageLabels.archive}
+              {label}
             </p>
             <h2 id="archive-title" className="reveal-scroll section-title" style={delay(80)}>
               The Full

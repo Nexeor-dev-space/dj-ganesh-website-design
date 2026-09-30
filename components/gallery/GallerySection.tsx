@@ -3,7 +3,10 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { galleryItems, gallerySectionLabel } from "@/data/gallery";
+import {
+  galleryItems as defaultItems,
+  gallerySectionLabel as defaultLabel,
+} from "@/data/gallery";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -22,7 +25,13 @@ const STEP = 70;
  * artwork is announcing — the titles are printed on the images themselves, so
  * nothing is captioned underneath.
  */
-export function GallerySection() {
+export function GallerySection({
+  gallerySectionLabel = defaultLabel,
+  galleryItems = defaultItems,
+}: {
+  gallerySectionLabel?: string;
+  galleryItems?: readonly { src: string; alt: string; href: string }[];
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 

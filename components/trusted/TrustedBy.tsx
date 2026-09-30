@@ -1,4 +1,7 @@
-import { trustedLabel, trustedNames } from "@/data/trusted";
+import {
+  trustedLabel as defaultLabel,
+  trustedNames as defaultNames,
+} from "@/data/trusted";
 
 /**
  * The rooms he has played, as a band that never stops moving.
@@ -13,7 +16,13 @@ import { trustedLabel, trustedNames } from "@/data/trusted";
  * meet without half a gap between them. The second copy is `aria-hidden`, so
  * the eight names are announced once each.
  */
-export function TrustedBy() {
+export function TrustedBy({
+  trustedLabel = defaultLabel,
+  trustedNames = defaultNames,
+}: {
+  trustedLabel?: string;
+  trustedNames?: readonly string[];
+} = {}) {
   return (
     <section aria-label={trustedLabel} className="trusted">
       <p className="trusted__label">{trustedLabel}</p>

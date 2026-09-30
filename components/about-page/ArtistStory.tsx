@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutPageLabels, aboutParagraphs } from "@/data/about-page";
 import { careerStats } from "@/lib/about";
+import type { CareerStat } from "@/types/about";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -19,7 +20,17 @@ const grouped = new Intl.NumberFormat("en-US");
  * design decision. The figures are the same four the homepage carries — they
  * belong here as the story's evidence rather than as a statistics band.
  */
-export function ArtistStory() {
+type ArtistStoryProps = {
+  label?: string;
+  paragraphs?: readonly string[];
+  stats?: readonly CareerStat[];
+};
+
+export function ArtistStory({
+  label = aboutPageLabels.story,
+  paragraphs = aboutParagraphs,
+  stats = careerStats,
+}: ArtistStoryProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -33,7 +44,7 @@ export function ArtistStory() {
         <div className="about-story__spread">
           <div>
             <p className="reveal-scroll about-label" style={delay(0)}>
-              {aboutPageLabels.story}
+              {label}
             </p>
 
             <h2
@@ -48,11 +59,11 @@ export function ArtistStory() {
           </div>
 
           <div className="about-story__text">
-            {aboutParagraphs.map((paragraph, index) => (
+            {paragraphs.map((paragraph, index) => (
               <p
                 key={paragraph}
                 className={`reveal-scroll about-story__paragraph ${
-                  index === aboutParagraphs.length - 1
+                  index === paragraphs.length - 1
                     ? "about-story__paragraph--close"
                     : ""
                 }`}
@@ -65,7 +76,7 @@ export function ArtistStory() {
         </div>
 
         <dl className="about-figures">
-          {careerStats.map((stat, index) => (
+          {stats.map((stat, index) => (
             <div
               key={stat.label}
               className="reveal-scroll about-figure"

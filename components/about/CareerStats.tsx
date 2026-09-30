@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/interactions/environment";
-import { careerStats } from "@/lib/about";
+import { careerStats as defaultStats } from "@/lib/about";
+import type { CareerStat } from "@/types/about";
 
 /** How long every figure takes to reach its number, in ms. */
 const DURATION = 1600;
@@ -19,7 +20,11 @@ const DURATION = 1600;
  * All four run off one animation frame and write straight to the DOM, so
  * counting never re-renders React. Reduced motion keeps the figures still.
  */
-export function CareerStats() {
+export function CareerStats({
+  careerStats = defaultStats,
+}: {
+  careerStats?: readonly CareerStat[];
+} = {}) {
   const listRef = useRef<HTMLDListElement>(null);
   const reducedMotion = usePrefersReducedMotion();
 

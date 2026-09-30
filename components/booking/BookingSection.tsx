@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import {
-  bookingCta,
-  bookingHeading,
-  bookingLede,
-  bookingLinks,
-  bookingScope,
-  bookingSectionLabel,
+  bookingCta as defaultCta,
+  bookingHeading as defaultHeading,
+  bookingLede as defaultLede,
+  bookingLinks as defaultLinks,
+  bookingScope as defaultScope,
+  bookingSectionLabel as defaultLabel,
 } from "@/data/booking";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -27,7 +27,26 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * So the mailto is the action, with the address and the rest of the booking
  * channels written out beside it for anyone who would rather use their own.
  */
-export function BookingSection() {
+export function BookingSection({
+  bookingSectionLabel = defaultLabel,
+  bookingHeading = defaultHeading,
+  bookingLede = defaultLede,
+  bookingScope = defaultScope,
+  bookingLinks = defaultLinks,
+  bookingCta = defaultCta,
+}: {
+  bookingSectionLabel?: string;
+  bookingHeading?: readonly string[];
+  bookingLede?: string;
+  bookingScope?: readonly string[];
+  bookingLinks?: readonly {
+    label: string;
+    value: string;
+    href: string;
+    external?: boolean;
+  }[];
+  bookingCta?: { label: string; href: string };
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 

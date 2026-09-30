@@ -3,7 +3,11 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { statement, statementLabel } from "@/data/statement";
+import {
+  statement as defaultStatement,
+  statementLabel as defaultLabel,
+} from "@/data/statement";
+import type { Statement } from "@/types/statement";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -27,7 +31,13 @@ const STEP = 110;
  * a sentence he did not say is a quote in everything but name. It survives
  * only as the photograph's alt text, where it describes who is pictured.
  */
-export function StatementSection() {
+export function StatementSection({
+  statementLabel = defaultLabel,
+  statement = defaultStatement,
+}: {
+  statementLabel?: string;
+  statement?: Statement;
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 

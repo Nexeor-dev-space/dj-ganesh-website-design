@@ -76,6 +76,7 @@ export interface Config {
     'legacy-milestones': LegacyMilestone;
     testimonials: Testimonial;
     'experiences-services': ExperiencesService;
+    'contact-submissions': ContactSubmission;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,6 +93,7 @@ export interface Config {
     'legacy-milestones': LegacyMilestonesSelect<false> | LegacyMilestonesSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     'experiences-services': ExperiencesServicesSelect<false> | ExperiencesServicesSelect<true>;
+    'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -106,12 +108,16 @@ export interface Config {
     navigation: Navigation;
     'home-page': HomePage;
     'contact-booking': ContactBooking;
+    about: About;
+    'music-page': MusicPage;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
     'contact-booking': ContactBookingSelect<false> | ContactBookingSelect<true>;
+    about: AboutSelect<false> | AboutSelect<true>;
+    'music-page': MusicPageSelect<false> | MusicPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -323,8 +329,16 @@ export interface Gallery {
 export interface LegacyMilestone {
   id: number;
   year: number;
+  /**
+   * Stable key for selecting a specific milestone in code (e.g. origin, taj, world-tour). Does not replace the numeric id.
+   */
+  slug?: string | null;
   title: string;
   description?: string | null;
+  /**
+   * Expanded detail shown when the milestone is opened.
+   */
+  more?: string | null;
   image?: (number | null) | Media;
   order?: number | null;
   publishedStatus?: boolean | null;
@@ -376,6 +390,26 @@ export interface ExperiencesService {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * Booking / contact enquiries submitted from the public site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-submissions".
+ */
+export interface ContactSubmission {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  /**
+   * e.g. Wedding, Festival, Corporate Event.
+   */
+  eventType?: string | null;
+  message: string;
+  status?: ('new' | 'read' | 'responded') | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -436,6 +470,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'experiences-services';
         value: number | ExperiencesService;
+      } | null)
+    | ({
+        relationTo: 'contact-submissions';
+        value: number | ContactSubmission;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -636,8 +674,10 @@ export interface GallerySelect<T extends boolean = true> {
  */
 export interface LegacyMilestonesSelect<T extends boolean = true> {
   year?: T;
+  slug?: T;
   title?: T;
   description?: T;
+  more?: T;
   image?: T;
   order?: T;
   publishedStatus?: T;
@@ -683,6 +723,20 @@ export interface ExperiencesServicesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-submissions_select".
+ */
+export interface ContactSubmissionsSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  eventType?: T;
+  message?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -752,6 +806,25 @@ export interface SiteSetting {
   };
   bookingInfo?: string | null;
   footerContent?: string | null;
+  footer?: {
+    columns?:
+      | {
+          title: string;
+          links?:
+            | {
+                label: string;
+                href: string;
+                external?: boolean | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    statement?: string | null;
+    copyright?: string | null;
+    contactEmail?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -793,6 +866,14 @@ export interface HomePage {
     heroImage?: (number | null) | Media;
     heroCtaText?: string | null;
     heroCtaUrl?: string | null;
+    /**
+     * Full-bleed hero background video (video/* accepted). Falls back to /videos/dj-ganesh.mp4.
+     */
+    heroVideo?: (number | null) | Media;
+    /**
+     * Optional still shown before the video loads.
+     */
+    heroVideoPoster?: (number | null) | Media;
   };
   artistIntro?: {
     introTitle?: string | null;
@@ -803,6 +884,7 @@ export interface HomePage {
     stats?:
       | {
           value: string;
+          suffix?: string | null;
           label: string;
           id?: string | null;
         }[]
@@ -819,6 +901,9 @@ export interface HomePage {
           country: string;
           lat?: number | null;
           lng?: number | null;
+          labelDx?: number | null;
+          labelDy?: number | null;
+          hub?: boolean | null;
           id?: string | null;
         }[]
       | null;
@@ -836,6 +921,133 @@ export interface HomePage {
     subheading?: string | null;
     ctaText?: string | null;
     ctaUrl?: string | null;
+  };
+  statementPlate?: {
+    label?: string | null;
+    /**
+     * Each line is a design break point.
+     */
+    lines?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    spoken?: boolean | null;
+    name?: string | null;
+    note?: string | null;
+  };
+  stages?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
+    stages?:
+      | {
+          name: string;
+          featured?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  trustedBy?: {
+    label?: string | null;
+    names?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  galleryStrip?: {
+    label?: string | null;
+    items?:
+      | {
+          image?: (number | null) | Media;
+          alt?: string | null;
+          href?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  follow?: {
+    heading?: string | null;
+    links?:
+      | {
+          label: string;
+          caption?: string | null;
+          href: string;
+          icon?: string | null;
+          external?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * The homepage booking band (data/booking.ts). The primary CTA remains in Booking CTA above.
+   */
+  bookingSection?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    scope?:
+      | {
+          item: string;
+          id?: string | null;
+        }[]
+      | null;
+    links?:
+      | {
+          label: string;
+          value?: string | null;
+          href: string;
+          external?: boolean | null;
+          icon?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  legacySection?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  testimonialsSection?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * The offerings themselves are managed in the Experiences / Services collection.
+   */
+  experienceSection?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    ctaHref?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -866,6 +1078,167 @@ export interface ContactBooking {
     | null;
   bookingCtaText?: string | null;
   bookingCtaUrl?: string | null;
+  whatsapp?: {
+    /**
+     * Digits only, country code first, no + or spaces.
+     */
+    whatsappNumber?: string | null;
+    whatsappLabel?: string | null;
+    whatsappMessage?: string | null;
+  };
+  contactMeta?: {
+    eyebrow?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+  };
+  enquiry?: {
+    heading?: string | null;
+    lede?: string | null;
+    submitLabel?: string | null;
+  };
+  bookingInfoBlock?: {
+    heading?: string | null;
+    copy?: string | null;
+  };
+  finalCta?: {
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    label?: string | null;
+    href?: string | null;
+  };
+  /**
+   * The band before the footer (data/call.ts). Agencies here supplement the single Agency Details above.
+   */
+  callBand?: {
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    ctaLabel?: string | null;
+    agencies?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Content for the /about page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about".
+ */
+export interface About {
+  id: number;
+  labels?: {
+    intro?: string | null;
+    story?: string | null;
+    identity?: string | null;
+    experience?: string | null;
+    sectionLabel?: string | null;
+  };
+  story?: {
+    /**
+     * e.g. "The" / "BollyAfro" / "Pioneer".
+     */
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    statement?: string | null;
+    paragraphs?:
+      | {
+          paragraph: string;
+          id?: string | null;
+        }[]
+      | null;
+    careerStart?: string | null;
+  };
+  /**
+   * The strands of the sound, e.g. Bollywood / Afrobeats / House.
+   */
+  soundStrands?:
+    | {
+        strand: string;
+        id?: string | null;
+      }[]
+    | null;
+  frames?: {
+    stage?: (number | null) | Media;
+    portrait?: (number | null) | Media;
+    decks?: (number | null) | Media;
+  };
+  portrait?: (number | null) | Media;
+  careerStats?: {
+    stats?:
+      | {
+          value: string;
+          suffix?: string | null;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Selects Legacy Milestones to preview on the about page.
+   */
+  experiencePreview?: {
+    /**
+     * Choose the 3 milestones to preview (e.g. origin, taj, world-tour).
+     */
+    milestones?: (number | LegacyMilestone)[] | null;
+    experienceHref?: string | null;
+    bookingHref?: string | null;
+  };
+  outro?: {
+    question?: string | null;
+    cta?: string | null;
+  };
+  cta?: {
+    label?: string | null;
+    href?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Copy for the /music page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "music-page".
+ */
+export interface MusicPage {
+  id: number;
+  pageTitle?: string | null;
+  statement?: string | null;
+  labels?: {
+    intro?: string | null;
+    archive?: string | null;
+    continue?: string | null;
+  };
+  homeSection?: {
+    sectionLabel?: string | null;
+    heading?: string | null;
+    allReleasesUrl?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -898,6 +1271,27 @@ export interface SiteSettingsSelect<T extends boolean = true> {
       };
   bookingInfo?: T;
   footerContent?: T;
+  footer?:
+    | T
+    | {
+        columns?:
+          | T
+          | {
+              title?: T;
+              links?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                    external?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        statement?: T;
+        copyright?: T;
+        contactEmail?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -934,6 +1328,8 @@ export interface HomePageSelect<T extends boolean = true> {
         heroImage?: T;
         heroCtaText?: T;
         heroCtaUrl?: T;
+        heroVideo?: T;
+        heroVideoPoster?: T;
       };
   artistIntro?:
     | T
@@ -949,6 +1345,7 @@ export interface HomePageSelect<T extends boolean = true> {
           | T
           | {
               value?: T;
+              suffix?: T;
               label?: T;
               id?: T;
             };
@@ -964,6 +1361,9 @@ export interface HomePageSelect<T extends boolean = true> {
               country?: T;
               lat?: T;
               lng?: T;
+              labelDx?: T;
+              labelDy?: T;
+              hub?: T;
               id?: T;
             };
       };
@@ -986,6 +1386,142 @@ export interface HomePageSelect<T extends boolean = true> {
         subheading?: T;
         ctaText?: T;
         ctaUrl?: T;
+      };
+  statementPlate?:
+    | T
+    | {
+        label?: T;
+        lines?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        spoken?: T;
+        name?: T;
+        note?: T;
+      };
+  stages?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
+        stages?:
+          | T
+          | {
+              name?: T;
+              featured?: T;
+              id?: T;
+            };
+      };
+  trustedBy?:
+    | T
+    | {
+        label?: T;
+        names?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+      };
+  galleryStrip?:
+    | T
+    | {
+        label?: T;
+        items?:
+          | T
+          | {
+              image?: T;
+              alt?: T;
+              href?: T;
+              id?: T;
+            };
+      };
+  follow?:
+    | T
+    | {
+        heading?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              caption?: T;
+              href?: T;
+              icon?: T;
+              external?: T;
+              id?: T;
+            };
+      };
+  bookingSection?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        scope?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        links?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              href?: T;
+              external?: T;
+              icon?: T;
+              id?: T;
+            };
+      };
+  legacySection?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+      };
+  testimonialsSection?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+      };
+  experienceSection?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        ctaHref?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1016,6 +1552,175 @@ export interface ContactBookingSelect<T extends boolean = true> {
       };
   bookingCtaText?: T;
   bookingCtaUrl?: T;
+  whatsapp?:
+    | T
+    | {
+        whatsappNumber?: T;
+        whatsappLabel?: T;
+        whatsappMessage?: T;
+      };
+  contactMeta?:
+    | T
+    | {
+        eyebrow?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+      };
+  enquiry?:
+    | T
+    | {
+        heading?: T;
+        lede?: T;
+        submitLabel?: T;
+      };
+  bookingInfoBlock?:
+    | T
+    | {
+        heading?: T;
+        copy?: T;
+      };
+  finalCta?:
+    | T
+    | {
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        label?: T;
+        href?: T;
+      };
+  callBand?:
+    | T
+    | {
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        ctaLabel?: T;
+        agencies?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_select".
+ */
+export interface AboutSelect<T extends boolean = true> {
+  labels?:
+    | T
+    | {
+        intro?: T;
+        story?: T;
+        identity?: T;
+        experience?: T;
+        sectionLabel?: T;
+      };
+  story?:
+    | T
+    | {
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        statement?: T;
+        paragraphs?:
+          | T
+          | {
+              paragraph?: T;
+              id?: T;
+            };
+        careerStart?: T;
+      };
+  soundStrands?:
+    | T
+    | {
+        strand?: T;
+        id?: T;
+      };
+  frames?:
+    | T
+    | {
+        stage?: T;
+        portrait?: T;
+        decks?: T;
+      };
+  portrait?: T;
+  careerStats?:
+    | T
+    | {
+        stats?:
+          | T
+          | {
+              value?: T;
+              suffix?: T;
+              label?: T;
+              id?: T;
+            };
+      };
+  experiencePreview?:
+    | T
+    | {
+        milestones?: T;
+        experienceHref?: T;
+        bookingHref?: T;
+      };
+  outro?:
+    | T
+    | {
+        question?: T;
+        cta?: T;
+      };
+  cta?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "music-page_select".
+ */
+export interface MusicPageSelect<T extends boolean = true> {
+  pageTitle?: T;
+  statement?: T;
+  labels?:
+    | T
+    | {
+        intro?: T;
+        archive?: T;
+        continue?: T;
+      };
+  homeSection?:
+    | T
+    | {
+        sectionLabel?: T;
+        heading?: T;
+        allReleasesUrl?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

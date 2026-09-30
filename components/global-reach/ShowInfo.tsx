@@ -1,7 +1,9 @@
-import { bookingEmail, findShow } from "@/lib/tour";
+import { bookingEmail, tourShows as defaultShows } from "@/lib/tour";
+import type { TourShow } from "@/types/tour";
 import type { GlobeAnchor } from "@/components/global-reach/TourGlobe";
 
 type ShowInfoProps = {
+  shows?: readonly TourShow[];
   city: string;
   anchor: GlobeAnchor | null;
 };
@@ -16,8 +18,9 @@ type ShowInfoProps = {
  * leader line so the globe is never covered, and below `md` it drops into
  * flow underneath, where a floating panel would only crowd the frame.
  */
-export function ShowInfo({ city, anchor }: ShowInfoProps) {
-  const show = findShow(city);
+export function ShowInfo({ city, anchor, shows = defaultShows }: ShowInfoProps) {
+  const cityKey = city.trim().toLowerCase();
+  const show = shows.find((s) => s.city.toLowerCase() === cityKey) ?? null;
   const side = anchor?.side ?? "right";
 
   return (

@@ -20,7 +20,23 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  *
  * Both frames carry the banner's treatment: graded to black and white.
  */
-export function ArtistVisual() {
+type Frame = { src: string; alt: string };
+
+type ArtistVisualProps = {
+  label?: string;
+  statement?: string;
+  strands?: readonly string[];
+  portrait?: Frame;
+  decks?: Frame;
+};
+
+export function ArtistVisual({
+  label = aboutPageLabels.identity,
+  statement = aboutStatement,
+  strands = soundStrands,
+  portrait = aboutFrames.portrait,
+  decks = aboutFrames.decks,
+}: ArtistVisualProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -39,8 +55,8 @@ export function ArtistVisual() {
               style={delay(0)}
             >
               <Image
-                src={aboutFrames.portrait.src}
-                alt={aboutFrames.portrait.alt}
+                src={portrait.src}
+                alt={portrait.alt}
                 fill
                 className="about-visual__image object-cover object-[50%_28%]"
                 sizes="(min-width: 1024px) 44vw, 100vw"
@@ -54,8 +70,8 @@ export function ArtistVisual() {
               style={delay(160)}
             >
               <Image
-                src={aboutFrames.decks.src}
-                alt={aboutFrames.decks.alt}
+                src={decks.src}
+                alt={decks.alt}
                 fill
                 className="about-visual__image object-cover object-[52%_42%]"
                 sizes="(min-width: 1024px) 26vw, 60vw"
@@ -66,7 +82,7 @@ export function ArtistVisual() {
 
           <div className="about-visual__words">
             <p className="reveal-scroll about-label" style={delay(80)}>
-              {aboutPageLabels.identity}
+              {label}
             </p>
 
             <h2
@@ -74,10 +90,10 @@ export function ArtistVisual() {
               className="reveal-scroll about-visual__strands mt-lg md:mt-xl"
               style={delay(160)}
             >
-              {soundStrands.map((strand, index) => (
+              {strands.map((strand, index) => (
                 <span key={strand} className="about-visual__strand">
                   {strand}
-                  {index < soundStrands.length - 1 ? (
+                  {index < strands.length - 1 ? (
                     <span aria-hidden className="about-visual__slash">
                       /
                     </span>
@@ -87,7 +103,7 @@ export function ArtistVisual() {
             </h2>
 
             <p className="reveal-scroll about-visual__line" style={delay(260)}>
-              {aboutStatement}
+              {statement}
             </p>
           </div>
         </div>

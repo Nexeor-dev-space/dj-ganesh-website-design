@@ -4,6 +4,7 @@ const Gallery: CollectionConfig = {
   slug: 'gallery',
   labels: { singular: 'Gallery Album', plural: 'Gallery' },
   admin: {
+    group: 'Collections',
     useAsTitle: 'title',
     defaultColumns: ['title', 'album', 'publishedStatus', 'order'],
     description: 'Gallery albums with multiple images per album.',
