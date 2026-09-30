@@ -4,6 +4,7 @@ const UpcomingShows: CollectionConfig = {
   slug: 'upcoming-shows',
   labels: { singular: 'Upcoming Show', plural: 'Upcoming Shows' },
   admin: {
+    group: 'Collections',
     useAsTitle: 'title',
     defaultColumns: ['title', 'date', 'city', 'country', 'showStatus', 'order'],
     description: 'Manage upcoming DJ Ganesh show listings.',

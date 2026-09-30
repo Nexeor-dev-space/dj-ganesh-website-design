@@ -1,12 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { CityList } from "@/components/global-reach/CityList";
 import { Container } from "@/components/layout/Container";
 import { ShowInfo } from "@/components/global-reach/ShowInfo";
 import { TourGlobe, type GlobeAnchor } from "@/components/global-reach/TourGlobe";
 import { UpNext } from "@/components/global-reach/UpNext";
-import { bookingEmail, countriesToured, tourName } from "@/lib/tour";
+import {
+  bookingEmail,
+  countriesToured,
+  tourCities as defaultCities,
+  tourName as defaultTourName,
+  tourShows as defaultShows,
+} from "@/lib/tour";
+import type { TourCity, TourShow } from "@/types/tour";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -25,7 +32,17 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * a keyboard visitor drives the globe by tabbing the strip. Everything the
  * globe can do is reachable from the two strips underneath it.
  */
-export function GlobalReach() {
+export function GlobalReach({
+  tourName = defaultTourName,
+  tourCities = defaultCities,
+  tourShows = defaultShows,
+}: {
+  tourName?: string;
+  tourCities?: readonly TourCity[];
+  tourShows?: readonly TourShow[];
+} = {}) {
+  // Memoised: the globe restarts if its route identity changes.
+  const tourRoute = useMemo(() => tourShows.map((show) => show.city), [tourShows]);
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
@@ -97,6 +114,8 @@ export function GlobalReach() {
         <div className="reveal-scroll shows__stage" style={delay(260)}>
           <div className="shows__globe">
             <TourGlobe
+              cities={tourCities}
+              route={tourRoute}
               activeCity={activeCity}
               onHoverCity={setHoveredCity}
               onSelectCity={selectCity}
@@ -104,11 +123,13 @@ export function GlobalReach() {
             />
           </div>
 
-          {activeCity ? <ShowInfo city={activeCity} anchor={anchor} /> : null}
+          {activeCity ? <ShowInfo city={activeCity} anchor={anchor} shows={tourShows} /> : null}
         </div>
 
         <div className="reveal-scroll" style={delay(360)}>
           <CityList
+            cities={tourCities}
+            shows={tourShows}
             activeCity={activeCity}
             onHover={setHoveredCity}
             onSelect={selectCity}
@@ -117,6 +138,7 @@ export function GlobalReach() {
 
         <div className="reveal-scroll" style={delay(450)}>
           <UpNext
+            shows={tourShows}
             activeCity={activeCity}
             onHover={setHoveredCity}
             onSelect={selectCity}

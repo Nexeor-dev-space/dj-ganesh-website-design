@@ -12,7 +12,16 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * rather write their own email should be able to read one off the page and
  * leave, which is the whole job of this section.
  */
-export function DirectContact() {
+type Desk = { label: string; address: string; note: string };
+type Social = { label: string; href: string };
+
+export function DirectContact({
+  desks = contactDesks,
+  socials = connectLinks,
+}: {
+  desks?: readonly Desk[];
+  socials?: readonly Social[];
+} = {}) {
   return (
     <RevealSection
       id="direct"
@@ -27,7 +36,7 @@ export function DirectContact() {
             </h2>
 
             <dl className="contact-desks">
-              {contactDesks.map((desk, index) => (
+              {desks.map((desk, index) => (
                 <div
                   key={desk.label}
                   className="reveal-scroll contact-desk"
@@ -51,7 +60,7 @@ export function DirectContact() {
             </h2>
 
             <ul className="contact-social">
-              {connectLinks.map((social, index) => (
+              {socials.map((social, index) => (
                 <li
                   key={social.href}
                   className="reveal-scroll"

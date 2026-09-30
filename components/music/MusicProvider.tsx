@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { tracks } from "@/data/tracks";
+import { tracks as defaultTracks } from "@/data/tracks";
 import type { Track } from "@/types/music";
 
 const FFT_SIZE = 128;
@@ -68,7 +68,14 @@ const MusicContext = createContext<MusicPlayer | null>(null);
  * exactly once and two tracks can never sound at the same time. Nothing is
  * created until the first real click, and nothing ever autoplays.
  */
-export function MusicProvider({ children }: { children: ReactNode }) {
+export function MusicProvider({
+  children,
+  tracks = defaultTracks,
+}: {
+  children: ReactNode;
+  /** Playlist. Falls back to the code list in data/tracks when omitted. */
+  tracks?: Track[];
+}) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const contextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { aboutPortrait } from "@/lib/about";
+import { aboutPortrait as defaultPortrait } from "@/lib/about";
 
 /**
  * The stage frame.
@@ -10,7 +10,11 @@ import { aboutPortrait } from "@/lib/about";
  * The same treatment as the banner and the footer — graded to black and white
  * and grained. The file on disk is never altered.
  */
-export function AboutImage() {
+export function AboutImage({
+  aboutPortrait = defaultPortrait,
+}: {
+  aboutPortrait?: { src: string; alt: string };
+} = {}) {
   return (
     <figure data-cursor="explore" className="story-frame">
       <Image

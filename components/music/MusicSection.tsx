@@ -6,11 +6,12 @@ import { Container } from "@/components/layout/Container";
 import { MusicCard } from "@/components/music/MusicCard";
 import { MusicProvider } from "@/components/music/MusicProvider";
 import {
-  allReleasesUrl,
-  musicHeading,
-  musicSectionLabel,
-  tracks,
+  allReleasesUrl as defaultAllReleasesUrl,
+  musicHeading as defaultHeading,
+  musicSectionLabel as defaultLabel,
+  tracks as defaultTracks,
 } from "@/data/tracks";
+import type { Track } from "@/types/music";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -32,7 +33,17 @@ const STEP = 90;
  * element — which is what makes "only one track at a time" a property of the
  * section rather than something each card has to remember.
  */
-export function MusicSection() {
+export function MusicSection({
+  musicSectionLabel = defaultLabel,
+  musicHeading = defaultHeading,
+  allReleasesUrl = defaultAllReleasesUrl,
+  tracks = defaultTracks,
+}: {
+  musicSectionLabel?: string;
+  musicHeading?: string;
+  allReleasesUrl?: string;
+  tracks?: Track[];
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -57,7 +68,7 @@ export function MusicSection() {
   }, []);
 
   return (
-    <MusicProvider>
+    <MusicProvider tracks={tracks}>
       <section
         ref={sectionRef}
         id="music"

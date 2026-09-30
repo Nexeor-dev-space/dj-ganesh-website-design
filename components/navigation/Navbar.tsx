@@ -6,6 +6,13 @@ import { usePathname } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { bookingHref, navLinks, siteConfig, socialLinks } from "@/lib/site";
+import {
+  hasText,
+  mapNavLinks,
+  mapSocials,
+  useSiteData,
+} from "@/components/site/SiteDataProvider";
+import type { SocialLink } from "@/types/site";
 
 /**
  * Fixed navigation bar: outlined wordmark on the left, social rail, a single
@@ -21,6 +28,13 @@ import { bookingHref, navLinks, siteConfig, socialLinks } from "@/lib/site";
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const site = useSiteData();
+  const links: readonly { label: string; href: string }[] =
+    mapNavLinks(site.nav) ?? navLinks;
+  const socials: readonly SocialLink[] = mapSocials(site.socials) ?? socialLinks;
+  const bookHref = hasText(site.contact?.bookingCtaUrl)
+    ? site.contact.bookingCtaUrl
+    : bookingHref;
 
   // Freeze the page behind the overlay and let Escape close it.
   useEffect(() => {
@@ -61,7 +75,7 @@ export function Navbar() {
 
           <div className="flex items-center gap-sm">
             <ul className="hidden items-center gap-xs sm:flex">
-              {socialLinks.map((social) => (
+              {socials.map((social) => (
                 <li key={social.label}>
                   <a
                     href={social.href}
@@ -77,7 +91,7 @@ export function Navbar() {
             </ul>
 
             <Link
-              href={bookingHref}
+              href={bookHref}
               className="btn-sweep btn-sweep--onAccent inline-flex h-10 items-center gap-xs rounded-full bg-accent px-5 text-[12px] font-semibold uppercase tracking-[0.14em] md:h-11 md:px-6"
             >
               <svg
@@ -125,7 +139,7 @@ export function Navbar() {
       >
         <Container className="flex h-full flex-col justify-between py-2xl">
           <ul className="flex flex-col gap-md">
-            {navLinks.map((link, index) => {
+            {links.map((link, index) => {
               const current =
                 link.href === "/"
                   ? pathname === "/"
@@ -150,7 +164,7 @@ export function Navbar() {
           </ul>
 
           <ul className="flex items-center gap-sm">
-            {socialLinks.map((social) => (
+            {socials.map((social) => (
               <li key={social.label}>
                 <a
                   href={social.href}

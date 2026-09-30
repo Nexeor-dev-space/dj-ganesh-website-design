@@ -19,7 +19,23 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * runs the full width of the screen; everything printed on it keeps the site's
  * gutters.
  */
-export function AboutHero() {
+type AboutHeroProps = {
+  intro?: string;
+  statement?: string;
+  strands?: readonly string[];
+  since?: string;
+  lede?: string;
+  stage?: { src: string; alt: string };
+};
+
+export function AboutHero({
+  intro = aboutPageLabels.intro,
+  statement = aboutStatement,
+  strands = soundStrands,
+  since = careerStart,
+  lede = aboutParagraphs[2],
+  stage = aboutFrames.stage,
+}: AboutHeroProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -31,8 +47,8 @@ export function AboutHero() {
     >
       <div className="about-hero__frame">
         <Image
-          src={aboutFrames.stage.src}
-          alt={aboutFrames.stage.alt}
+          src={stage.src}
+          alt={stage.alt}
           fill
           priority
           sizes="100vw"
@@ -46,7 +62,7 @@ export function AboutHero() {
 
       <Container className="about-hero__body relative z-10">
         <p className="reveal-scroll about-label" style={delay(0)}>
-          {aboutPageLabels.intro}
+          {intro}
         </p>
 
         <h1
@@ -58,12 +74,12 @@ export function AboutHero() {
         </h1>
 
         <p className="reveal-scroll about-hero__statement" style={delay(180)}>
-          {aboutStatement}
+          {statement}
         </p>
 
         <div className="reveal-scroll about-hero__meta" style={delay(260)}>
           <p className="about-hero__strands">
-            {soundStrands.map((strand, index) => (
+            {strands.map((strand, index) => (
               <span key={strand}>
                 {index > 0 ? (
                   <span aria-hidden className="mx-sm text-white/25">
@@ -75,11 +91,11 @@ export function AboutHero() {
             ))}
           </p>
 
-          <p className="about-hero__since">Mumbai · {careerStart}</p>
+          <p className="about-hero__since">Mumbai · {since}</p>
         </div>
 
         <p className="reveal-scroll about-hero__lede" style={delay(340)}>
-          {aboutParagraphs[2]}
+          {lede}
         </p>
       </Container>
     </section>

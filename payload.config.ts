@@ -1,5 +1,9 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+
+const configDir = path.dirname(fileURLToPath(import.meta.url))
 
 // Collections
 import Users from './src/collections/Users.ts'
@@ -11,12 +15,15 @@ import Gallery from './src/collections/Gallery.ts'
 import LegacyMilestones from './src/collections/LegacyMilestones.ts'
 import Testimonials from './src/collections/Testimonials.ts'
 import ExperiencesServices from './src/collections/ExperiencesServices.ts'
+import ContactSubmissions from './src/collections/ContactSubmissions.ts'
 
 // Globals
 import SiteSettings from './src/globals/SiteSettings.ts'
 import Navigation from './src/globals/Navigation.ts'
 import HomePage from './src/globals/HomePage.ts'
 import ContactBooking from './src/globals/ContactBooking.ts'
+import About from './src/globals/About.ts'
+import MusicPage from './src/globals/MusicPage.ts'
 
 export default buildConfig({
   // Required by Payload to encrypt tokens and sessions.
@@ -27,13 +34,19 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL,
     },
+    // Dev auto-syncs the schema (push). Production ignores push and uses the
+    // committed migrations in ./src/migrations instead (run via `payload migrate`).
     push: true,
+    migrationDir: path.resolve(configDir, 'src/migrations'),
   }),
 
   // Admin panel configuration.
   admin: {
     // The collection used for admin authentication.
     user: 'users',
+    components: {
+      beforeDashboard: ['/src/admin/Dashboard#default'],
+    },
     meta: {
       titleSuffix: '– DJ Ganesh CMS',
     },
@@ -50,6 +63,7 @@ export default buildConfig({
     LegacyMilestones,
     Testimonials,
     ExperiencesServices,
+    ContactSubmissions,
   ],
 
   // Register all globals.
@@ -58,6 +72,8 @@ export default buildConfig({
     Navigation,
     HomePage,
     ContactBooking,
+    About,
+    MusicPage,
   ],
 
   // TypeScript types output file.

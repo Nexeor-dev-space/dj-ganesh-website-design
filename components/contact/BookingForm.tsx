@@ -29,7 +29,11 @@ type Status = "idle" | "sending" | "sent" | "failed";
  * other booking control on this site takes — and the panel below says exactly
  * that. See `lib/enquiry.ts` for the single seam a real endpoint plugs into.
  */
-export function BookingForm() {
+export function BookingForm({
+  submitLabel = enquiryMeta.submitLabel,
+}: {
+  submitLabel?: string;
+} = {}) {
   const [values, setValues] = useState<EnquiryValues>(emptyEnquiry);
   const [errors, setErrors] = useState<EnquiryErrors>({});
   const [status, setStatus] = useState<Status>("idle");
@@ -81,8 +85,8 @@ export function BookingForm() {
       >
         <p className="enquiry-done__title">Thank you.</p>
         <p className="enquiry-done__lede">
-          Your enquiry is composed and waiting in your mail app — send it and
-          we&apos;ll get back to you as soon as possible.
+          Your enquiry has been received — we&apos;ll get back to you as soon
+          as possible.
         </p>
 
         <button
@@ -259,7 +263,7 @@ export function BookingForm() {
       ) : null}
 
       <button type="submit" data-cursor="book" className="enquiry-submit btn-sweep btn-sweep--onAccent">
-        {status === "sending" ? "Sending…" : enquiryMeta.submitLabel}
+        {status === "sending" ? "Sending…" : submitLabel}
         <span aria-hidden className="enquiry-submit__arrow">
           →
         </span>

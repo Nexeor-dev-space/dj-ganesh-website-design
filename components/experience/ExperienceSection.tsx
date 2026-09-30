@@ -4,10 +4,11 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { Offering } from "@/components/experience/Offering";
 import {
-  experienceHeading,
-  experienceSectionLabel,
-  offerings,
+  experienceHeading as defaultHeading,
+  experienceSectionLabel as defaultLabel,
+  offerings as defaultOfferings,
 } from "@/data/experience";
+import type { Offering as OfferingData } from "@/types/experience";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -27,7 +28,17 @@ const STEP = 110;
  * cards are told apart by their numbers, each set twice: once legibly in the
  * accent, once as a ghost across the card's corner.
  */
-export function ExperienceSection() {
+export function ExperienceSection({
+  experienceSectionLabel = defaultLabel,
+  experienceHeading = defaultHeading,
+  offerings = defaultOfferings,
+  ctaHref,
+}: {
+  experienceSectionLabel?: string;
+  experienceHeading?: readonly string[];
+  offerings?: readonly OfferingData[];
+  ctaHref?: string;
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -90,6 +101,7 @@ export function ExperienceSection() {
             <Offering
               key={offering.id}
               offering={offering}
+              ctaHref={ctaHref}
               delay={240 + index * STEP}
             />
           ))}

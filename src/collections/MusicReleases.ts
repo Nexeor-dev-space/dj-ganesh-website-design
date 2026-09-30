@@ -4,6 +4,7 @@ const MusicReleases: CollectionConfig = {
   slug: 'music-releases',
   labels: { singular: 'Music / Release', plural: 'Music / Releases' },
   admin: {
+    group: 'Collections',
     useAsTitle: 'title',
     defaultColumns: ['title', 'genre', 'releaseDate', 'featured', 'publishedStatus', 'order'],
     description: 'Manage DJ Ganesh music tracks and releases.',

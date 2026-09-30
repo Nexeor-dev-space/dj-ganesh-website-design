@@ -4,13 +4,14 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { StageMarquee } from "@/components/stages/StageMarquee";
 import {
-  stageRows,
-  stagesCtaHref,
-  stagesCtaLabel,
-  stagesHeading,
-  stagesLede,
-  stagesSectionLabel,
+  stageRows as defaultStageRows,
+  stagesCtaHref as defaultCtaHref,
+  stagesCtaLabel as defaultCtaLabel,
+  stagesHeading as defaultHeading,
+  stagesLede as defaultLede,
+  stagesSectionLabel as defaultSectionLabel,
 } from "@/lib/stages";
+import type { Stage } from "@/types/stages";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -33,7 +34,21 @@ const DURATIONS = [46, 56, 50];
  * Announced dates live in section 02 with their own ticket links, so this
  * band deliberately carries none; the only way out is the enquiry.
  */
-export function StagesSection() {
+export function StagesSection({
+  stagesSectionLabel = defaultSectionLabel,
+  stagesHeading = defaultHeading,
+  stagesLede = defaultLede,
+  stagesCtaHref = defaultCtaHref,
+  stagesCtaLabel = defaultCtaLabel,
+  stageRows = defaultStageRows,
+}: {
+  stagesSectionLabel?: string;
+  stagesHeading?: readonly string[];
+  stagesLede?: string;
+  stagesCtaHref?: string;
+  stagesCtaLabel?: string;
+  stageRows?: readonly (readonly Stage[])[];
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 

@@ -1,4 +1,4 @@
-import { bookingEmail, eventTypes } from "@/data/contact";
+import { eventTypes } from "@/data/contact";
 
 /** Everything the booking form collects. Empty strings, never `undefined`. */
 export type EnquiryValues = {
@@ -119,14 +119,23 @@ export type EnquiryOutcome = "handed-off" | "failed";
 export async function submitEnquiry(
   values: EnquiryValues,
 ): Promise<EnquiryOutcome> {
-  const { subject, body } = composeEnquiry(values);
-  const href = `mailto:${bookingEmail}?subject=${encodeURIComponent(
-    subject,
-  )}&body=${encodeURIComponent(body)}`;
+  // The collection stores name/email/phone/eventType/message only, so the
+  // other fields (date, location, ...) are folded into the message.
+  const { body } = composeEnquiry(values);
 
   try {
-    window.location.href = href;
-    return "handed-off";
+    const res = await fetch("/api/contact-submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        phone: values.phone.trim(),
+        eventType: values.eventType,
+        message: body,
+      }),
+    });
+    return res.ok ? "handed-off" : "failed";
   } catch {
     return "failed";
   }
