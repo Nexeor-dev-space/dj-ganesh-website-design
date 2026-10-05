@@ -7,6 +7,10 @@
   "scripts": {
     "dev": "next dev",
     "payload:types": "payload generate:types",
+    "migrate": "payload migrate",
+    "migrate:create": "payload migrate:create",
+    "migrate:status": "payload migrate:status",
+    "seed": "node --experimental-strip-types --no-warnings scripts/seed.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

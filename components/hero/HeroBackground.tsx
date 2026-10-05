@@ -14,12 +14,19 @@
  * browser will refuse an autoplaying video with sound, and iOS will take a
  * video without `playsInline` fullscreen rather than leaving it in the page.
  */
-export function HeroBackground() {
+export function HeroBackground({
+  videoSrc = "/videos/dj-ganesh.mp4",
+  poster,
+}: {
+  videoSrc?: string;
+  poster?: string;
+} = {}) {
   return (
     <div className="hero-media" aria-hidden>
       <video
         className="hero-media__video"
-        src="/videos/dj-ganesh.mp4"
+        src={videoSrc}
+        poster={poster}
         autoPlay
         muted
         loop

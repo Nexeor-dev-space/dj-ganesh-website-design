@@ -4,6 +4,7 @@ const Testimonials: CollectionConfig = {
   slug: 'testimonials',
   labels: { singular: 'Testimonial', plural: 'Testimonials' },
   admin: {
+    group: 'Collections',
     useAsTitle: 'name',
     defaultColumns: ['name', 'eventType', 'location', 'publishedStatus', 'order'],
     description: 'Client and attendee testimonials for DJ Ganesh.',

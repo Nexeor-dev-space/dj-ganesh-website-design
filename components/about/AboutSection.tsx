@@ -5,12 +5,13 @@ import { Container } from "@/components/layout/Container";
 import { AboutImage } from "@/components/about/AboutImage";
 import { CareerStats } from "@/components/about/CareerStats";
 import {
-  aboutCta,
-  aboutHeading,
-  aboutSectionLabel,
-  aboutStory,
-  soundStrands,
+  aboutCta as defaultCta,
+  aboutHeading as defaultHeading,
+  aboutSectionLabel as defaultLabel,
+  aboutStory as defaultStory,
+  soundStrands as defaultStrands,
 } from "@/lib/about";
+import type { CareerStat } from "@/types/about";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -22,7 +23,23 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * close the spread as one ruled band rather than as cards — an editorial
  * page, not an about box.
  */
-export function AboutSection() {
+export function AboutSection({
+  aboutSectionLabel = defaultLabel,
+  aboutHeading = defaultHeading,
+  aboutStory = defaultStory,
+  soundStrands = defaultStrands,
+  aboutCta = defaultCta,
+  aboutPortrait,
+  careerStats,
+}: {
+  aboutSectionLabel?: string;
+  aboutHeading?: readonly string[];
+  aboutStory?: readonly string[];
+  soundStrands?: readonly string[];
+  aboutCta?: { label: string; href: string };
+  aboutPortrait?: { src: string; alt: string };
+  careerStats?: readonly CareerStat[];
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -68,7 +85,7 @@ export function AboutSection() {
           {/* The frame leads on a phone, where a tall column of type before any
               picture would read as a wall of text. */}
           <div className="reveal-scroll order-1 lg:order-2" style={delay(200)}>
-            <AboutImage />
+            <AboutImage aboutPortrait={aboutPortrait} />
           </div>
 
           <div className="order-2 lg:order-1">
@@ -132,7 +149,7 @@ export function AboutSection() {
 
         {/* The career in figures, ruled across the foot of the spread. */}
         <div className="reveal-scroll mt-2xl md:mt-3xl" style={delay(440)}>
-          <CareerStats />
+          <CareerStats careerStats={careerStats} />
         </div>
       </Container>
     </section>

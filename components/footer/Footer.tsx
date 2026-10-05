@@ -7,6 +7,7 @@ import { FooterNavigation } from "@/components/footer/FooterNavigation";
 import { SocialLinks } from "@/components/footer/SocialLinks";
 import { footerCopyright, footerStatement } from "@/data/footer";
 import { siteConfig } from "@/lib/site";
+import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -24,6 +25,9 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
+  const { footer } = useSiteData();
+  const statement = hasText(footer?.statement) ? footer.statement : footerStatement;
+  const copyright = hasText(footer?.copyright) ? footer.copyright : footerCopyright;
 
   useEffect(() => {
     const footer = footerRef.current;
@@ -77,12 +81,12 @@ export function Footer() {
         </div>
 
         <div className="reveal-scroll footer-rail" style={delay(300)}>
-          <p className="footer-rail__statement">{footerStatement}</p>
+          <p className="footer-rail__statement">{statement}</p>
           <SocialLinks />
         </div>
 
         <div className="reveal-scroll footer-bar" style={delay(380)}>
-          <p className="footer-bar__credit">{footerCopyright}</p>
+          <p className="footer-bar__credit">{copyright}</p>
 
           <button type="button" onClick={backToTop} className="footer-link group">
             Back to top

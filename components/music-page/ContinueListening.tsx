@@ -19,7 +19,15 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * of the viewport once something is playing, and this is the section it would
  * otherwise sit on top of.
  */
-export function ContinueListening() {
+type ContinueListeningProps = {
+  label?: string;
+  url?: string;
+};
+
+export function ContinueListening({
+  label = musicPageLabels.continue,
+  url = allReleasesUrl,
+}: ContinueListeningProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -33,7 +41,7 @@ export function ContinueListening() {
 
       <Container className="relative z-10">
         <p className="reveal-scroll music-label" style={delay(0)}>
-          {musicPageLabels.continue}
+          {label}
         </p>
 
         <h2 id="continue-title" className="reveal-scroll music-continue__title" style={delay(80)}>
@@ -43,7 +51,7 @@ export function ContinueListening() {
         </h2>
 
         <a
-          href={allReleasesUrl}
+          href={url}
           target="_blank"
           rel="noreferrer noopener"
           data-cursor="explore"

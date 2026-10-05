@@ -1,8 +1,10 @@
 "use client";
 
-import { tourShows } from "@/lib/tour";
+import { tourShows as defaultShows } from "@/lib/tour";
+import type { TourShow } from "@/types/tour";
 
 type UpNextProps = {
+  shows?: readonly TourShow[];
   activeCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
@@ -18,7 +20,12 @@ type UpNextProps = {
  * panel beside the marker gives the room and the tickets — so the section
  * makes the ticket offer once, in one place, instead of four times.
  */
-export function UpNext({ activeCity, onHover, onSelect }: UpNextProps) {
+export function UpNext({
+  shows: tourShows = defaultShows,
+  activeCity,
+  onHover,
+  onSelect,
+}: UpNextProps) {
   return (
     <div className="up-next">
       <h3 className="up-next__label">Up Next</h3>

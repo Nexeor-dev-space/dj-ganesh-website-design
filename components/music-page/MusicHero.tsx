@@ -21,7 +21,21 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * holds and what they are made of. Deliberately short — the listening starts
  * one screen down, and a full viewport of type would only delay it.
  */
-export function MusicHero() {
+type MusicHeroProps = {
+  intro?: string;
+  title?: string;
+  statement?: string;
+  strands?: readonly string[];
+  count?: number;
+};
+
+export function MusicHero({
+  intro = musicPageLabels.intro,
+  title = musicPageTitle,
+  statement = musicPageStatement,
+  strands = musicPageStrands,
+  count = musicPageCount,
+}: MusicHeroProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -36,20 +50,20 @@ export function MusicHero() {
 
       <Container className="relative z-10">
         <p className="reveal-scroll music-label" style={delay(0)}>
-          {musicPageLabels.intro}
+          {intro}
         </p>
 
         <h1 id="music-page-title" className="reveal-scroll music-hero__title" style={delay(90)}>
-          {musicPageTitle}
+          {title}
         </h1>
 
         <p className="reveal-scroll music-hero__statement" style={delay(180)}>
-          {musicPageStatement}
+          {statement}
         </p>
 
         <div className="reveal-scroll music-hero__meta" style={delay(260)}>
           <p className="music-hero__strands">
-            {musicPageStrands.map((strand, index) => (
+            {strands.map((strand, index) => (
               <span key={strand}>
                 {index > 0 ? (
                   <span aria-hidden className="mx-sm text-white/25">
@@ -62,7 +76,7 @@ export function MusicHero() {
           </p>
 
           <p className="music-hero__count">
-            {musicPageCount} tracks · Play in full
+            {count} tracks · Play in full
           </p>
         </div>
       </Container>

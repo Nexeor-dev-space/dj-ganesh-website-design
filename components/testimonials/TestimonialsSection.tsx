@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { testimonials } from "@/lib/testimonials";
+import { testimonials as defaultTestimonials } from "@/lib/testimonials";
+import type { Testimonial } from "@/types/testimonials";
 import { wallRow } from "@/lib/wall";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -33,7 +34,11 @@ const ROWS = [0, 1, 2];
  * pointer so a quote can be finished, and the whole rotation stops for anyone
  * who has asked for less motion — the first quote simply stays.
  */
-export function TestimonialsSection() {
+export function TestimonialsSection({
+  testimonials = defaultTestimonials,
+}: {
+  testimonials?: readonly Testimonial[];
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const [active, setActive] = useState(0);
@@ -68,7 +73,7 @@ export function TestimonialsSection() {
       QUOTE_INTERVAL,
     );
     return () => window.clearInterval(id);
-  }, [visible, paused]);
+  }, [visible, paused, testimonials.length]);
 
   return (
     <section

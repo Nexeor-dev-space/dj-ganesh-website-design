@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
+import type { Milestone } from "@/types/legacy";
 import {
   aboutPageLabels,
   experienceHref,
@@ -17,7 +18,17 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * Years, titles and ledes come straight from `lib/legacy.ts`; the link points
  * at a page that does not exist yet, which is why it is a plain anchor.
  */
-export function ExperiencePreview() {
+type ExperiencePreviewProps = {
+  label?: string;
+  href?: string;
+  milestones?: readonly Milestone[];
+};
+
+export function ExperiencePreview({
+  label = aboutPageLabels.experience,
+  href = experienceHref,
+  milestones = experiencePreview,
+}: ExperiencePreviewProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -31,7 +42,7 @@ export function ExperiencePreview() {
         <div className="flex flex-col gap-md md:flex-row md:items-end md:justify-between md:gap-2xl">
           <div>
             <p className="reveal-scroll about-label" style={delay(0)}>
-              {aboutPageLabels.experience}
+              {label}
             </p>
 
             <h2
@@ -46,7 +57,7 @@ export function ExperiencePreview() {
           </div>
 
           <a
-            href={experienceHref}
+            href={href}
             className="reveal-scroll about-more group"
             style={delay(160)}
           >
@@ -61,7 +72,7 @@ export function ExperiencePreview() {
         </div>
 
         <ol className="about-nights">
-          {experiencePreview.map((milestone, index) => (
+          {milestones.map((milestone, index) => (
             <li
               key={milestone.id}
               className="reveal-scroll about-night"

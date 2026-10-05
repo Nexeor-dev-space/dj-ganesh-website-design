@@ -4,7 +4,11 @@ import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { followHeading, followLinks } from "@/data/follow";
+import {
+  followHeading as defaultHeading,
+  followLinks as defaultLinks,
+  type FollowLink,
+} from "@/data/follow";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -23,7 +27,13 @@ const STEP = 90;
  * Each mark is a link in its own right — the caption is the link's text, so
  * the accessible name is the thing being followed rather than a glyph.
  */
-export function FollowSection() {
+export function FollowSection({
+  followHeading = defaultHeading,
+  followLinks = defaultLinks,
+}: {
+  followHeading?: string;
+  followLinks?: readonly FollowLink[];
+} = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (

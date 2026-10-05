@@ -11,7 +11,11 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * scroll one — there is nothing to scroll into yet. Three elements and a great
  * deal of air: the statement is the design.
  */
-export function ContactHero() {
+export function ContactHero({
+  meta = contactMeta,
+}: {
+  meta?: { eyebrow: string; heading: readonly string[]; lede: string };
+} = {}) {
   return (
     <section aria-labelledby="contact-title" className="contact-hero relative overflow-hidden">
       <div className="contact-hero__glow" aria-hidden />
@@ -19,11 +23,11 @@ export function ContactHero() {
 
       <Container className="relative z-10">
         <p className="reveal contact-hero__eyebrow" style={delay(150)}>
-          {contactMeta.eyebrow}
+          {meta.eyebrow}
         </p>
 
         <h1 id="contact-title" className="contact-hero__title">
-          {contactMeta.heading.map((line, index) => (
+          {meta.heading.map((line, index) => (
             <span key={line} className="reveal contact-hero__line" style={delay(300 + index * 120)}>
               {line}
             </span>
@@ -31,7 +35,7 @@ export function ContactHero() {
         </h1>
 
         <p className="reveal contact-hero__lede" style={delay(620)}>
-          {contactMeta.lede}
+          {meta.lede}
         </p>
       </Container>
     </section>
