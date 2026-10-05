@@ -12,7 +12,18 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * directly under it goes back to the form to include it. Kept to one section
  * so the page ends on a single beat rather than two small ones.
  */
-export function FinalCta() {
+export function FinalCta({
+  info = bookingInfo,
+  cta = finalCta,
+}: {
+  info?: { heading: string; copy: string };
+  cta?: {
+    heading: readonly string[];
+    lede: string;
+    label: string;
+    href: string;
+  };
+} = {}) {
   return (
     <RevealSection
       aria-labelledby="final-title"
@@ -23,12 +34,12 @@ export function FinalCta() {
 
       <Container className="relative z-10">
         <div className="reveal-scroll contact-note" style={delay(0)}>
-          <h2 className="contact-note__title">{bookingInfo.heading}</h2>
-          <p className="contact-note__copy">{bookingInfo.copy}</p>
+          <h2 className="contact-note__title">{info.heading}</h2>
+          <p className="contact-note__copy">{info.copy}</p>
         </div>
 
         <h2 id="final-title" className="contact-final__title">
-          {finalCta.heading.map((line, index) => (
+          {cta.heading.map((line, index) => (
             <span
               key={line}
               className="reveal-scroll contact-final__line"
@@ -40,16 +51,16 @@ export function FinalCta() {
         </h2>
 
         <p className="reveal-scroll contact-final__lede" style={delay(420)}>
-          {finalCta.lede}
+          {cta.lede}
         </p>
 
         <a
-          href={finalCta.href}
+          href={cta.href}
           data-cursor="book"
           className="reveal-scroll contact-final__cta"
           style={delay(500)}
         >
-          {finalCta.label}
+          {cta.label}
           <span aria-hidden className="contact-final__arrow">
             →
           </span>

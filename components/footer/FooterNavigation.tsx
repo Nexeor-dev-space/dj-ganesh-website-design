@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { footerColumns } from "@/data/footer";
+import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
 
 /**
  * The footer's four columns.
@@ -15,6 +16,24 @@ import { footerColumns } from "@/data/footer";
  * twelve links in a row with nothing to group them.
  */
 export function FooterNavigation() {
+  const { footer } = useSiteData();
+  const cmsColumns = (footer?.columns ?? [])
+    .filter((c) => hasText(c.title))
+    .map((c) => ({
+      label: c.title as string,
+      links: (c.links ?? [])
+        .filter((l) => hasText(l.label) && hasText(l.href))
+        .map((l) => ({
+          label: l.label as string,
+          href: l.href as string,
+          external: !!l.external,
+        })),
+    }));
+  const columns: readonly {
+    label: string;
+    links: readonly { label: string; href: string; external?: boolean }[];
+  }[] = cmsColumns.length ? cmsColumns : footerColumns;
+
   function scrollToSection(event: React.MouseEvent<HTMLAnchorElement>, href: string) {
     const target = document.querySelector(href);
     if (!target) return; // Let the browser handle it rather than swallow the click.
@@ -27,7 +46,7 @@ export function FooterNavigation() {
 
   return (
     <nav aria-label="Footer navigation" className="footer-columns">
-      {footerColumns.map((column) => (
+      {columns.map((column) => (
         <div key={column.label} className="footer-column">
           <h3 className="footer-column__label">{column.label}</h3>
 

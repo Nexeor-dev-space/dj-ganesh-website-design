@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { tourCities, tourRoute, findCity } from "@/lib/tour";
+import { tourCities as defaultCities, tourRoute as defaultRoute } from "@/lib/tour";
+import type { TourCity } from "@/types/tour";
 import { decodeWorldMask, isLand } from "@/lib/world-mask";
 
 export type GlobeAnchor = {
@@ -13,6 +14,8 @@ export type GlobeAnchor = {
 };
 
 type TourGlobeProps = {
+  cities?: readonly TourCity[];
+  route?: readonly string[];
   activeCity: string | null;
   onHoverCity: (city: string | null) => void;
   onSelectCity: (city: string) => void;
@@ -94,11 +97,15 @@ function slerp(a: Vec3, b: Vec3, t: number): Vec3 {
  * face the viewer. The loop is suspended whenever the section is off-screen.
  */
 export function TourGlobe({
+  cities = defaultCities,
+  route = defaultRoute,
   activeCity,
   onHoverCity,
   onSelectCity,
   onAnchorChange,
 }: TourGlobeProps) {
+  const tourCities = cities;
+  const tourRoute = route;
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const activeRef = useRef<string | null>(activeCity);
@@ -115,6 +122,11 @@ export function TourGlobe({
   }, [activeCity, onAnchorChange, onHoverCity, onSelectCity]);
 
   useEffect(() => {
+    const findCity = (name: string | null): TourCity | null => {
+      if (!name) return null;
+      const key = name.trim().toLowerCase();
+      return tourCities.find((city) => city.name.toLowerCase() === key) ?? null;
+    };
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
@@ -618,7 +630,7 @@ export function TourGlobe({
       canvas.removeEventListener("pointerleave", onPointerLeave);
       canvas.removeEventListener("pointerdown", onPointerDown);
     };
-  }, []);
+  }, [tourCities, tourRoute]);
 
   return (
     <div ref={containerRef} className="absolute inset-0">

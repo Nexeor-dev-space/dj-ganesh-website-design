@@ -1,9 +1,13 @@
+"use client";
+
 import {
-  whatsappHref,
-  whatsappLabel,
-  whatsappNumber,
+  whatsappHref as defaultHref,
+  whatsappLabel as defaultLabel,
+  whatsappMessage as defaultMessage,
+  whatsappNumber as defaultNumber,
   whatsappPlaceholderNumber,
 } from "@/data/booking";
+import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
 
 /**
  * The floating booking button.
@@ -18,6 +22,20 @@ import {
  * times, whether or not it happens to be showing.
  */
 export function WhatsAppFab() {
+  const { contact } = useSiteData();
+  const cmsDigits = contact?.whatsappNumber?.replace(/\D/g, "");
+  const whatsappNumber = cmsDigits || defaultNumber;
+  const whatsappLabel = hasText(contact?.whatsappLabel)
+    ? contact.whatsappLabel
+    : defaultLabel;
+  const whatsappMessage = hasText(contact?.whatsappMessage)
+    ? contact.whatsappMessage
+    : defaultMessage;
+  const whatsappHref =
+    whatsappNumber === defaultNumber && whatsappMessage === defaultMessage
+      ? defaultHref
+      : `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
   // Never ship a live link to the placeholder number. See `data/booking.ts`.
   if (
     whatsappNumber === whatsappPlaceholderNumber &&

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { call } from "@/data/call";
+import { call as defaultCall } from "@/data/call";
 import { bookingEmail } from "@/lib/tour";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -18,7 +18,16 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * only to hold the type off a moving crowd — the band reads the same without
  * any of it.
  */
-export function CallSection() {
+export function CallSection({
+  call = defaultCall,
+}: {
+  call?: {
+    heading: readonly string[];
+    lede: string;
+    ctaLabel: string;
+    agencies: readonly string[];
+  };
+} = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 

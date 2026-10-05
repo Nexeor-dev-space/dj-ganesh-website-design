@@ -4,6 +4,7 @@ const PerformanceHistory: CollectionConfig = {
   slug: 'performance-history',
   labels: { singular: 'Performance', plural: 'Performance History' },
   admin: {
+    group: 'Collections',
     useAsTitle: 'venue',
     defaultColumns: ['venue', 'city', 'country', 'year', 'category', 'order'],
     description: 'Track past DJ Ganesh performances worldwide.',

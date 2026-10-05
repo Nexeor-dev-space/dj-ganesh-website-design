@@ -1,11 +1,12 @@
 import type { CSSProperties } from "react";
-import { experienceCtaHref } from "@/data/experience";
+import { experienceCtaHref as defaultCtaHref } from "@/data/experience";
 import type { Offering as OfferingData } from "@/types/experience";
 
 type OfferingProps = {
   offering: OfferingData;
   /** Stagger for the card's entrance, in ms. */
   delay: number;
+  ctaHref?: string;
 };
 
 /**
@@ -23,7 +24,11 @@ type OfferingProps = {
  * link, so `:focus-within` opens it for the keyboard with nothing extra to
  * tab through.
  */
-export function Offering({ offering, delay }: OfferingProps) {
+export function Offering({
+  offering,
+  delay,
+  ctaHref = defaultCtaHref,
+}: OfferingProps) {
   return (
     <li
       className="exp-card reveal-scroll"
@@ -65,7 +70,7 @@ export function Offering({ offering, delay }: OfferingProps) {
         </div>
 
         <a
-          href={experienceCtaHref}
+          href={ctaHref}
           data-cursor="book"
           className="exp-card__link"
           aria-label={`${offering.cta} — ${offering.title}`}

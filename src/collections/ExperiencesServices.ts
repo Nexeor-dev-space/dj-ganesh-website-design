@@ -4,6 +4,7 @@ const ExperiencesServices: CollectionConfig = {
   slug: 'experiences-services',
   labels: { singular: 'Experience / Service', plural: 'Experiences / Services' },
   admin: {
+    group: 'Collections',
     useAsTitle: 'title',
     defaultColumns: ['title', 'publishedStatus', 'order'],
     description: 'DJ Ganesh experience and service offerings (e.g. Royal Weddings, Club Residencies).',

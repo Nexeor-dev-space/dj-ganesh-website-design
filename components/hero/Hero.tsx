@@ -18,14 +18,20 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * readable display size rather than stretched to the width of the screen, and
  * the video is left to be the movement.
  */
-export function Hero() {
+export function Hero({
+  videoSrc,
+  poster,
+}: {
+  videoSrc?: string;
+  poster?: string;
+} = {}) {
   return (
     <section
       id="hero"
       aria-labelledby="hero-title"
       className="hero relative flex min-h-svh flex-col overflow-hidden"
     >
-      <HeroBackground />
+      <HeroBackground videoSrc={videoSrc} poster={poster} />
 
       <Container className="hero__inner relative z-10">
         <p className="hero__kicker reveal" style={delay(300)}>

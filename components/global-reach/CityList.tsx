@@ -1,8 +1,11 @@
 "use client";
 
-import { findShow, tourCities } from "@/lib/tour";
+import { tourCities as defaultCities, tourShows as defaultShows } from "@/lib/tour";
+import type { TourCity, TourShow } from "@/types/tour";
 
 type CityListProps = {
+  cities?: readonly TourCity[];
+  shows?: readonly TourShow[];
   activeCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
@@ -22,7 +25,17 @@ type CityListProps = {
  * own strip reads. No borders, no cells: the globe is the picture here and
  * this row is its caption.
  */
-export function CityList({ activeCity, onHover, onSelect }: CityListProps) {
+export function CityList({
+  cities: tourCities = defaultCities,
+  shows = defaultShows,
+  activeCity,
+  onHover,
+  onSelect,
+}: CityListProps) {
+  const findShow = (name: string) => {
+    const key = name.trim().toLowerCase();
+    return shows.find((show) => show.city.toLowerCase() === key) ?? null;
+  };
   return (
     <ul className="city-run">
       {tourCities.map((city) => {

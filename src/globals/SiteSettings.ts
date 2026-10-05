@@ -4,6 +4,7 @@ const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site Settings',
   admin: {
+    group: 'Settings',
     description: 'Global site configuration, branding, SEO defaults, and contact information.',
   },
   access: { read: () => true },
@@ -68,6 +69,34 @@ const SiteSettings: GlobalConfig = {
     },
     { name: 'bookingInfo', label: 'Booking Information', type: 'textarea' },
     { name: 'footerContent', label: 'Footer Content', type: 'textarea' },
+    {
+      type: 'group',
+      name: 'footer',
+      label: 'Footer',
+      fields: [
+        {
+          name: 'columns',
+          label: 'Footer Columns',
+          type: 'array',
+          fields: [
+            { name: 'title', label: 'Column Title', type: 'text', required: true },
+            {
+              name: 'links',
+              label: 'Links',
+              type: 'array',
+              fields: [
+                { name: 'label', label: 'Label', type: 'text', required: true },
+                { name: 'href', label: 'Link', type: 'text', required: true },
+                { name: 'external', label: 'External', type: 'checkbox', defaultValue: false },
+              ],
+            },
+          ],
+        },
+        { name: 'statement', label: 'Footer Statement', type: 'text', admin: { placeholder: 'e.g. Follow the sound' } },
+        { name: 'copyright', label: 'Copyright', type: 'text' },
+        { name: 'contactEmail', label: 'Footer Contact Email', type: 'email' },
+      ],
+    },
   ],
 }
 

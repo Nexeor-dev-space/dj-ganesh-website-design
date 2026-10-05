@@ -4,12 +4,11 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MilestoneTile } from "@/components/legacy/MilestoneTile";
 import { Container } from "@/components/layout/Container";
 import {
-  archiveCount,
-  archiveSpan,
-  legacyHeading,
-  legacySectionLabel,
-  milestones,
+  legacyHeading as defaultHeading,
+  legacySectionLabel as defaultLabel,
+  milestones as defaultMilestones,
 } from "@/lib/legacy";
+import type { Milestone } from "@/types/legacy";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -35,7 +34,20 @@ const STEP = 70;
  * same way. Below `md`, where there is no pointer to hover with, that line is
  * simply printed.
  */
-export function LegacySection() {
+export function LegacySection({
+  legacySectionLabel = defaultLabel,
+  legacyHeading = defaultHeading,
+  milestones = defaultMilestones,
+}: {
+  legacySectionLabel?: string;
+  legacyHeading?: readonly string[];
+  milestones?: readonly Milestone[];
+} = {}) {
+  // Derived from whichever list is showing (identical to lib/legacy's own
+  // archiveCount/archiveSpan when the list is the code default).
+  const archiveCount = milestones.length;
+  const years = milestones.map((milestone) => Number(milestone.year));
+  const archiveSpan = `${Math.min(...years)} — ${Math.max(...years)}`;
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 

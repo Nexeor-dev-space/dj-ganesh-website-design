@@ -4,6 +4,7 @@ const Navigation: GlobalConfig = {
   slug: 'navigation',
   label: 'Navigation',
   admin: {
+    group: 'Settings',
     description: 'Manage website navigation items and their order.',
   },
   access: { read: () => true },

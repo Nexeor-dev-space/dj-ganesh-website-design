@@ -4,6 +4,7 @@ const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'Media', plural: 'Media' },
   admin: {
+    group: 'Media',
     useAsTitle: 'filename',
     defaultColumns: ['filename', 'alt', 'caption', 'updatedAt'],
     description: 'Media library for all website assets.',
