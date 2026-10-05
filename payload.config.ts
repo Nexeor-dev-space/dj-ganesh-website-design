@@ -34,9 +34,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL,
     },
-    // Dev auto-syncs the schema (push). Production ignores push and uses the
-    // committed migrations in ./src/migrations instead (run via `payload migrate`).
-    push: true,
+    // Dev auto-syncs the schema (push), but only against a local database.
+    // Remote DBs (preview/production) must use the committed migrations in
+    // ./src/migrations instead (run via `payload migrate`).
+    push:
+      process.env.NODE_ENV !== 'production' &&
+      /@(localhost|127\.0\.0\.1)(:|\/)/.test(process.env.DATABASE_URL || ''),
     migrationDir: path.resolve(configDir, 'src/migrations'),
   }),
 
