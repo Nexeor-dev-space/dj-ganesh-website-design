@@ -47,14 +47,11 @@ export function BookingTransition({
           <a
             href={href}
             data-cursor="book"
-            className="reveal-scroll about-outro__cta group"
+            className="reveal-scroll btn-primary about-outro__cta"
             style={delay(90)}
           >
-            {cta}
-            <span
-              aria-hidden
-              className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5 motion-reduce:transition-none"
-            >
+            <span>{cta}</span>
+            <span aria-hidden className="btn__arrow">
               &rarr;
             </span>
           </a>

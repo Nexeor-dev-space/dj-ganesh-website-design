@@ -127,11 +127,11 @@ export function StagesSection({
         <a
           href={stagesCtaHref}
           data-cursor="book"
-          className="reveal-scroll stages-cta"
+          className="reveal-scroll btn-tertiary stages-cta"
           style={delay(320)}
         >
           {stagesCtaLabel}
-          <span aria-hidden className="stages-cta__arrow">
+          <span aria-hidden className="btn__arrow">
             &rarr;
           </span>
         </a>

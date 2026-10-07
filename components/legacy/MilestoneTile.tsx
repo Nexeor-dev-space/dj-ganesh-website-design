@@ -3,8 +3,6 @@ import type { Milestone } from "@/types/legacy";
 
 type MilestoneTileProps = {
   milestone: Milestone;
-  /** Tiles 1, 4 and 6 run double width — see `.legacy-wall`. */
-  wide: boolean;
   /** Stagger for the wall's entrance, in ms. */
   delay: number;
 };
@@ -22,11 +20,10 @@ type MilestoneTileProps = {
  * an `article` that can be focused rather than a button that would announce
  * itself as something to press.
  */
-export function MilestoneTile({ milestone, wide, delay }: MilestoneTileProps) {
+export function MilestoneTile({ milestone, delay }: MilestoneTileProps) {
   return (
     <article
       tabIndex={0}
-      data-wide={wide || undefined}
       className="legacy-tile reveal-scroll"
       style={{ "--reveal-delay": `${delay}ms` } as CSSProperties}
     >

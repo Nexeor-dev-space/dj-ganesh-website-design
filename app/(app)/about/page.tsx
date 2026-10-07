@@ -7,17 +7,36 @@ import { AboutHero } from "@/components/about-page/AboutHero";
 import { ArtistStory } from "@/components/about-page/ArtistStory";
 import { ArtistVisual } from "@/components/about-page/ArtistVisual";
 import { BookingTransition } from "@/components/about-page/BookingTransition";
-import { ExperiencePreview } from "@/components/about-page/ExperiencePreview";
+import { ExperienceSection } from "@/components/experience/ExperienceSection";
 import { Footer } from "@/components/footer/Footer";
+import { LegacySection } from "@/components/legacy/LegacySection";
 import { Navbar } from "@/components/navigation/Navbar";
 import { aboutFrames } from "@/data/about-page";
-import { getAbout, getMilestoneBySlug } from "@/lib/cms/queries";
+import {
+  getAbout,
+  getExperiencesServices,
+  getHomePage,
+  getLegacyMilestones,
+} from "@/lib/cms/queries";
 import { resolveMedia } from "@/lib/cms/media";
 import { toMilestone } from "@/lib/cms/mappers";
 import type { CareerStat } from "@/types/about";
-import type { LegacyMilestone } from "@/payload-types";
 
 const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
+
+/** `[{ line: "x" }]` → `["x"]`, or undefined if fewer than `min` non-empty. */
+function strings<T extends Record<string, unknown>>(
+  arr: readonly T[] | null | undefined,
+  key: keyof T,
+  min = 1,
+): string[] | undefined {
+  const out: string[] = [];
+  for (const row of arr ?? []) {
+    const v = row[key];
+    if (typeof v === "string" && v.trim() !== "") out.push(v);
+  }
+  return out.length >= min ? out : undefined;
+}
 
 /** Media field -> {src, alt}; undefined when the CMS has no image (code frame stays). */
 function frame(
@@ -27,8 +46,6 @@ function frame(
   const m = resolveMedia(field, undefined, fallback.alt);
   return m.url ? { src: m.url, alt: m.alt ?? fallback.alt } : undefined;
 }
-
-const PREVIEW_SLUGS = ["origin", "taj", "world-tour"];
 
 /**
  * Description is the client's own bio sentence, trimmed to length — no claim
@@ -41,7 +58,12 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const about = await getAbout();
+  const [about, home, milestoneDocs, services] = await Promise.all([
+    getAbout(),
+    getHomePage(),
+    getLegacyMilestones(),
+    getExperiencesServices(),
+  ]);
 
   const paragraphs = (about?.story?.paragraphs ?? [])
     .map((p) => p.paragraph)
@@ -54,15 +76,19 @@ export default async function AboutPage() {
     return [{ value, label: s.label, ...(s.suffix ? { suffix: s.suffix } : {}) }];
   });
 
-  // Milestones: editor-picked relationship first, else the three known slugs.
-  let docs = (about?.experiencePreview?.milestones ?? []).filter(
-    (m): m is LegacyMilestone => typeof m === "object" && m !== null,
-  );
-  if (docs.length === 0) {
-    const bySlug = await Promise.all(PREVIEW_SLUGS.map((s) => getMilestoneBySlug(s)));
-    if (bySlug.every(Boolean)) docs = bySlug as LegacyMilestone[];
-  }
-  const milestones = docs.length ? docs.map(toMilestone) : undefined;
+  /* The archive: every published milestone, as on the home page before. */
+  const milestones = milestoneDocs.length ? milestoneDocs.map(toMilestone) : undefined;
+
+  /* The experience: the offerings from the Experiences / Services collection. */
+  const offerings = services.length
+    ? services.map((s, i) => ({
+        id: String(i + 1).padStart(2, "0"),
+        title: s.title,
+        summary: s.shortDescription,
+        points: (s.features ?? []).map((f) => f.feature),
+        cta: s.ctaText ?? "",
+      }))
+    : undefined;
 
   return (
     <>
@@ -89,10 +115,20 @@ export default async function AboutPage() {
           portrait={frame(about?.frames?.portrait, aboutFrames.portrait)}
           decks={frame(about?.frames?.decks, aboutFrames.decks)}
         />
-        <ExperiencePreview
-          label={str(about?.labels?.experience)}
-          href={str(about?.experiencePreview?.experienceHref)}
+        {/* The career in full, then what can be booked from it — both moved
+            here from the home page, which now keeps to the footage. Their
+            labels still live on the home-page global, where the editor set
+            them. */}
+        <LegacySection
+          legacySectionLabel={str(home?.legacySection?.label)}
+          legacyHeading={strings(home?.legacySection?.heading, "line", 2)}
           milestones={milestones}
+        />
+        <ExperienceSection
+          experienceSectionLabel={str(home?.experienceSection?.label)}
+          experienceHeading={strings(home?.experienceSection?.heading, "line", 2)}
+          ctaHref={str(home?.experienceSection?.ctaHref)}
+          offerings={offerings}
         />
         <BookingTransition
           question={str(about?.outro?.question)}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
+import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { MusicCard } from "@/components/music/MusicCard";
 import { MusicProvider } from "@/components/music/MusicProvider";
 import {
@@ -110,20 +111,20 @@ export function MusicSection({
               href={allReleasesUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="releases__button btn-sweep"
+              className="btn-secondary"
             >
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.2c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8ZM9.5 15.6V8.4l6.3 3.6-6.3 3.6Z" />
-              </svg>
-              All Releases on YouTube
-              <span aria-hidden className="releases__button-arrow">
-                →
+              <span aria-hidden className="btn__mark">
+                <SocialIcon name="youtube" />
               </span>
+              <span>All Releases on YouTube</span>
             </a>
 
             {/* The section is the four latest; the archive is all of them. */}
-            <Link href="/music" className="releases__archive">
-              View the full archive <span aria-hidden>→</span>
+            <Link href="/music" className="btn-tertiary">
+              View the full archive
+              <span aria-hidden className="btn__arrow">
+                →
+              </span>
             </Link>
           </div>
         </Container>

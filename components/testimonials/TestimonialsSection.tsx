@@ -84,7 +84,7 @@ export function TestimonialsSection({
       className="wall relative overflow-hidden"
     >
       <Container className="relative z-10">
-        <h2 id="testimonials-title" className="wall__title reveal-scroll" style={delay(0)}>
+        <h2 id="testimonials-title" className="section-title wall__title reveal-scroll" style={delay(0)}>
           Wall of Love
         </h2>
         <p className="wall__sub reveal-scroll" style={delay(80)}>

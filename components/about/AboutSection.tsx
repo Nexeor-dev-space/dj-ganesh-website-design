@@ -75,7 +75,7 @@ export function AboutSection({
 
       <Container className="relative z-10">
         <p
-          className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
+          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
           style={delay(0)}
         >
           {aboutSectionLabel}
@@ -133,14 +133,11 @@ export function AboutSection({
             <a
               href={aboutCta.href}
               data-cursor="book"
-              className="reveal-scroll group mt-2xl inline-flex items-center gap-md border-b border-white/25 pb-sm text-[11px] font-light uppercase tracking-[0.24em] transition-colors duration-300 hover:border-accent hover:text-accent md:text-[12px]"
+              className="reveal-scroll btn-tertiary mt-2xl"
               style={delay(380)}
             >
               {aboutCta.label}
-              <span
-                aria-hidden
-                className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5 motion-reduce:transition-none"
-              >
+              <span aria-hidden className="btn__arrow">
                 &rarr;
               </span>
             </a>
@@ -148,7 +145,7 @@ export function AboutSection({
         </div>
 
         {/* The career in figures, ruled across the foot of the spread. */}
-        <div className="reveal-scroll mt-2xl md:mt-3xl" style={delay(440)}>
+        <div className="reveal-scroll mt-xl md:mt-2xl" style={delay(440)}>
           <CareerStats careerStats={careerStats} />
         </div>
       </Container>

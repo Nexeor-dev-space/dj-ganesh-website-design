@@ -4,8 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { FitText } from "@/components/hero/FitText";
 import { FooterNavigation } from "@/components/footer/FooterNavigation";
-import { SocialLinks } from "@/components/footer/SocialLinks";
-import { footerCopyright, footerStatement } from "@/data/footer";
+import { footerCopyright } from "@/data/footer";
 import { siteConfig } from "@/lib/site";
 import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
 
@@ -26,7 +25,6 @@ export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   const { footer } = useSiteData();
-  const statement = hasText(footer?.statement) ? footer.statement : footerStatement;
   const copyright = hasText(footer?.copyright) ? footer.copyright : footerCopyright;
 
   useEffect(() => {
@@ -74,23 +72,19 @@ export function Footer() {
           </span>
         </h2>
 
-        {/* Four columns, then the rail, then the credit line — the client's
-            own footer, in that order. */}
+        {/* Four columns, then the credit line. The "Follow the sound" rail
+            that sat between them is gone: the accounts are already in the
+            Connect column above and in the menu. */}
         <div className="reveal-scroll footer-index" style={delay(220)}>
           <FooterNavigation />
-        </div>
-
-        <div className="reveal-scroll footer-rail" style={delay(300)}>
-          <p className="footer-rail__statement">{statement}</p>
-          <SocialLinks />
         </div>
 
         <div className="reveal-scroll footer-bar" style={delay(380)}>
           <p className="footer-bar__credit">{copyright}</p>
 
-          <button type="button" onClick={backToTop} className="footer-link group">
+          <button type="button" onClick={backToTop} className="btn-tertiary footer-link">
             Back to top
-            <span aria-hidden className="footer-link__arrow">
+            <span aria-hidden className="btn__arrow">
               ↑
             </span>
           </button>

@@ -96,10 +96,12 @@ export function BookingForm({
             setErrors({});
             setStatus("idle");
           }}
-          className="enquiry-done__again"
+          className="btn-tertiary enquiry-done__again"
         >
           Send another enquiry
-          <span aria-hidden> →</span>
+          <span aria-hidden className="btn__arrow">
+            →
+          </span>
         </button>
       </div>
     );
@@ -262,9 +264,9 @@ export function BookingForm({
         </p>
       ) : null}
 
-      <button type="submit" data-cursor="book" className="enquiry-submit btn-sweep btn-sweep--onAccent">
-        {status === "sending" ? "Sending…" : submitLabel}
-        <span aria-hidden className="enquiry-submit__arrow">
+      <button type="submit" data-cursor="book" className="btn-primary btn--block enquiry-submit">
+        <span>{status === "sending" ? "Sending…" : submitLabel}</span>
+        <span aria-hidden className="btn__arrow">
           →
         </span>
       </button>

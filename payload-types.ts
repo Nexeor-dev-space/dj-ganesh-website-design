@@ -330,7 +330,7 @@ export interface LegacyMilestone {
   id: number;
   year: number;
   /**
-   * Stable key for selecting a specific milestone in code (e.g. origin, taj, world-tour). Does not replace the numeric id.
+   * Stable ID used to feature this milestone on the Home and About pages (e.g. origin, taj, world-tour). Do not change it once set.
    */
   slug?: string | null;
   title: string;
@@ -340,7 +340,13 @@ export interface LegacyMilestone {
    */
   more?: string | null;
   image?: (number | null) | Media;
+  /**
+   * Lower numbers appear first.
+   */
   order?: number | null;
+  /**
+   * Untick to hide from the live site without deleting.
+   */
   publishedStatus?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -893,16 +899,31 @@ export interface HomePage {
   globalReach?: {
     heading?: string | null;
     /**
-     * Manage city/location data from CMS instead of hardcoding in JS.
+     * Cities shown as pins on the Global Reach globe. Add one row per city.
      */
     locations?:
       | {
           city: string;
           country: string;
+          /**
+           * North/south position, -90 to 90 (e.g. Mumbai 19.07). On Google Maps, right-click a city and copy the first number.
+           */
           lat?: number | null;
+          /**
+           * East/west position, -180 to 180 (e.g. Mumbai 72.87). The second number from Google Maps.
+           */
           lng?: number | null;
+          /**
+           * Optional: nudge the city name sideways on the globe so labels do not overlap. Leave blank if unsure.
+           */
           labelDx?: number | null;
+          /**
+           * Optional: nudge the city name up/down on the globe. Leave blank if unsure.
+           */
           labelDy?: number | null;
+          /**
+           * Tick for a main base city; it is highlighted on the globe.
+           */
           hub?: boolean | null;
           id?: string | null;
         }[]
@@ -951,6 +972,9 @@ export interface HomePage {
     stages?:
       | {
           name: string;
+          /**
+           * Tick to highlight this stage in the scrolling marquee.
+           */
           featured?: boolean | null;
           id?: string | null;
         }[]
@@ -1139,7 +1163,7 @@ export interface ContactBooking {
   createdAt?: string | null;
 }
 /**
- * Content for the /about page.
+ * Content for the /about page. Live page: http://localhost:3000/about
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about".
@@ -1220,7 +1244,7 @@ export interface About {
   createdAt?: string | null;
 }
 /**
- * Copy for the /music page.
+ * Copy for the /music page. Live page: http://localhost:3000/music
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "music-page".

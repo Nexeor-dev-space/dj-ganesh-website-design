@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
+import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { allReleasesUrl, musicPageLabels } from "@/data/music-page";
 
@@ -55,13 +56,13 @@ export function ContinueListening({
           target="_blank"
           rel="noreferrer noopener"
           data-cursor="explore"
-          className="reveal-scroll music-continue__link group"
+          className="reveal-scroll btn-secondary music-continue__link"
           style={delay(160)}
         >
-          All releases on YouTube
-          <span aria-hidden className="music-continue__arrow">
-            ↗
+          <span aria-hidden className="btn__mark">
+            <SocialIcon name="youtube" />
           </span>
+          <span>All releases on YouTube</span>
         </a>
       </Container>
     </section>

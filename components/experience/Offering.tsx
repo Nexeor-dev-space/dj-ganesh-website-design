@@ -72,11 +72,11 @@ export function Offering({
         <a
           href={ctaHref}
           data-cursor="book"
-          className="exp-card__link"
+          className="btn-tertiary exp-card__link"
           aria-label={`${offering.cta} — ${offering.title}`}
         >
           {offering.cta}
-          <span className="exp-card__arrow" aria-hidden>
+          <span className="btn__arrow" aria-hidden>
             →
           </span>
         </a>

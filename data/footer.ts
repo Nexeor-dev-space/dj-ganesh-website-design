@@ -94,7 +94,10 @@ export const footerSocialLinks = [
 /** Secondary, deliberately quiet — the Booking section owns the real CTA. */
 export const footerContactEmail = "info@djganeshbombay.com";
 
-/** The frame the site closes on. */
+/**
+ * Seeds the CMS's footer `statement`; the footer no longer prints a rail,
+ * so nothing on the site reads it.
+ */
 export const footerStatement = "Follow the sound";
 
 /** Carried over verbatim from the source footer. */

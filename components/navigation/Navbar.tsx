@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/layout/Container";
+import { MenuMarquee } from "@/components/navigation/MenuMarquee";
 import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { bookingHref, navLinks, siteConfig, socialLinks } from "@/lib/site";
 import {
@@ -18,6 +19,11 @@ import type { SocialLink } from "@/types/site";
  * Fixed navigation bar: outlined wordmark on the left, social rail, a single
  * accent call-to-action and a hamburger that opens the full-screen menu.
  * Links live in the overlay so the bar itself stays quiet at every width.
+ *
+ * The overlay is one centred column: the pages, then three rows of the rooms
+ * and the names he is trusted by running edge to edge, then the accounts as
+ * labelled pills — so the menu vouches for him on the way to wherever it
+ * sends the visitor.
  *
  * Every destination is a route, so they are `next/link` rather than plain
  * anchors — the menu now moves between pages, and a full document load on each
@@ -90,10 +96,7 @@ export function Navbar() {
               ))}
             </ul>
 
-            <Link
-              href={bookHref}
-              className="btn-sweep btn-sweep--onAccent inline-flex h-10 items-center gap-xs rounded-full bg-accent px-5 text-[12px] font-semibold uppercase tracking-[0.14em] md:h-11 md:px-6"
-            >
+            <Link href={bookHref} className="btn-primary btn--sm">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden
@@ -105,7 +108,7 @@ export function Navbar() {
                 <circle cx="12" cy="8.5" r="3.5" />
                 <path d="M4.8 19.5a7.2 7.2 0 0 1 14.4 0" strokeLinecap="round" />
               </svg>
-              Book
+              <span>Book</span>
             </Link>
 
             <button
@@ -137,8 +140,8 @@ export function Navbar() {
         hidden={!open}
         className="fixed inset-0 z-40 bg-background/98 pt-16 backdrop-blur-xl md:pt-20"
       >
-        <Container className="flex h-full flex-col justify-between py-2xl">
-          <ul className="flex flex-col gap-md">
+        <Container className="menu h-full overflow-y-auto">
+          <ul className="menu__links">
             {links.map((link, index) => {
               const current =
                 link.href === "/"
@@ -151,9 +154,7 @@ export function Navbar() {
                     href={link.href}
                     onClick={() => setOpen(false)}
                     aria-current={current ? "page" : undefined}
-                    className={`reveal font-display text-[36px] font-bold uppercase leading-[1.05] tracking-[-0.03em] transition-colors duration-200 hover:text-accent md:text-[64px] ${
-                      current ? "text-accent" : ""
-                    }`}
+                    className="reveal menu__link"
                     style={{ "--reveal-delay": `${60 * index}ms` } as React.CSSProperties}
                   >
                     {link.label}
@@ -163,17 +164,21 @@ export function Navbar() {
             })}
           </ul>
 
-          <ul className="flex items-center gap-sm">
+          <div className="reveal w-full" style={{ "--reveal-delay": "260ms" } as React.CSSProperties}>
+            <MenuMarquee />
+          </div>
+
+          <ul className="reveal menu__socials" style={{ "--reveal-delay": "340ms" } as React.CSSProperties}>
             {socials.map((social) => (
               <li key={social.label}>
                 <a
                   href={social.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label={social.label}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-border text-white/70 transition-colors duration-200 hover:border-accent hover:text-accent"
+                  className="menu__social"
                 >
-                  <SocialIcon name={social.icon} className="h-[22px] w-auto" />
+                  <SocialIcon name={social.icon} className="h-[18px] w-auto" />
+                  {social.label}
                 </a>
               </li>
             ))}

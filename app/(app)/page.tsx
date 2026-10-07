@@ -5,34 +5,26 @@ export const revalidate = 60;
 
 import { AboutSection } from "@/components/about/AboutSection";
 import { BookingSection } from "@/components/booking/BookingSection";
-import { CallSection } from "@/components/call/CallSection";
 import { WhatsAppFab } from "@/components/booking/WhatsAppFab";
 import { Footer } from "@/components/footer/Footer";
 import { GallerySection } from "@/components/gallery/GallerySection";
-import { ExperienceSection } from "@/components/experience/ExperienceSection";
-import { FollowSection } from "@/components/follow/FollowSection";
 import { GlobalReach } from "@/components/global-reach/GlobalReach";
 import { Hero } from "@/components/hero/Hero";
 import { StagesSection } from "@/components/stages/StagesSection";
-import { StatementSection } from "@/components/statement/StatementSection";
-import { LegacySection } from "@/components/legacy/LegacySection";
 import { MusicSection } from "@/components/music/MusicSection";
 import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
 import { TrustedBy } from "@/components/trusted/TrustedBy";
 import { Navbar } from "@/components/navigation/Navbar";
 import {
   getAbout,
-  getContactBooking,
-  getExperiencesServices,
   getHomePage,
-  getLegacyMilestones,
   getMusicPage,
   getMusicReleases,
   getTestimonials,
   getUpcomingShows,
 } from "@/lib/cms/queries";
 import { resolveMedia } from "@/lib/cms/media";
-import { toMilestone, toTestimonial, toTrack } from "@/lib/cms/mappers";
+import { toTestimonial, toTrack } from "@/lib/cms/mappers";
 import { tracks as codeTracks } from "@/data/tracks";
 import { galleryItems as codeGallery } from "@/data/gallery";
 import { aboutPortrait as codePortrait } from "@/lib/about";
@@ -41,7 +33,6 @@ import type { Track } from "@/types/music";
 import type { Stage } from "@/types/stages";
 import type { TourCity, TourShow } from "@/types/tour";
 import type { CareerStat } from "@/types/about";
-import type { FollowLink } from "@/data/follow";
 import type { MusicRelease, UpcomingShow } from "@/payload-types";
 
 /* ── Tiny helpers: every one returns `undefined` when the CMS value is empty,
@@ -79,21 +70,15 @@ function toTourShow(show: UpcomingShow): TourShow | null {
   };
 }
 
-const ICONS = ["instagram", "youtube", "email"] as const;
-
 export default async function HomePage() {
-  const [home, about, releases, upcoming, milestonesDocs, testimonialDocs, services, contact, musicPage] =
-    await Promise.all([
-      getHomePage(),
-      getAbout(),
-      getMusicReleases(),
-      getUpcomingShows(),
-      getLegacyMilestones(),
-      getTestimonials(),
-      getExperiencesServices(),
-      getContactBooking(),
-      getMusicPage(),
-    ]);
+  const [home, about, releases, upcoming, testimonialDocs, musicPage] = await Promise.all([
+    getHomePage(),
+    getAbout(),
+    getMusicReleases(),
+    getUpcomingShows(),
+    getTestimonials(),
+    getMusicPage(),
+  ]);
 
   /* Hero ------------------------------------------------------------------ */
   const heroVideo = resolveMedia(home?.hero?.heroVideo, "/videos/dj-ganesh.mp4").url;
@@ -166,11 +151,6 @@ export default async function HomePage() {
   const aboutCtaLabel = str(about?.cta?.label);
   const aboutCtaHref = str(about?.cta?.href);
 
-  /* Statement ------------------------------------------------------------- */
-  const sp = home?.statementPlate;
-  const statementLines = strings(sp?.lines, "line");
-  const hasStatement = Boolean(statementLines || str(sp?.name) || str(sp?.note) || sp?.spoken);
-
   /* Gallery --------------------------------------------------------------- */
   const galleryItems = (() => {
     const rows = (home?.galleryStrip?.items ?? [])
@@ -188,56 +168,15 @@ export default async function HomePage() {
     return rows.length ? rows : undefined;
   })();
 
-  /* Follow ---------------------------------------------------------------- */
-  const followLinks: FollowLink[] | undefined = (() => {
-    const rows = (home?.follow?.links ?? [])
-      .filter((l) => l.label && l.href)
-      .map((l) => ({
-        label: l.label,
-        caption: str(l.caption) ?? l.label,
-        href: l.href,
-        icon: (ICONS as readonly string[]).includes(l.icon ?? "")
-          ? (l.icon as FollowLink["icon"])
-          : "instagram",
-        ...(l.external ? { external: true } : {}),
-      }));
-    return rows.length ? rows : undefined;
-  })();
-
-  /* Legacy ---------------------------------------------------------------- */
-  const milestones = milestonesDocs.length ? milestonesDocs.map(toMilestone) : undefined;
-
-  /* Experience ------------------------------------------------------------ */
-  const offerings = services.length
-    ? services.map((s, i) => ({
-        id: String(i + 1).padStart(2, "0"),
-        title: s.title,
-        summary: s.shortDescription,
-        points: (s.features ?? []).map((f) => f.feature),
-        cta: s.ctaText ?? "",
-      }))
-    : undefined;
+  /* The statement plate, the Follow band, the archive, the experience and
+     the call band are no longer on this page: the first two are folded into
+     the menu and the booking section, the archive and the experience moved to
+     /about, and the call band's question now opens the booking section. Their
+     CMS groups remain in the schema and still seed; they are simply unread
+     here. ------------------------------------------------------------------ */
 
   /* Testimonials ---------------------------------------------------------- */
   const testimonials = testimonialDocs.length ? testimonialDocs.map(toTestimonial) : undefined;
-
-  /* Call band (contact-booking) ------------------------------------------ */
-  const cb = contact?.callBand;
-  const callHeading = strings(cb?.heading, "line", 2);
-  const callLede = str(cb?.lede);
-  const callCta = str(cb?.ctaLabel);
-  const callAgencies = strings(cb?.agencies, "name");
-  const call =
-    callHeading || callLede || callCta || callAgencies
-      ? {
-          heading: callHeading ?? (["Ready to", "Book?"] as const),
-          lede:
-            callLede ??
-            "For bookings and inquiries, reach out through BMT Agency, Black Hat Talent, or VStar Entertainment",
-          ctaLabel: callCta ?? "Book DJ Ganesh",
-          agencies: callAgencies ?? (["BMT Agency", "Black Hat Talent", "VStar Entertainment"] as const),
-        }
-      : undefined;
 
   /* Booking section ------------------------------------------------------- */
   const bs = home?.bookingSection;
@@ -259,6 +198,24 @@ export default async function HomePage() {
       <main>
         <Hero videoSrc={heroVideo} poster={heroPoster} />
 
+        {/* Who he is, straight after the banner: the story and the career
+            figures before any map, stage or track. */}
+        <AboutSection
+          aboutSectionLabel={str(about?.labels?.sectionLabel)}
+          aboutHeading={strings(about?.story?.heading, "line", 3)}
+          soundStrands={strings(about?.soundStrands, "strand")}
+          aboutCta={
+            aboutCtaLabel || aboutCtaHref
+              ? {
+                  label: aboutCtaLabel ?? "Book a private event",
+                  href: aboutCtaHref ?? "#booking",
+                }
+              : undefined
+          }
+          aboutPortrait={{ src: portrait.url ?? codePortrait.src, alt: portrait.alt ?? codePortrait.alt }}
+          careerStats={aboutStats}
+        />
+
         <GlobalReach
           tourCities={cities.length ? cities : undefined}
           tourShows={shows.length ? shows : undefined}
@@ -277,69 +234,21 @@ export default async function HomePage() {
           allReleasesUrl={str(musicPage?.homeSection?.allReleasesUrl)}
           tracks={tracks}
         />
-        <AboutSection
-          aboutSectionLabel={str(about?.labels?.sectionLabel)}
-          aboutHeading={strings(about?.story?.heading, "line", 3)}
-          soundStrands={strings(about?.soundStrands, "strand")}
-          aboutCta={
-            aboutCtaLabel || aboutCtaHref
-              ? {
-                  label: aboutCtaLabel ?? "Book a private event",
-                  href: aboutCtaHref ?? "#booking",
-                }
-              : undefined
-          }
-          aboutPortrait={{ src: portrait.url ?? codePortrait.src, alt: portrait.alt ?? codePortrait.alt }}
-          careerStats={aboutStats}
-        />
-        {/* Straight after the career figures: the numbers, then the rooms
-            they were played in. */}
         <TrustedBy
           trustedLabel={str(home?.trustedBy?.label)}
           trustedNames={strings(home?.trustedBy?.names, "name")}
         />
-        <StatementSection
-          statementLabel={str(sp?.label)}
-          statement={
-            hasStatement
-              ? {
-                  lines: statementLines ?? ["Bollywood, Afrobeats", "and house, mixed", "into one."],
-                  spoken: sp?.spoken ?? false,
-                  name: str(sp?.name) ?? "DJ Ganesh",
-                  note: str(sp?.note) ?? "The BollyAfro sound · Mumbai, 1998 —",
-                }
-              : undefined
-          }
-        />
-        <LegacySection
-          legacySectionLabel={str(home?.legacySection?.label)}
-          legacyHeading={strings(home?.legacySection?.heading, "line", 2)}
-          milestones={milestones}
-        />
-        {/* The record, then what can actually be booked from it. */}
+        {/* The archive and the experience now live on /about; here the
+            proof is the footage. */}
         <GallerySection
           gallerySectionLabel={str(home?.galleryStrip?.label)}
           galleryItems={galleryItems}
         />
-        <ExperienceSection
-          experienceSectionLabel={str(home?.experienceSection?.label)}
-          experienceHeading={strings(home?.experienceSection?.heading, "line", 2)}
-          ctaHref={str(home?.experienceSection?.ctaHref)}
-          offerings={offerings}
-        />
 
-        {/* The accounts, asked for while the room is still talking about him
-            rather than at the very end. */}
-        <FollowSection
-          followHeading={str(home?.follow?.heading)}
-          followLinks={followLinks}
-        />
         <TestimonialsSection testimonials={testimonials} />
 
-        {/* The question, over footage — asked first, so the booking room
-            below it is the answer rather than an afterthought. */}
-        <CallSection call={call} />
-
+        {/* The question and the room that answers it, as one closing
+            section: the ask on the left, the pass on the right. */}
         <BookingSection
           bookingSectionLabel={str(bs?.label)}
           bookingHeading={strings(bs?.heading, "line")}

@@ -6,6 +6,8 @@ import type { TourShow } from "@/types/tour";
 type UpNextProps = {
   shows?: readonly TourShow[];
   activeCity: string | null;
+  /** The city held by a press, as opposed to merely pointed at. */
+  pinnedCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
 };
@@ -23,6 +25,7 @@ type UpNextProps = {
 export function UpNext({
   shows: tourShows = defaultShows,
   activeCity,
+  pinnedCity,
   onHover,
   onSelect,
 }: UpNextProps) {
@@ -37,15 +40,20 @@ export function UpNext({
               type="button"
               className="up-next__pill"
               data-active={activeCity === show.city}
+              data-pinned={pinnedCity === show.city}
               aria-label={`View the ${show.city} show, ${show.day} ${show.month} 2026 at ${show.venue}`}
-              aria-pressed={activeCity === show.city}
+              aria-pressed={pinnedCity === show.city}
               onPointerEnter={(event) => {
                 if (event.pointerType === "mouse") onHover(show.city);
               }}
               onPointerLeave={(event) => {
                 if (event.pointerType === "mouse") onHover(null);
               }}
-              onFocus={() => onHover(show.city)}
+              onFocus={(event) => {
+                // Only a visible focus previews: a mouse click focuses too,
+                // and treating that as a hover left cities stuck "hovered".
+                if (event.currentTarget.matches(":focus-visible")) onHover(show.city);
+              }}
               onBlur={() => onHover(null)}
               onClick={() => onSelect(show.city)}
             >

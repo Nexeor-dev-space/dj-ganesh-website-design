@@ -53,4 +53,4 @@ export const offerings: readonly Offering[] = [
 ] as const;
 
 /** Every offering leads to the same place. */
-export const experienceCtaHref = "#booking";
+export const experienceCtaHref = "/contact";

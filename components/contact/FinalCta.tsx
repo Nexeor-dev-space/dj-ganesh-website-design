@@ -57,11 +57,11 @@ export function FinalCta({
         <a
           href={cta.href}
           data-cursor="book"
-          className="reveal-scroll contact-final__cta"
+          className="reveal-scroll btn-primary contact-final__cta"
           style={delay(500)}
         >
-          {cta.label}
-          <span aria-hidden className="contact-final__arrow">
+          <span>{cta.label}</span>
+          <span aria-hidden className="btn__arrow">
             →
           </span>
         </a>

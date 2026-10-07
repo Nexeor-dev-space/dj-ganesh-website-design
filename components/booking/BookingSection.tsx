@@ -9,6 +9,7 @@ import {
   bookingLinks as defaultLinks,
   bookingScope as defaultScope,
   bookingSectionLabel as defaultLabel,
+  bookingStatement as defaultStatement,
 } from "@/data/booking";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -17,7 +18,10 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * Section 08 — Booking.
  *
  * The last room in the building, and the only one with a door out: the
- * statement on the left, the pass on the right, one action on it.
+ * question and the closing line on the left, the pass on the right, one
+ * action on it. The "Ready to book?" band that used to sit above this
+ * section is folded in here, so the page asks once and answers in the same
+ * breath.
  *
  * There is no form. The client's `index.html` has no booking form anywhere —
  * every booking control on that site is `mailto:info@djganeshbombay.com`, and
@@ -30,6 +34,7 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 export function BookingSection({
   bookingSectionLabel = defaultLabel,
   bookingHeading = defaultHeading,
+  bookingStatement = defaultStatement,
   bookingLede = defaultLede,
   bookingScope = defaultScope,
   bookingLinks = defaultLinks,
@@ -37,6 +42,7 @@ export function BookingSection({
 }: {
   bookingSectionLabel?: string;
   bookingHeading?: readonly string[];
+  bookingStatement?: string;
   bookingLede?: string;
   bookingScope?: readonly string[];
   bookingLinks?: readonly {
@@ -83,7 +89,7 @@ export function BookingSection({
 
       <Container className="relative z-10">
         <p
-          className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
+          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
           style={delay(0)}
         >
           {bookingSectionLabel}
@@ -91,18 +97,27 @@ export function BookingSection({
 
         <div className="booking-spread mt-lg md:mt-xl">
           <div className="min-w-0">
-            {/* One line at a time, so the closing statement lands in beats. */}
+            {/* One line at a time, so the question lands in beats; the second
+                line carries the accent. */}
             <h2 id="booking-title" className="section-title booking-title">
               {bookingHeading.map((line, index) => (
                 <span
                   key={line}
-                  className="reveal-scroll booking-title__line"
+                  className={`reveal-scroll booking-title__line${
+                    index === bookingHeading.length - 1
+                      ? " booking-title__accent"
+                      : ""
+                  }`}
                   style={delay(80 + index * 80)}
                 >
                   {line}
                 </span>
               ))}
             </h2>
+
+            <p className="reveal-scroll booking-statement" style={delay(260)}>
+              {bookingStatement}
+            </p>
 
             <p className="reveal-scroll booking-lede" style={delay(340)}>
               {bookingLede}
@@ -117,14 +132,10 @@ export function BookingSection({
 
           {/* The pass: the action, and every channel the source records. */}
           <div className="reveal-scroll booking-pass" style={delay(460)}>
-            <a
-              href={bookingCta.href}
-              data-cursor="book"
-              className="booking-cta group"
-            >
-              <span className="booking-cta__label">{bookingCta.label}</span>
-              <span className="booking-cta__rule" aria-hidden>
-                <span className="booking-cta__arrow">&rarr;</span>
+            <a href={bookingCta.href} data-cursor="book" className="btn-primary">
+              <span>{bookingCta.label}</span>
+              <span aria-hidden className="btn__arrow">
+                &rarr;
               </span>
             </a>
 
