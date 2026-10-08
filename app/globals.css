@@ -3905,19 +3905,8 @@
 
   /* The closing line, large enough to read as the answer to the question
      above it rather than as a caption. */
-  .booking-statement {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 22ch;
-    font-size: clamp(22px, 2.6vw, 34px);
-    font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    color: var(--foreground);
-    text-wrap: balance;
-  }
-
   .booking-lede {
-    margin-top: var(--space-lg);
+    margin-top: var(--rhythm-heading);
     max-width: 38ch;
     font-size: 15px;
     font-weight: 300;

@@ -9,7 +9,6 @@ import {
   bookingLinks as defaultLinks,
   bookingScope as defaultScope,
   bookingSectionLabel as defaultLabel,
-  bookingStatement as defaultStatement,
 } from "@/data/booking";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -34,7 +33,6 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 export function BookingSection({
   bookingSectionLabel = defaultLabel,
   bookingHeading = defaultHeading,
-  bookingStatement = defaultStatement,
   bookingLede = defaultLede,
   bookingScope = defaultScope,
   bookingLinks = defaultLinks,
@@ -42,7 +40,6 @@ export function BookingSection({
 }: {
   bookingSectionLabel?: string;
   bookingHeading?: readonly string[];
-  bookingStatement?: string;
   bookingLede?: string;
   bookingScope?: readonly string[];
   bookingLinks?: readonly {
@@ -114,10 +111,6 @@ export function BookingSection({
                 </span>
               ))}
             </h2>
-
-            <p className="reveal-scroll booking-statement" style={delay(260)}>
-              {bookingStatement}
-            </p>
 
             <p className="reveal-scroll booking-lede" style={delay(340)}>
               {bookingLede}

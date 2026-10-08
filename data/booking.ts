@@ -32,9 +32,6 @@ export const bookingSectionLabel = "Booking";
  */
 export const bookingHeading = ["Ready to", "Book?"] as const;
 
-/** The closing line, set large under the question. */
-export const bookingStatement = "Let's make it a night.";
-
 /**
  * The v2 file's own sentence, naming its three agencies. The other supplied
  * file names BMT Agency alone, and that is the one the pass links to; the
