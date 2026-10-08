@@ -46,6 +46,10 @@ export function Navbar() {
   useEffect(() => {
     if (!open) return;
 
+    // The menu is its own scroller and keeps its offset while hidden, so a
+    // menu scrolled down last time reopened below HOME. Start at the top.
+    document.querySelector("#primary-menu .menu")?.scrollTo(0, 0);
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -72,6 +76,19 @@ export function Navbar() {
           <Link
             href="/"
             aria-label={`${siteConfig.name} — home`}
+            onClick={(event) => {
+              // Already home: a link to the same page goes nowhere, so the
+              // wordmark would do nothing. Glide back to the top instead,
+              // dropping any #section and closing the menu.
+              if (pathname !== "/") return;
+              event.preventDefault();
+              setOpen(false);
+              if (window.location.hash) {
+                window.history.replaceState(null, "", "/");
+              }
+              const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+              window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+            }}
             className="group inline-flex items-center px-4 py-2 transition-opacity duration-200 hover:opacity-80 md:px-6 md:py-2.5"
           >
             <span className="font-display text-[13px] font-bold uppercase leading-none tracking-[0.28em] md:text-[15px]">
@@ -164,25 +181,27 @@ export function Navbar() {
             })}
           </ul>
 
-          <div className="reveal w-full" style={{ "--reveal-delay": "260ms" } as React.CSSProperties}>
-            <MenuMarquee />
-          </div>
-
-          <ul className="reveal menu__socials" style={{ "--reveal-delay": "340ms" } as React.CSSProperties}>
+          {/* The accounts as bare marks, right under the pages. */}
+          <ul className="reveal menu__socials" style={{ "--reveal-delay": "260ms" } as React.CSSProperties}>
             {socials.map((social) => (
               <li key={social.label}>
                 <a
                   href={social.href}
                   target="_blank"
                   rel="noreferrer noopener"
+                  aria-label={social.label}
                   className="menu__social"
                 >
-                  <SocialIcon name={social.icon} className="h-[18px] w-auto" />
-                  {social.label}
+                  <SocialIcon name={social.icon} className="h-[22px] w-auto" />
                 </a>
               </li>
             ))}
           </ul>
+
+          <div className="reveal w-full" style={{ "--reveal-delay": "340ms" } as React.CSSProperties}>
+            <MenuMarquee />
+          </div>
+
         </Container>
       </div>
     </>

@@ -43,6 +43,18 @@
   --space-4xl: 120px;
   --space-5xl: 160px;
 
+  /* Vertical rhythm — the one set of gaps every section's type uses, so a
+     heading sits the same distance from its eyebrow, its body and its
+     actions wherever it is on the site:
+       eyebrow → heading            --rhythm-eyebrow
+       heading → body / lede        --rhythm-heading
+       body    → buttons and links  --rhythm-body
+       heading block → content      --rhythm-block (grids, players, cards) */
+  --rhythm-eyebrow: 16px;
+  --rhythm-heading: 24px;
+  --rhythm-body: 32px;
+  --rhythm-block: 32px;
+
   /* Typography */
   --font-size-base: 16px;
   --line-height-base: 1.6;
@@ -67,6 +79,12 @@
 @media (width >= 640px) {
   :root {
     --container-padding: var(--container-padding-tablet);
+  }
+}
+
+@media (width >= 768px) {
+  :root {
+    --rhythm-block: 48px;
   }
 }
 
@@ -102,6 +120,10 @@
   --spacing-3xl: var(--space-3xl);
   --spacing-4xl: var(--space-4xl);
   --spacing-5xl: var(--space-5xl);
+  --spacing-eyebrow: var(--rhythm-eyebrow);
+  --spacing-heading: var(--rhythm-heading);
+  --spacing-body: var(--rhythm-body);
+  --spacing-block: var(--rhythm-block);
 
   --container-page: var(--container-max-width);
   --ease-brand: var(--ease-out);
@@ -461,7 +483,7 @@
   /* Big enough to own a full-viewport banner — nearly the width of the
      column on a desktop — without being fitted to the gutters like a poster. */
   .hero__title {
-    margin: var(--space-md) 0 0;
+    margin: var(--rhythm-eyebrow) 0 0;
     font-family: var(--font-consul), var(--font-display);
     font-weight: 400;
     font-size: clamp(46px, 12.5vw, 168px);
@@ -495,7 +517,7 @@
     align-items: center;
     gap: var(--space-lg);
     width: 100%;
-    margin-top: var(--space-xl);
+    margin-top: var(--rhythm-body);
   }
 
   @media (width >= 480px) {
@@ -688,10 +710,30 @@
      moment a title is pointed at. Clipped to the text, so an accent word
      inside the title keeps its own colour and nothing around it moves —
      no tracking change, no reflow, no wrapped line. Pointer screens only:
-     a phone has nothing to hover with. */
+     a phone has nothing to hover with.
+
+     A transition rather than an animation. Most titles already run an
+     entrance animation, and an `animation` set on hover replaced it — so
+     leaving the title restarted the entrance, dropping it 46px out from under
+     the pointer and back, which is what made the hero lockup flicker. A
+     transition touches nothing but the band, and since only the hovered
+     state carries one, the band snaps home on leave instead of sweeping back.
+
+     100% → 0% and no further: with the band image wider than the title, only
+     positions in that range keep the whole title covered. Outside it the
+     image slides off one end and, the fill being transparent, takes the
+     letters there with it. */
+  main h1,
+  main h2,
+  main .title-ink {
+    background-position: 100% 0;
+  }
+
   @media (hover: hover) {
     main h1:hover,
-    main h2:hover {
+    main h2:hover,
+    main h1:hover .title-ink,
+    main h2:hover .title-ink {
       background-image: linear-gradient(
         100deg,
         currentColor 0%,
@@ -702,11 +744,12 @@
       );
       background-size: 260% 100%;
       background-repeat: no-repeat;
+      background-position: 0% 0;
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: none;
-      animation: title-sheen 1100ms var(--ease-out) both;
+      transition: background-position 1100ms var(--ease-out);
     }
 
     /* An accented word stays its own colour under the sheen. */
@@ -714,23 +757,31 @@
     main h2:hover [class*="accent"] {
       -webkit-text-fill-color: currentColor;
     }
-  }
 
-  @keyframes title-sheen {
-    from {
-      background-position: 120% 0;
+    /* Titles built from separately revealed lines. Each line is its own
+       paint layer while it animates in, and a text-clipped background never
+       reaches into one — the parent's transparent fill left those lines
+       blank. So the parent keeps solid ink and each line's inner span takes
+       the sheen itself. */
+    main h1:has(.title-ink):hover,
+    main h2:has(.title-ink):hover {
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
     }
-    to {
-      background-position: -40% 0;
+
+    main h1:hover .title-ink,
+    main h2:hover .title-ink {
+      -webkit-text-fill-color: transparent;
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   main h1:hover,
-  main h2:hover {
-    animation: none;
-    background-position: -40% 0;
+  main h2:hover,
+  main h1:hover .title-ink,
+  main h2:hover .title-ink {
+    transition: none;
   }
 }
 
@@ -742,9 +793,10 @@
   /* Sets the gap between every section on the page: two of these meet at each
      seam, so the number here is half the breathing room, not all of it. At the
      old 180px the seams ran to 360px of empty ground — enough that a section
-     could end and the next begin with nothing in view between them. */
+     could end and the next begin with nothing in view between them, and even
+     96px left the page feeling like separate slides; 40px keeps it connected. */
   .section-block {
-    padding-block: clamp(56px, 6vw, 96px);
+    padding-block: clamp(24px, 2.4vw, 40px);
     background-color: var(--background);
   }
 
@@ -799,6 +851,15 @@
     gap: var(--space-xl);
     padding-block: var(--space-xl) var(--space-lg);
     text-align: center;
+    /* The name band runs 100vw, a scrollbar's width wider than this box
+       whenever it scrolls; clip that, and keep the scroll itself (a short
+       screen still needs it) without drawing a bar for it. */
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+
+  .menu::-webkit-scrollbar {
+    display: none;
   }
 
   @media (width >= 768px) {
@@ -923,12 +984,12 @@
     color: rgba(255, 255, 255, 0.92);
   }
 
+  /* The same diamond the homepage bands use between names. */
   .menu-row__mark {
-    display: inline-flex;
-    width: 14px;
-    height: 14px;
+    font-size: 0.5em;
+    line-height: 1;
     color: var(--accent);
-    opacity: 0.7;
+    opacity: 0.5;
   }
 
   /* ---- The accounts ------------------------------------------------------ */
@@ -943,18 +1004,15 @@
     list-style: none;
   }
 
+  /* Bare marks: each logo carries its own colour, so the ring is all the
+     hover needs to change. */
   .menu__social {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    min-height: 44px;
-    padding-inline: var(--space-md);
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
     border: 1px solid var(--border);
     border-radius: 999px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
     color: rgba(255, 255, 255, 0.8);
     transition:
       color 200ms var(--ease-out),
@@ -1021,11 +1079,11 @@
   /* Set from the shared section face — this is the same heading the rest of
      the page uses, only centred. */
   .shows__title {
-    margin-top: var(--space-md);
+    margin-top: var(--rhythm-eyebrow);
   }
 
   .shows__sub {
-    margin-top: var(--space-md);
+    margin-top: var(--rhythm-heading);
     font-size: 12px;
     font-weight: 300;
     text-transform: uppercase;
@@ -1521,7 +1579,7 @@
   }
 
   .releases__title {
-    margin-top: var(--space-md);
+    margin-top: var(--rhythm-eyebrow);
   }
 
   .releases__grid {
@@ -1695,13 +1753,525 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-md);
-    margin-top: var(--space-2xl);
+    margin-top: var(--rhythm-block);
     text-align: left;
   }
 
+
+  /* ---- The vinyl rack ----------------------------------------------------- */
+
+  /* One sleeve at the centre, its neighbours scaled down at the edges. Every
+     sleeve holds its record underneath; pulling one out moves the sleeve and
+     the disc apart from each other, so the pair stays centred as a unit. */
+  /* Sized by the screen's height as well as its width, so the sleeve, the
+     transport and the release details all fit in one view under the nav
+     (~360px of it is everything but the stage). */
+  .vinyl {
+    --sleeve: clamp(190px, min(60vw, calc((100svh - 360px) / 1.55)), 300px);
+    --spread: 1.32;
+    margin-top: var(--rhythm-block);
+    outline: none;
+  }
+
   @media (width >= 768px) {
-    .releases__cta {
-      margin-top: var(--space-3xl);
+    .vinyl {
+      --sleeve: clamp(220px, min(28vw, calc((100svh - 380px) / 1.12)), 380px);
+    }
+  }
+
+  /* Room above and below on phones, where the record comes out of the top. */
+  .vinyl__stage {
+    position: relative;
+    height: calc(var(--sleeve) * 1.55);
+  }
+
+  @media (width >= 768px) {
+    .vinyl__stage {
+      height: calc(var(--sleeve) * 1.12);
+    }
+  }
+
+  /* Neighbours stand back while a record is out, to leave it the room. */
+  .vinyl__stage[data-out] {
+    --spread: 1.5;
+  }
+
+  .vinyl__item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1;
+    width: var(--sleeve);
+    aspect-ratio: 1;
+    opacity: 0.4;
+    filter: grayscale(0.4) brightness(0.55);
+    transform: translate(-50%, -50%)
+      translateX(calc(var(--offset) * var(--sleeve) * var(--spread))) scale(0.6);
+    transition:
+      transform 650ms var(--ease-in-out),
+      opacity 650ms var(--ease-in-out),
+      filter 650ms var(--ease-in-out);
+  }
+
+  .vinyl__stage[data-out] .vinyl__item:not([data-active]) {
+    opacity: 0.18;
+  }
+
+  .vinyl__item[data-active] {
+    z-index: 3;
+    opacity: 1;
+    filter: none;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* Anything two or more away is off the rack: hidden while it wraps round. */
+  .vinyl__item[data-far] {
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition-duration: 650ms, 200ms, 650ms;
+  }
+
+  /* ---- The sleeve --------------------------------------------------------- */
+
+  .vinyl__sleeve {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background-color: #050505;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+    transition:
+      transform 720ms var(--ease-in-out),
+      border-color 400ms var(--ease-out);
+  }
+
+  /* Card stock catching the light, and the shadow at the open edge the
+     record leaves by. */
+  .vinyl__sleeve::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to left, rgba(0, 0, 0, 0.45), transparent 7%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 42%);
+    pointer-events: none;
+  }
+
+  .vinyl__art {
+    object-fit: cover;
+    filter: brightness(0.82);
+    transition: filter 420ms var(--ease-out);
+  }
+
+  /* The still carries black bars above and below the picture; scaling by
+     4/3 crops them off so the sleeve is artwork to the edge. */
+  .vinyl__art[data-still],
+  .vinyl__label-art[data-still] {
+    transform: scale(1.34);
+  }
+
+  .vinyl__item[data-active] .vinyl__sleeve:hover,
+  .vinyl__item[data-active] .vinyl__sleeve:focus-visible {
+    border-color: rgba(255, 213, 0, 0.4);
+  }
+
+  .vinyl__item[data-active] .vinyl__sleeve:hover .vinyl__art,
+  .vinyl__item[data-active] .vinyl__sleeve:focus-visible .vinyl__art,
+  .vinyl__item[data-out] .vinyl__art {
+    filter: brightness(1);
+  }
+
+  /* ---- The record --------------------------------------------------------- */
+
+  .vinyl__disc {
+    position: absolute;
+    inset: 2%;
+    z-index: 1;
+    border-radius: 50%;
+    background-color: #070707;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 24px 60px rgba(0, 0, 0, 0.65);
+    transition: transform 720ms var(--ease-in-out);
+  }
+
+  /* The light stays where it is while the platter turns under it, which is
+     what makes the turning read. */
+  .vinyl__disc::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 200deg,
+      rgba(255, 255, 255, 0.13) 0deg,
+      transparent 50deg,
+      transparent 160deg,
+      rgba(255, 255, 255, 0.09) 210deg,
+      transparent 260deg,
+      transparent 330deg,
+      rgba(255, 255, 255, 0.13) 360deg
+    );
+    pointer-events: none;
+  }
+
+  /* Grooves, then the run-out band and the label. */
+  .vinyl__platter {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle,
+        transparent 0 33%,
+        #050505 33% 36%,
+        transparent 36% 93%,
+        #050505 93%
+      ),
+      repeating-radial-gradient(
+        circle at 50% 50%,
+        #0a0a0a 0px,
+        #0a0a0a 1px,
+        #161616 1.5px,
+        #0a0a0a 3px
+      );
+    contain: paint;
+    animation: vinyl-spin 1.8s linear infinite;
+    animation-play-state: paused;
+  }
+
+  /* About 33 rpm. Paused rather than removed when the music stops, so the
+     record halts where it is instead of snapping back to square. */
+  .vinyl__item[data-spinning] .vinyl__platter {
+    animation-play-state: running;
+  }
+
+  @keyframes vinyl-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .vinyl__label {
+    position: absolute;
+    inset: 33.5%;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(255, 213, 0, 0.45);
+  }
+
+  .vinyl__label-art {
+    object-fit: cover;
+  }
+
+  .vinyl__spindle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3.2%;
+    height: 3.2%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background-color: var(--background);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+  }
+
+  /* ---- Pulling it out ----------------------------------------------------- */
+
+  /* A hint under the pointer: the record starts out of the sleeve. */
+  .vinyl__item[data-active]:not([data-out]):has(.vinyl__sleeve:hover) .vinyl__disc {
+    transform: translateY(-7%) rotate(-18deg);
+  }
+
+  /* Phones: up out of the top, sleeve dropping to meet it. The disc rolls as
+     it travels, the way a record turns against the card on its way out. */
+  .vinyl__item[data-out] .vinyl__disc {
+    transform: translateY(-31%) rotate(-200deg);
+    transition: transform 950ms var(--ease-out);
+  }
+
+  .vinyl__item[data-out] .vinyl__sleeve {
+    transform: translateY(22%);
+    transition-duration: 950ms;
+    transition-timing-function: var(--ease-out);
+  }
+
+  @media (width >= 768px) {
+    .vinyl__item[data-active]:not([data-out]):has(.vinyl__sleeve:hover) .vinyl__disc {
+      transform: translateX(7%) rotate(18deg);
+    }
+
+    .vinyl__item[data-out] .vinyl__disc {
+      transform: translateX(30%) rotate(200deg);
+    }
+
+    .vinyl__item[data-out] .vinyl__sleeve {
+      transform: translateX(-24%);
+    }
+  }
+
+  /* ---- Arrows ------------------------------------------------------------- */
+
+  .vinyl__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    transform: translateY(-50%);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background-color: rgba(5, 5, 5, 0.42);
+    backdrop-filter: blur(8px);
+    color: var(--foreground);
+    transition:
+      border-color 300ms var(--ease-out),
+      color 300ms var(--ease-out);
+  }
+
+  .vinyl__arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .vinyl__arrow:hover,
+  .vinyl__arrow:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .vinyl__arrow--prev {
+    left: max(0px, calc(50% - var(--sleeve) * 0.88 - 24px));
+  }
+
+  .vinyl__arrow--next {
+    right: max(0px, calc(50% - var(--sleeve) * 0.88 - 24px));
+  }
+
+  /* ---- Counter and transport --------------------------------------------- */
+
+  .vinyl__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+  }
+
+  .vinyl__count {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+  }
+
+  .vinyl__count span {
+    margin-left: 2px;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground);
+  }
+
+  .vinyl__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    padding: 0 20px 0 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    transition:
+      border-color 300ms var(--ease-out),
+      color 300ms var(--ease-out);
+  }
+
+  .vinyl__toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .vinyl__toggle:hover,
+  .vinyl__toggle:focus-visible,
+  .vinyl__toggle[data-playing] {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .vinyl__info {
+    margin-top: var(--space-lg);
+    text-align: center;
+    animation: vinyl-info-in 500ms var(--ease-out);
+  }
+
+  /* On /music the player follows the page's opening statement directly, so
+     the section's own top padding and the rack's top margin both go; on a
+     phone the opening's bottom padding goes too (set beside `.music-hero`),
+     since the room the stage keeps above the sleeve for the pull-out already
+     reads as the gap. The homepage keeps its spacing. */
+  .music-archive {
+    padding-top: 0;
+  }
+
+  @media (width < 768px) {
+    .music-archive {
+      padding-top: var(--space-md);
+    }
+  }
+
+  .music-archive .vinyl {
+    margin-top: 0;
+  }
+
+  /* ---- Playlist (on /music) ---------------------------------------------- */
+
+  .playlist {
+    max-width: 720px;
+    margin: var(--space-2xl) auto 0;
+    text-align: left;
+  }
+
+  .playlist__title {
+    margin: 0 0 var(--space-md);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .playlist__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .playlist__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: 8px var(--space-sm) 8px 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.03);
+    text-align: left;
+    transition:
+      border-color 300ms var(--ease-out),
+      background-color 300ms var(--ease-out);
+  }
+
+  .playlist__row:hover,
+  .playlist__row:focus-visible {
+    border-color: var(--border-strong);
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .playlist__row[data-current] {
+    border-color: rgba(255, 213, 0, 0.4);
+  }
+
+  .playlist__thumb {
+    position: relative;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 6px;
+    background-color: var(--surface);
+  }
+
+  .playlist__thumb-art {
+    object-fit: cover;
+  }
+
+  /* The equaliser sits over the thumbnail of the row that is sounding. */
+  .playlist__thumb .playlist__eq {
+    position: absolute;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    background-color: rgba(5, 5, 5, 0.6);
+  }
+
+  /* The shared bars size to their row's height; this one has none of its
+     own, so they get a fixed one. */
+  .playlist__thumb .playlist__eq > span {
+    height: 14px;
+  }
+
+  .playlist__text {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+  }
+
+  .playlist__name {
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .playlist__artist {
+    color: var(--muted-foreground);
+  }
+
+  .playlist__row[data-current] .playlist__name {
+    color: var(--accent);
+  }
+
+  .playlist__tag {
+    flex: none;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* Stacked on a phone, side by side from tablets up. */
+  .vinyl__links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  @media (width >= 768px) {
+    .vinyl__links {
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--space-xl);
+    }
+  }
+
+  .vinyl__info .release-card__title {
+    font-size: clamp(18px, 2vw, 24px);
+  }
+
+  @keyframes vinyl-info-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
     }
   }
 
@@ -1835,6 +2405,24 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .story-swap > p {
+    transition: none;
+    transform: none;
+  }
+
+  .vinyl__item,
+  .vinyl__sleeve,
+  .vinyl__disc,
+  .vinyl__item[data-out] .vinyl__disc,
+  .vinyl__item[data-out] .vinyl__sleeve {
+    transition: none;
+  }
+
+  .vinyl__platter,
+  .vinyl__info {
+    animation: none;
+  }
+
   .disc__platter[data-spinning="true"],
   .artwork-swap,
   .eq > span {
@@ -1957,8 +2545,60 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
-  .story-strands span:first-child {
+  /* The lead strand carries the accent until another is picked, then the
+     accent follows the pick. */
+  .story-strand:first-child,
+  .story-strand__button[data-current] {
     color: var(--accent);
+  }
+
+  .story-strands[data-picked] .story-strand:first-child {
+    color: inherit;
+  }
+
+  .story-strands[data-picked] .story-strand__button[data-current] {
+    color: var(--accent);
+  }
+
+  .story-strand__button {
+    padding-block: 4px;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 6px;
+    transition:
+      color 300ms var(--ease-out),
+      text-decoration-color 300ms var(--ease-out);
+  }
+
+  .story-strand__button:hover,
+  .story-strand__button:focus-visible,
+  .story-strand__button[data-current] {
+    text-decoration-color: currentColor;
+  }
+
+  /* The story and each strand's paragraph, stacked in one cell. */
+  .story-swap {
+    display: grid;
+  }
+
+  .story-swap > p {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 420ms var(--ease-out),
+      transform 420ms var(--ease-out);
+  }
+
+  .story-swap > p[data-shown] {
+    opacity: 1;
+    transform: none;
   }
 
   /* The career figures as a ruled band rather than four cards. Two abreast on
@@ -2068,7 +2708,7 @@
      between two sections rather than a stop of its own. */
   .trusted {
     position: relative;
-    padding-block: clamp(36px, 4.5vw, 64px);
+    padding-block: clamp(16px, 1.8vw, 26px);
     border-block: 1px solid var(--border);
     background-color: var(--background);
     overflow: hidden;
@@ -2121,12 +2761,6 @@
     width: max-content;
     animation: trusted-scroll 46s linear infinite;
     will-change: transform;
-  }
-
-  /* Slow to a stop under the pointer, so a name can actually be read. */
-  .trusted:hover .trusted__track,
-  .trusted:focus-within .trusted__track {
-    animation-play-state: paused;
   }
 
   /* Exactly half, because the two halves are identical. */
@@ -2445,7 +3079,7 @@
   /* Set on one line rather than broken in two like the ranged headings: the
      two words are one phrase here, and the break would only weaken it. */
   .experience-title {
-    margin-top: var(--space-md);
+    margin-top: var(--rhythm-eyebrow);
     font-size: clamp(34px, 7vw, 84px);
   }
 
@@ -2471,7 +3105,7 @@
     display: grid;
     align-items: start;
     gap: clamp(16px, 2.4vw, 28px);
-    margin: var(--space-2xl) 0 0;
+    margin: var(--rhythm-block) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -2479,7 +3113,6 @@
   @media (width >= 768px) {
     .exp-cards {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      margin-top: var(--space-3xl);
     }
 
     /* Three cards into two columns would leave an orphan, so the last one
@@ -2726,7 +3359,7 @@
 
   /* The shared section face; only the margin to the grid is its own. */
   .gallery__title {
-    margin: 0 0 clamp(32px, 4vw, 56px);
+    margin: 0 0 var(--rhythm-block);
     color: var(--foreground);
   }
 
@@ -2799,7 +3432,7 @@
 
 @layer components {
   .wall {
-    padding-block: clamp(64px, 8vw, 120px) 0;
+    padding-block: clamp(28px, 3.2vw, 48px) 0;
     text-align: left;
     background-color: var(--background);
   }
@@ -3235,7 +3868,7 @@
      foot so the section breathes into the footer rather than butting it. */
   .booking-section {
     background-color: #030303;
-    padding-bottom: clamp(88px, 10vw, 160px);
+    padding-bottom: clamp(36px, 4vw, 64px);
   }
 
   .booking-glow {
@@ -3273,7 +3906,7 @@
   /* The closing line, large enough to read as the answer to the question
      above it rather than as a caption. */
   .booking-statement {
-    margin: var(--space-xl) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     max-width: 22ch;
     font-size: clamp(22px, 2.6vw, 34px);
     font-weight: 500;
@@ -3433,7 +4066,7 @@
        black on black leaves the seam invisible otherwise. */
     border-top: 1px solid var(--border);
     background-color: var(--background);
-    padding-block: clamp(56px, 6vw, 104px) clamp(40px, 5vw, 72px);
+    padding-block: clamp(24px, 2.4vw, 42px) clamp(40px, 5vw, 72px);
   }
 
   /* Type comes from the shared banner block above; the footer only sets
@@ -3588,7 +4221,7 @@
   .stages-section {
     /* Positioned for the grain layer inside it, which stacks above the copy. */
     position: relative;
-    padding-block: clamp(56px, 6vw, 100px);
+    padding-block: clamp(24px, 2.4vw, 40px);
     background-color: #030503;
     color: var(--foreground);
   }
@@ -3658,7 +4291,7 @@
     display: flex;
     flex-direction: column;
     gap: clamp(2px, 0.5vw, 8px);
-    margin-top: clamp(32px, 5vw, 72px);
+    margin-top: var(--rhythm-block);
   }
 
   .stage-row {
@@ -3671,14 +4304,6 @@
     animation: stage-marquee var(--marquee-duration, 46s) linear infinite;
     animation-direction: var(--marquee-direction, normal);
     will-change: transform;
-  }
-
-  /* Moving text that never stops fails WCAG 2.2.2, and room names are
-     content rather than decoration — so the wall halts while it is hovered
-     or holds focus, and never starts under reduced motion. */
-  .stages-band:hover .stage-row__track,
-  .stages-band:focus-within .stage-row__track {
-    animation-play-state: paused;
   }
 
   /* Two identical copies; sliding exactly half the track lands the second
@@ -3794,12 +4419,12 @@
 
   .whatsapp-fab:hover,
   .whatsapp-fab:focus-visible {
-    border-color: var(--accent);
+    border-color: #25d366;
     background: rgba(10, 10, 10, 0.94);
     box-shadow:
       0 18px 44px rgba(0, 0, 0, 0.55),
-      0 0 0 1px rgba(255, 213, 0, 0.24),
-      0 0 32px rgba(255, 213, 0, 0.18);
+      0 0 0 1px rgba(37, 211, 102, 0.24),
+      0 0 32px rgba(37, 211, 102, 0.18);
     transform: translateY(-2px);
   }
 
@@ -3814,8 +4439,10 @@
     height: 38px;
     flex: none;
     border-radius: 999px;
-    background: var(--accent);
-    color: #050505;
+    /* WhatsApp's own green and white, not the site accent: the mark is
+       recognised by its colour before its shape. */
+    background: #25d366;
+    color: #ffffff;
     transition: transform var(--duration-base) var(--ease-out);
   }
 
@@ -3925,14 +4552,14 @@
   .about-hero {
     /* Clears the fixed navigation, then holds the name well down the frame. */
     padding-top: clamp(120px, 18vh, 200px);
-    padding-bottom: clamp(64px, 10vh, 120px);
+    padding-bottom: clamp(28px, 4vh, 48px);
     background-color: var(--background);
   }
 
   @media (width >= 1024px) {
     .about-hero {
       padding-top: clamp(180px, 22vh, 260px);
-      padding-bottom: clamp(96px, 12vh, 160px);
+      padding-bottom: clamp(40px, 5vh, 64px);
     }
   }
 
@@ -3962,7 +4589,7 @@
   }
 
   .about-hero__name {
-    margin: var(--space-md) 0 0;
+    margin: var(--rhythm-eyebrow) 0 0;
     font-family: var(--font-laura), var(--font-display);
     font-weight: 400;
     font-size: clamp(46px, 12vw, 150px);
@@ -3972,7 +4599,7 @@
   }
 
   .about-hero__statement {
-    margin: var(--space-xl) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     max-width: 18ch;
     font-family: var(--font-display);
     font-size: clamp(22px, 3.4vw, 44px);
@@ -4027,7 +4654,7 @@
 
   .about-story__spread {
     display: grid;
-    gap: var(--space-2xl);
+    gap: var(--rhythm-heading);
   }
 
   @media (width >= 1024px) {
@@ -4173,7 +4800,7 @@
   }
 
   .about-visual__line {
-    margin: var(--space-xl) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     max-width: 34ch;
     font-size: 15px;
     line-height: 1.7;
@@ -4186,7 +4813,7 @@
   /* ---- Hand-off to booking ------------------------------------------------ */
 
   .about-outro {
-    padding-block: clamp(64px, 8vw, 120px);
+    padding-block: clamp(28px, 3.2vw, 48px);
     background-color: var(--background);
   }
 
@@ -4245,8 +4872,15 @@
   /* Clears the fixed navigation, and deliberately short of a full screen: the
      first pressing should already be on its way up as this is read. */
   .music-hero {
-    padding-block: clamp(120px, 15vh, 200px) clamp(48px, 6vw, 88px);
+    padding-block: clamp(120px, 15vh, 200px) clamp(20px, 2.4vw, 36px);
     background-color: var(--background);
+  }
+
+  /* The vinyl stage below already keeps room above its sleeve on a phone. */
+  @media (width < 768px) {
+    .music-hero {
+      padding-bottom: 0;
+    }
   }
 
   .music-hero__glow {
@@ -4262,7 +4896,7 @@
 
   /* The page's own name, in the section face at banner scale. */
   .music-hero__title {
-    margin: var(--space-md) 0 0;
+    margin: var(--rhythm-eyebrow) 0 0;
     font-family: var(--font-consul), var(--font-display);
     font-weight: 400;
     font-size: clamp(64px, 17vw, 200px);
@@ -4273,7 +4907,7 @@
   }
 
   .music-hero__statement {
-    margin: var(--space-lg) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     max-width: 24ch;
     font-size: clamp(20px, 2.6vw, 34px);
     font-weight: 300;
@@ -4414,13 +5048,12 @@
   /* Carries the foot of the page: the transport docks over this section, so
      the padding below is what keeps the link clear of it. */
   .music-continue {
-    padding-block: clamp(64px, 7vw, 120px) clamp(150px, 16vh, 220px);
+    padding-block: clamp(28px, 2.8vw, 48px) clamp(150px, 16vh, 220px);
     background-color: var(--background);
-    border-top: 1px solid var(--border);
   }
 
   .music-continue__title {
-    margin: var(--space-md) 0 0;
+    margin: var(--rhythm-eyebrow) 0 0;
     font-family: var(--font-display);
     font-size: clamp(26px, 4vw, 52px);
     font-weight: 700;
@@ -4714,6 +5347,20 @@
     height: 11px;
   }
 
+  /* A brand logo is its own mark: no accent disc behind the red badge. */
+  .btn__mark:has(> svg),
+  .btn-secondary:hover .btn__mark:has(> svg),
+  .btn-secondary:focus-visible .btn__mark:has(> svg) {
+    width: auto;
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  .btn__mark > svg {
+    width: auto;
+    height: 15px;
+  }
+
   .btn-secondary:hover .btn__mark,
   .btn-secondary:focus-visible .btn__mark {
     background-color: #050505;
@@ -4790,6 +5437,14 @@
     transition: transform 320ms var(--ease-out);
   }
 
+  /* A platform's own logo in place of the arrow on links that leave for it;
+     it keeps its brand colour when the label turns accent on hover. */
+  .btn__brand {
+    flex: none;
+    width: auto;
+    height: 13px;
+  }
+
   .btn-tertiary:hover .btn__arrow,
   .btn-tertiary:focus-visible .btn__arrow,
   [data-sweep-host]:hover .btn-tertiary .btn__arrow,
@@ -4834,7 +5489,7 @@
   }
 
   .stages-cta {
-    margin-top: clamp(32px, 5vw, 64px);
+    margin-top: var(--rhythm-block);
   }
 
   .show-info__cta,
@@ -4856,12 +5511,15 @@
     align-self: flex-start;
   }
 
-  .music-continue__link {
-    margin-top: var(--space-xl);
+  .music-continue__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-xl);
+    margin-top: var(--rhythm-body);
   }
 
   .contact-final__cta {
-    margin-top: var(--space-2xl);
+    margin-top: var(--rhythm-body);
   }
 
   .enquiry-submit {
@@ -5031,7 +5689,7 @@
      section on the home page: this is a page that opens on a statement. */
   .contact-hero {
     padding-top: clamp(140px, 20vw, 260px);
-    padding-bottom: clamp(72px, 10vw, 140px);
+    padding-bottom: clamp(28px, 4vw, 56px);
     background-color: var(--background);
   }
 
@@ -5055,7 +5713,7 @@
   }
 
   .contact-hero__title {
-    margin: clamp(20px, 3vw, 36px) 0 0;
+    margin: var(--rhythm-eyebrow) 0 0;
     font-family: var(--font-display);
     font-size: clamp(40px, 8.4vw, 118px);
     font-weight: 700;
@@ -5074,7 +5732,7 @@
   }
 
   .contact-hero__lede {
-    margin: clamp(24px, 4vw, 48px) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     max-width: 52ch;
     font-size: 14px;
     font-weight: 300;
@@ -5146,7 +5804,7 @@
   }
 
   .contact-enquiry__lede {
-    margin: var(--space-lg) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     max-width: 38ch;
     font-size: 14px;
     font-weight: 300;
@@ -5355,7 +6013,7 @@
   }
 
   .contact-desks {
-    margin: var(--space-xl) 0 0;
+    margin: var(--rhythm-block) 0 0;
     border-top: 1px solid var(--border);
   }
 
@@ -5431,7 +6089,7 @@
   }
 
   .contact-social {
-    margin: var(--space-xl) 0 0;
+    margin: var(--rhythm-block) 0 0;
     padding: 0;
     list-style: none;
     border-top: 1px solid var(--border);
@@ -5479,7 +6137,7 @@
 
   .contact-final {
     background-color: #030303;
-    padding-bottom: clamp(120px, 15vw, 220px);
+    padding-bottom: clamp(48px, 6vw, 88px);
   }
 
   .contact-final__glow {
@@ -5532,7 +6190,7 @@
   }
 
   .contact-final__lede {
-    margin: var(--space-lg) 0 0;
+    margin: var(--rhythm-heading) 0 0;
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.28em;

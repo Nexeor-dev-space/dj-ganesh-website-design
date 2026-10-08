@@ -42,6 +42,19 @@ const str = (v: string | null | undefined): string | undefined =>
   typeof v === "string" && v.trim() ? v : undefined;
 
 /** `[{ line: "x" }]` → `["x"]`, or undefined if fewer than `min` non-empty. */
+/** CMS sound strands with their hover copy; undefined falls back to code. */
+function strands(
+  arr: readonly { strand?: string | null; description?: string | null }[] | null | undefined,
+): { name: string; description?: string }[] | undefined {
+  const out = (arr ?? [])
+    .filter((row) => row.strand?.trim())
+    .map((row) => ({
+      name: row.strand!.trim(),
+      description: row.description?.trim() || undefined,
+    }));
+  return out.length ? out : undefined;
+}
+
 function strings<T extends Record<string, unknown>>(
   arr: readonly T[] | null | undefined,
   key: keyof T,
@@ -203,7 +216,7 @@ export default async function HomePage() {
         <AboutSection
           aboutSectionLabel={str(about?.labels?.sectionLabel)}
           aboutHeading={strings(about?.story?.heading, "line", 3)}
-          soundStrands={strings(about?.soundStrands, "strand")}
+          soundStrands={strands(about?.soundStrands)}
           aboutCta={
             aboutCtaLabel || aboutCtaHref
               ? {
@@ -231,7 +244,7 @@ export default async function HomePage() {
         <MusicSection
           musicSectionLabel={str(musicPage?.homeSection?.sectionLabel)}
           musicHeading={str(musicPage?.homeSection?.heading)}
-          allReleasesUrl={str(musicPage?.homeSection?.allReleasesUrl)}
+          spotifyUrl={str(musicPage?.homeSection?.spotifyUrl)}
           tracks={tracks}
         />
         <TrustedBy

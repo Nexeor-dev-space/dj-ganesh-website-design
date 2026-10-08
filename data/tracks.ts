@@ -67,3 +67,6 @@ export const musicSectionLabel = "Latest Drops";
 export const musicHeading = "The Music";
 
 export const allReleasesUrl = "https://www.youtube.com/@DJGANESH_DJG";
+
+/** The artist page on Spotify, beside the channel link. */
+export const spotifyUrl = "https://open.spotify.com/artist/7xN2ufjWKVWZnhZJu8DKDn";

@@ -2,19 +2,17 @@
 
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { allReleasesUrl, musicPageLabels } from "@/data/music-page";
+import { SocialIcon } from "@/components/navigation/SocialIcon";
+import { allReleasesUrl, musicPageLabels, spotifyUrl as defaultSpotifyUrl } from "@/data/music-page";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 /**
  * 04 — The way out.
  *
- * The archive on this site is what the client supplied; the channel is where
- * the rest of it lives. One link, to the one external destination the source
- * actually records — no Spotify, no SoundCloud, no store, because none of
- * those appear anywhere in the supplied content.
+ * The archive on this site is what the client supplied; the channel and the
+ * Spotify artist page are where the rest of it lives, side by side.
  *
  * Carries the page's bottom margin as well: the transport docks over the foot
  * of the viewport once something is playing, and this is the section it would
@@ -23,11 +21,13 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 type ContinueListeningProps = {
   label?: string;
   url?: string;
+  spotifyUrl?: string;
 };
 
 export function ContinueListening({
   label = musicPageLabels.continue,
   url = allReleasesUrl,
+  spotifyUrl = defaultSpotifyUrl,
 }: ContinueListeningProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
@@ -51,19 +51,29 @@ export function ContinueListening({
           sound is on the channel.
         </h2>
 
-        <a
-          href={url}
-          target="_blank"
-          rel="noreferrer noopener"
-          data-cursor="explore"
-          className="reveal-scroll btn-secondary music-continue__link"
-          style={delay(160)}
-        >
-          <span aria-hidden className="btn__mark">
-            <SocialIcon name="youtube" />
-          </span>
-          <span>All releases on YouTube</span>
-        </a>
+        <div className="reveal-scroll music-continue__links" style={delay(160)}>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer noopener"
+            data-cursor="explore"
+            className="btn-tertiary"
+          >
+            All releases on YouTube
+            <SocialIcon name="youtube" className="btn__brand" />
+          </a>
+
+          <a
+            href={spotifyUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            data-cursor="explore"
+            className="btn-tertiary"
+          >
+            Listen on Spotify
+            <SocialIcon name="spotify" className="btn__brand" />
+          </a>
+        </div>
       </Container>
     </section>
   );

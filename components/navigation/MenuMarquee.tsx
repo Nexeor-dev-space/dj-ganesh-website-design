@@ -1,8 +1,6 @@
 import type { CSSProperties } from "react";
-import { SocialIcon } from "@/components/navigation/SocialIcon";
 import { stageRows } from "@/lib/stages";
 import { trustedNames } from "@/data/trusted";
-import { socialLinks } from "@/lib/site";
 
 /**
  * The trust marquee inside the menu.
@@ -40,10 +38,7 @@ export function MenuMarquee() {
         {rows.map((row, rowIndex) => {
           const group = (
             <ul className="menu-row__group">
-              {row.map((item, itemIndex) => {
-                const social =
-                  socialLinks[(rowIndex + itemIndex) % socialLinks.length];
-
+              {row.map((item) => {
                 return (
                   <li
                     key={item.name}
@@ -52,10 +47,7 @@ export function MenuMarquee() {
                   >
                     {item.name}
                     <span className="menu-row__mark" aria-hidden>
-                      <SocialIcon
-                        name={social.icon}
-                        className="h-full w-auto"
-                      />
+                      ✦
                     </span>
                   </li>
                 );

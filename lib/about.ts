@@ -25,6 +25,19 @@ export const aboutStory = [
 /** The three strands of the BollyAfro sound, named in the bio. */
 export const soundStrands = ["Bollywood", "Afrobeats", "House"] as const;
 
+/**
+ * What each strand brings, shown in place of the story while it is hovered.
+ * Keyed by name so a CMS strand left without a description still finds one.
+ */
+export const strandDescriptions: Readonly<Record<string, string>> = {
+  Bollywood:
+    "Where it starts: the film songs Mumbai grew up on, the hooks a whole room already knows by heart, recut for the dancefloor rather than played as they were pressed.",
+  Afrobeats:
+    "The pulse underneath. Afrobeats rhythms carry the Bollywood melodies, so a crowd that came for one hears the other and stays for both — the cross that gave BollyAfro its name.",
+  House:
+    "The engine room: a steady four-to-the-floor that holds a set together from first track to last, built up live with saxophone, violin and percussion on stage.",
+};
+
 /** The year the story starts, printed on the stage frame. */
 export const careerStart = "1998";
 

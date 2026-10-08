@@ -95,7 +95,7 @@ export function BookingSection({
           {bookingSectionLabel}
         </p>
 
-        <div className="booking-spread mt-lg md:mt-xl">
+        <div className="booking-spread mt-eyebrow">
           <div className="min-w-0">
             {/* One line at a time, so the question lands in beats; the second
                 line carries the accent. */}
@@ -110,7 +110,7 @@ export function BookingSection({
                   }`}
                   style={delay(80 + index * 80)}
                 >
-                  {line}
+                  <span className="title-ink">{line}</span>
                 </span>
               ))}
             </h2>

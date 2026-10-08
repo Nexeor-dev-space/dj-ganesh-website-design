@@ -6,9 +6,8 @@ import type { FooterSocialLink } from "@/types/footer";
  * Anchors point at section ids that exist in this build — verified against the
  * rendered sections, not copied from the old markup, which linked to pages and
  * sections this site does not have. Social handles and the copyright line come
- * verbatim from the client's existing `index.html`; no account is invented,
- * and platforms absent from the source (Spotify, SoundCloud) are simply not
- * listed.
+ * verbatim from the client's existing `index.html`, plus the Spotify artist
+ * page the client supplied later; no account is invented.
  */
 
 /**
@@ -40,6 +39,11 @@ export const footerColumns = [
       {
         label: "YouTube · @DJGANESH_DJG",
         href: "https://www.youtube.com/@DJGANESH_DJG",
+        external: true,
+      },
+      {
+        label: "Spotify · DJ Ganesh",
+        href: "https://open.spotify.com/artist/7xN2ufjWKVWZnhZJu8DKDn",
         external: true,
       },
     ],

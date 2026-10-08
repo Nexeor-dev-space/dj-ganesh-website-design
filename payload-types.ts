@@ -1197,11 +1197,15 @@ export interface About {
     careerStart?: string | null;
   };
   /**
-   * The strands of the sound, e.g. Bollywood / Afrobeats / House.
+   * The strands of the sound, e.g. Bollywood / Afrobeats / House. On the home page, hovering a strand swaps the story paragraph for its description.
    */
   soundStrands?:
     | {
         strand: string;
+        /**
+         * Shown in place of the story paragraph while this strand is hovered on the home page.
+         */
+        description?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -1262,6 +1266,10 @@ export interface MusicPage {
     sectionLabel?: string | null;
     heading?: string | null;
     allReleasesUrl?: string | null;
+    /**
+     * The "Listen on Spotify" link under the home page music player and at the foot of the Music page.
+     */
+    spotifyUrl?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1679,6 +1687,7 @@ export interface AboutSelect<T extends boolean = true> {
     | T
     | {
         strand?: T;
+        description?: T;
         id?: T;
       };
   frames?:
@@ -1744,6 +1753,7 @@ export interface MusicPageSelect<T extends boolean = true> {
         sectionLabel?: T;
         heading?: T;
         allReleasesUrl?: T;
+        spotifyUrl?: T;
       };
   updatedAt?: T;
   createdAt?: T;
