@@ -88,7 +88,7 @@ export function LegacySection({
           {legacySectionLabel}
         </p>
 
-        <div className="mt-lg flex flex-col gap-lg md:mt-xl md:flex-row md:items-end md:justify-between md:gap-2xl">
+        <div className="mt-eyebrow flex flex-col gap-heading md:flex-row md:items-end md:justify-between md:gap-2xl">
           <h2
             id="legacy-title"
             className="reveal-scroll section-title"
@@ -109,7 +109,7 @@ export function LegacySection({
           </p>
         </div>
 
-        <div className="legacy-wall mt-xl md:mt-2xl">
+        <div className="legacy-wall mt-block">
           {milestones.map((milestone, index) => (
             <MilestoneTile
               key={milestone.id}

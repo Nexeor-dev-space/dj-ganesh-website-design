@@ -50,4 +50,9 @@ export const socialLinks = [
     href: "https://www.youtube.com/@DJGANESH_DJG",
     icon: "youtube",
   },
+  {
+    label: "Spotify",
+    href: "https://open.spotify.com/artist/7xN2ufjWKVWZnhZJu8DKDn",
+    icon: "spotify",
+  },
 ] as const satisfies readonly SocialLink[];

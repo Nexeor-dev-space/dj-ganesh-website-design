@@ -67,16 +67,16 @@ export function mapNavLinks(nav: SiteData["nav"]) {
 }
 
 /** Only platforms SocialIcon can draw (instagram / youtube); null if none. */
+/** The platforms the site has a mark for; the rest are skipped. */
+const labels = { instagram: "Instagram", youtube: "YouTube", spotify: "Spotify" } as const;
+
 export function mapSocials(socials: SiteData["socials"]) {
   const out = (socials ?? [])
-    .filter(
-      (s) => (s.platform === "instagram" || s.platform === "youtube") && has(s.url),
-    )
-    .map((s) =>
-      s.platform === "instagram"
-        ? ({ label: "Instagram", href: s.url as string, icon: "instagram" } as const)
-        : ({ label: "YouTube", href: s.url as string, icon: "youtube" } as const),
-    );
+    .filter((s) => s.platform != null && s.platform in labels && has(s.url))
+    .map((s) => {
+      const icon = s.platform as keyof typeof labels;
+      return { label: labels[icon], href: s.url as string, icon } as const;
+    });
   return out.length ? out : null;
 }
 

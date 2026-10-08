@@ -45,7 +45,7 @@ export function FinalCta({
               className="reveal-scroll contact-final__line"
               style={delay(160 + index * 110)}
             >
-              {line}
+              <span className="title-ink">{line}</span>
             </span>
           ))}
         </h2>

@@ -24,7 +24,7 @@ const { galleryItems, gallerySectionLabel } = await ld('../data/gallery.ts')
 const { followHeading, followLinks } = await ld('../data/follow.ts')
 const { experienceSectionLabel, experienceHeading, experienceCtaHref, offerings } = await ld('../data/experience.ts')
 const { tourCities, tourShows } = await ld('../lib/tour.ts')
-const { tracks, musicSectionLabel, musicHeading, allReleasesUrl } = await ld('../data/tracks.ts')
+const { tracks, musicSectionLabel, musicHeading, allReleasesUrl, spotifyUrl } = await ld('../data/tracks.ts')
 const { musicPageTitle, musicPageStatement, musicPageLabels } = await ld('../data/music-page.ts')
 const {
   aboutPageLabels,
@@ -40,6 +40,7 @@ const {
   aboutHeading,
   careerStart,
   soundStrands,
+  strandDescriptions,
   careerStats,
   aboutPortrait,
   aboutCta,
@@ -393,7 +394,7 @@ await g('about', {
     paragraphs: aboutParagraphs.map((paragraph) => ({ paragraph })),
     careerStart,
   },
-  soundStrands: soundStrands.map((strand) => ({ strand })),
+  soundStrands: soundStrands.map((strand) => ({ strand, description: strandDescriptions[strand] })),
   frames: { stage: aboutStage, portrait: aboutPortraitFrame, decks: aboutDecks },
   portrait: aboutPortraitId,
   careerStats: {
@@ -412,7 +413,7 @@ await g('music-page', {
   pageTitle: musicPageTitle,
   statement: musicPageStatement,
   labels: { ...musicPageLabels },
-  homeSection: { sectionLabel: musicSectionLabel, heading: musicHeading, allReleasesUrl },
+  homeSection: { sectionLabel: musicSectionLabel, heading: musicHeading, allReleasesUrl, spotifyUrl },
 })
 
 await g('contact-booking', {

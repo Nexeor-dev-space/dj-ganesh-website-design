@@ -1,10 +1,12 @@
+import { MarqueeSlowdown } from "@/components/interactions/MarqueeSlowdown";
 import {
   trustedLabel as defaultLabel,
   trustedNames as defaultNames,
 } from "@/data/trusted";
 
 /**
- * The rooms he has played, as a band that never stops moving.
+ * The rooms he has played, as a band that never stops moving — it only eases
+ * down to a crawl under the pointer.
  *
  * A band rather than a section: it sits between two sections on the page's own
  * hairlines and carries a tighter rhythm, so the names read as a caption
@@ -27,7 +29,7 @@ export function TrustedBy({
     <section aria-label={trustedLabel} className="trusted">
       <p className="trusted__label">{trustedLabel}</p>
 
-      <div className="trusted__viewport">
+      <MarqueeSlowdown className="trusted__viewport">
         <div className="trusted__track">
           {[0, 1].map((copy) => (
             <ul
@@ -47,7 +49,7 @@ export function TrustedBy({
             </ul>
           ))}
         </div>
-      </div>
+      </MarqueeSlowdown>
     </section>
   );
 }

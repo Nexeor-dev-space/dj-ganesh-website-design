@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
+import { MarqueeSlowdown } from "@/components/interactions/MarqueeSlowdown";
 import { StageMarquee } from "@/components/stages/StageMarquee";
 import {
   stageRows as defaultStageRows,
@@ -94,7 +95,7 @@ export function StagesSection({
           {stagesSectionLabel}
         </p>
 
-        <div className="mt-lg flex flex-col gap-md md:mt-xl md:flex-row md:items-end md:justify-between md:gap-2xl">
+        <div className="mt-eyebrow flex flex-col gap-heading md:flex-row md:items-end md:justify-between md:gap-2xl">
           <h2
             id="stages-title"
             className="reveal-scroll section-title stages-title"
@@ -112,7 +113,7 @@ export function StagesSection({
       </Container>
 
       {/* Every row now, since nothing shares the band with them. */}
-      <div className="reveal-scroll stages-band" style={delay(240)}>
+      <MarqueeSlowdown className="reveal-scroll stages-band" style={delay(240)}>
         {stageRows.map((stages, index) => (
           <StageMarquee
             key={index}
@@ -121,7 +122,7 @@ export function StagesSection({
             duration={DURATIONS[index] ?? 48}
           />
         ))}
-      </div>
+      </MarqueeSlowdown>
 
       <Container className="relative z-10">
         <a

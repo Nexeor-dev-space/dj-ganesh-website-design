@@ -49,7 +49,7 @@ export function ArtistStory({
 
             <h2
               id="about-story-title"
-              className="reveal-scroll section-title mt-lg md:mt-xl"
+              className="reveal-scroll section-title mt-eyebrow"
               style={delay(80)}
             >
               The

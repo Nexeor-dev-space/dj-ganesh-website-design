@@ -29,7 +29,7 @@ export function ContactHero({
         <h1 id="contact-title" className="contact-hero__title">
           {meta.heading.map((line, index) => (
             <span key={line} className="reveal contact-hero__line" style={delay(300 + index * 120)}>
-              {line}
+              <span className="title-ink">{line}</span>
             </span>
           ))}
         </h1>
