@@ -52,12 +52,12 @@ export const bookingScope = [
 ] as const;
 
 /**
- * The one action in the section. `mailto:` is the site's actual booking
- * mechanism — swap `href` for a real endpoint if a booking form is ever added.
+ * The one action in the section. Like every "book" action on the site, it
+ * lands on the enquiry form at /contact#booking.
  */
 export const bookingCta = {
   label: "Book DJ Ganesh",
-  href: `mailto:${bookingEmail}`,
+  href: "/contact#booking",
 };
 
 export const bookingLinks: readonly BookingLink[] = [

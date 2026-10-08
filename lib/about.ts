@@ -64,5 +64,5 @@ export const aboutPortrait = {
 
 export const aboutCta = {
   label: "Book a private event",
-  href: "#booking",
+  href: "/contact#booking",
 };

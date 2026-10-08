@@ -45,5 +45,5 @@ export const stagesLede = "Every weekend is a sold-out headline set.";
  * Announced dates already carry their own ticket links in section 02, so this
  * band points at the enquiry instead of implying a ticketing host.
  */
-export const stagesCtaHref = "#booking";
+export const stagesCtaHref = "/contact#booking";
 export const stagesCtaLabel = "Book DJ Ganesh";

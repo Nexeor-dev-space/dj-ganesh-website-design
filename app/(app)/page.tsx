@@ -221,7 +221,7 @@ export default async function HomePage() {
             aboutCtaLabel || aboutCtaHref
               ? {
                   label: aboutCtaLabel ?? "Book a private event",
-                  href: aboutCtaHref ?? "#booking",
+                  href: aboutCtaHref ?? "/contact#booking",
                 }
               : undefined
           }

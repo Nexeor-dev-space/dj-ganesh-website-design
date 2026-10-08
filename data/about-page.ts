@@ -56,7 +56,7 @@ export const aboutFrames = {
 export const experienceHref = "/performance-history";
 
 /** Written once here; a plain href so the outro stays a simple anchor. */
-export const bookingHref = "/contact";
+export const bookingHref = "/contact#booking";
 
 export const aboutOutro = {
   question: "Ready for the next night?",

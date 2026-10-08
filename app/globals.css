@@ -2127,6 +2127,18 @@
     padding-top: 0;
   }
 
+  /* Book buttons land on /contact#booking; the fixed navigation (64px, 80px
+     from tablets) would otherwise sit over the top of the form. */
+  #booking {
+    scroll-margin-top: 64px;
+  }
+
+  @media (width >= 768px) {
+    #booking {
+      scroll-margin-top: 80px;
+    }
+  }
+
   @media (width < 768px) {
     .music-archive {
       padding-top: var(--space-md);
@@ -5507,10 +5519,6 @@
     margin-top: var(--rhythm-body);
   }
 
-  .contact-final__cta {
-    margin-top: var(--rhythm-body);
-  }
-
   .enquiry-submit {
     margin-top: var(--space-2xl);
   }
@@ -6161,30 +6169,6 @@
     font-weight: 300;
     line-height: 1.75;
     color: var(--muted-foreground);
-  }
-
-  .contact-final__title {
-    margin: clamp(56px, 9vw, 120px) 0 0;
-    font-family: var(--font-display);
-    font-size: clamp(38px, 7.6vw, 104px);
-    font-weight: 700;
-    line-height: 0.96;
-    letter-spacing: -0.045em;
-    text-transform: uppercase;
-    color: var(--foreground);
-  }
-
-  .contact-final__line {
-    display: block;
-  }
-
-  .contact-final__lede {
-    margin: var(--rhythm-heading) 0 0;
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.65);
   }
 
   }
