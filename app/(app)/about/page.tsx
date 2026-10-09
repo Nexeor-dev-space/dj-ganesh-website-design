@@ -104,7 +104,6 @@ export default async function AboutPage() {
           stage={frame(about?.frames?.stage, aboutFrames.stage)}
         />
         <ArtistStory
-          label={str(about?.labels?.story)}
           paragraphs={paragraphs.length ? paragraphs : undefined}
           stats={stats.length ? stats : undefined}
         />

@@ -42,6 +42,22 @@ export function Navbar() {
     ? site.contact.bookingCtaUrl
     : bookingHref;
 
+  /**
+   * A link to the page already open goes nowhere, so the wordmark or a menu
+   * item for it would leave the visitor wherever they had scrolled to. Glide
+   * back to the top instead, dropping any #section and closing the menu.
+   */
+  const toTopIfCurrent = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (pathname !== href) return;
+    event.preventDefault();
+    setOpen(false);
+    if (window.location.hash) {
+      window.history.replaceState(null, "", href);
+    }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  };
+
   // Freeze the page behind the overlay and let Escape close it.
   useEffect(() => {
     if (!open) return;
@@ -76,19 +92,7 @@ export function Navbar() {
           <Link
             href="/"
             aria-label={`${siteConfig.name} — home`}
-            onClick={(event) => {
-              // Already home: a link to the same page goes nowhere, so the
-              // wordmark would do nothing. Glide back to the top instead,
-              // dropping any #section and closing the menu.
-              if (pathname !== "/") return;
-              event.preventDefault();
-              setOpen(false);
-              if (window.location.hash) {
-                window.history.replaceState(null, "", "/");
-              }
-              const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-              window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-            }}
+            onClick={(event) => toTopIfCurrent(event, "/")}
             className="group inline-flex items-center px-4 py-2 transition-opacity duration-200 hover:opacity-80 md:px-6 md:py-2.5"
           >
             <span className="font-display text-[13px] font-bold uppercase leading-none tracking-[0.28em] md:text-[15px]">
@@ -169,7 +173,10 @@ export function Navbar() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    onClick={() => setOpen(false)}
+                    onClick={(event) => {
+                      setOpen(false);
+                      toTopIfCurrent(event, link.href);
+                    }}
                     aria-current={current ? "page" : undefined}
                     className="reveal menu__link"
                     style={{ "--reveal-delay": `${60 * index}ms` } as React.CSSProperties}

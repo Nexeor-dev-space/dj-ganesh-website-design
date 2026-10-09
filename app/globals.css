@@ -529,7 +529,6 @@
     }
   }
 
-
   /* The cue the old banner closes on. Hidden where the viewport is too short
      for it to sit clear of the lockup. */
   .hero__scroll {
@@ -625,26 +624,27 @@
     }
   }
 
-  /* Film grain, clipped to the letterforms themselves.
-     Two background layers — noise over a flat fill of the element's own
-     colour — blended together and clipped to the text. The fill is
-     `currentColor` and the glyphs are emptied with `text-fill-color` rather
-     than `color`, so whatever colour the mark is set in still comes through
-     with the grain riding on top of it.
-     This sits on the fitted line rather than on the heading: the reveal
-     animation transforms that line, and a transform between the background
-     and the text it is clipped to loses the clip entirely. */
-  .grain-text {
-    background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
-      linear-gradient(currentColor 0 0);
-    background-size:
-      150px 150px,
-      100% 100%;
-    background-blend-mode: overlay;
+  /* Film grain over the letterforms. The letters stay solid ink in whatever
+     colour the mark is set in; the grain is a copy of the text laid over
+     them, filled with noise and overlay-blended onto that colour. Filling the letters themselves
+     with a clipped background (as this used to) let phone browsers that
+     force their own dark mode darken that fill, so the mark went dark too. */
+  .grain-text > span {
+    position: relative;
+  }
+
+  .grain-text > span::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size: 150px 150px;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    mix-blend-mode: overlay;
+    pointer-events: none;
   }
 
   /* Clipped upward reveal — one mask per line of the lockup. */
@@ -1756,7 +1756,6 @@
     margin-top: var(--rhythm-block);
     text-align: left;
   }
-
 
   /* ---- The vinyl rack ----------------------------------------------------- */
 
@@ -3096,16 +3095,29 @@
   }
 
   /* White into the accent across the word, so the colour arrives at the end
-     of the phrase rather than colouring the whole of it. */
+     of the phrase rather than colouring the whole of it.
+
+     Drawn as solid white text with a solid accent copy faded in over it by a
+     mask, not as a gradient clipped to the glyphs. Phone browsers that force
+     their own dark mode (Samsung Internet, Chrome's "darken websites") treat
+     a clipped gradient as a background and darken it, which turned the word
+     black; text colours they leave light, and a mask is alpha they never
+     touch. */
   .experience-title__accent {
-    background-image: linear-gradient(
-      104deg,
-      var(--foreground) 12%,
-      var(--accent) 78%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    position: relative;
+    display: inline-block;
+    color: var(--foreground);
+  }
+
+  .experience-title__accent::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    position: absolute;
+    inset: 0;
+    color: var(--accent);
+    -webkit-mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
+    mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
+    pointer-events: none;
   }
 
   /* ---- The three plates --------------------------------------------------- */
@@ -4362,7 +4374,6 @@
 
   /* ---- The way out ------------------------------------------------------ */
 
-
   }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4680,10 +4691,11 @@
     margin-top: var(--space-lg);
   }
 
-  /* The closing line is the one that carries the present tense. */
   .about-story__paragraph--close {
     color: rgba(255, 255, 255, 0.94);
   }
+
+  /* The closing line is the one that carries the present tense. */
 
   /* The career in figures, ruled across the foot of the spread. */
   .about-figures {
@@ -4807,7 +4819,6 @@
     line-height: 1.7;
     color: var(--muted-foreground);
   }
-
 
 
 
@@ -5957,7 +5968,6 @@
     font-weight: 300;
     color: rgb(255, 138, 128);
   }
-
 
   /* ---- Sent -------------------------------------------------------------- */
 

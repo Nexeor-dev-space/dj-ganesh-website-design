@@ -118,7 +118,7 @@ export function MusicProvider({
         probe.src = "";
       });
     };
-  }, []);
+  }, [tracks]);
 
   // Keep React in step with the element, including pauses we did not initiate.
   useEffect(() => {
@@ -220,7 +220,7 @@ export function MusicProvider({
       setCurrentIndex(bounded);
       setCurrentTime(0);
     },
-    [currentIndex],
+    [currentIndex, tracks.length],
   );
 
   const toggle = useCallback(
@@ -330,6 +330,7 @@ export function MusicProvider({
       readLevels,
     }),
     [
+      tracks,
       currentTrack,
       currentIndex,
       isPlaying,

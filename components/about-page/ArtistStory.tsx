@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { aboutPageLabels, aboutParagraphs } from "@/data/about-page";
+import { aboutParagraphs } from "@/data/about-page";
 import { careerStats } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
 
@@ -21,13 +21,11 @@ const grouped = new Intl.NumberFormat("en-US");
  * belong here as the story's evidence rather than as a statistics band.
  */
 type ArtistStoryProps = {
-  label?: string;
   paragraphs?: readonly string[];
   stats?: readonly CareerStat[];
 };
 
 export function ArtistStory({
-  label = aboutPageLabels.story,
   paragraphs = aboutParagraphs,
   stats = careerStats,
 }: ArtistStoryProps = {}) {
@@ -42,15 +40,13 @@ export function ArtistStory({
     >
       <Container className="relative z-10">
         <div className="about-story__spread">
+          {/* No eyebrow: it only said "The Story" over a heading that says
+              the same. */}
           <div>
-            <p className="reveal-scroll about-label" style={delay(0)}>
-              {label}
-            </p>
-
             <h2
               id="about-story-title"
-              className="reveal-scroll section-title mt-eyebrow"
-              style={delay(80)}
+              className="reveal-scroll section-title"
+              style={delay(0)}
             >
               The
               <br />

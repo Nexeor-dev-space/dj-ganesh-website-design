@@ -7,6 +7,7 @@
  */
 import path from 'node:path'
 import fs from 'node:fs'
+import type { CollectionSlug, GlobalSlug, Where } from 'payload'
 
 
 
@@ -78,7 +79,7 @@ const TEXT_ONLY = process.env.SEED_TEXT_ONLY === '1'
 
 async function main() {
 const { getPayload } = await import('payload')
-const config = (await import('../payload.config.ts')).default as any
+const config = (await import('../payload.config.ts')).default
 const payload = await getPayload({ config })
 const counts: Record<string, number> = {}
 
@@ -107,13 +108,20 @@ async function media(src: string, alt: string): Promise<number | string | undefi
   return (mediaIds[src] = doc.id)
 }
 
-async function upsert(collection: string, where: any, data: any) {
-  const found = await payload.find({ collection: collection as any, where, limit: 1, depth: 0, draft: true })
+// Seed data is assembled from plain objects rather than each collection's
+// generated type, so it is handed to Payload as `never` — the one place the
+// script trades type checking for being able to write any collection.
+type SeedData = Record<string, unknown>
+
+async function upsert(collection: CollectionSlug, where: Where, data: SeedData) {
+  const found = await payload.find({ collection, where, limit: 1, depth: 0, draft: true })
   if (found.docs[0]) {
-    return payload.update({ collection: collection as any, id: found.docs[0].id, data, depth: 0 })
+    return payload.update({ collection, id: found.docs[0].id, data: data as never, depth: 0 })
   }
-  return payload.create({ collection: collection as any, data, depth: 0 })
+  return payload.create({ collection, data: data as never, depth: 0 })
 }
+
+type SeedDoc = Awaited<ReturnType<typeof upsert>>
 
 // Upload all media referenced by code
 const heroVideo = await media('/videos/dj-ganesh.mp4', siteConfig.name)
@@ -137,7 +145,7 @@ const genreMap: Record<string, string> = {
   BollyAfro: 'bollyafro',
 }
 
-const trackDocs: any[] = []
+const trackDocs: SeedDoc[] = []
 for (const [i, t] of tracks.entries()) {
   trackDocs.push(
     await upsert(
@@ -171,7 +179,7 @@ const countryOf: Record<string, string> = {
   'New York': 'United States',
   Singapore: 'Singapore',
 }
-const showDocs: any[] = []
+const showDocs: SeedDoc[] = []
 for (const [i, s] of tourShows.entries()) {
   showDocs.push(
     await upsert(
@@ -192,7 +200,7 @@ for (const [i, s] of tourShows.entries()) {
   )
 }
 
-const milestoneDocs: Record<string, any> = {}
+const milestoneDocs: Record<string, SeedDoc> = {}
 for (const [i, m] of milestones.entries()) {
   milestoneDocs[m.id] = await upsert(
     'legacy-milestones',
@@ -249,7 +257,7 @@ if (!TEXT_ONLY) {
     {
       title: 'Live Sets',
       album: 'Live Sets',
-      images: galleryItems.map((it: any, i: number) => ({ image: galleryMedia[i], caption: it.alt })),
+      images: galleryItems.map((it: { alt: string }, i: number) => ({ image: galleryMedia[i], caption: it.alt })),
       order: 0,
       publishedStatus: true,
       _status: 'published',
@@ -280,7 +288,7 @@ for (const [i, s] of tourShows.entries()) {
 // ---------- Placeholder images on existing docs (client's own images) ----------
 if (!TEXT_ONLY) {
 const wall = (n: string) => mediaIds[`/images/wall/gallery-${n}.png`]
-const milestoneImg: Record<string, any> = {
+const milestoneImg: Record<string, number | string | undefined> = {
   taj: wall('wedding'),
   ambani: wall('corporate'),
   'karan-johar': wall('concert'),
@@ -302,7 +310,7 @@ for (const [i, o] of offerings.entries()) {
 }
 
 // ---------- Globals ----------
-const g = (slug: string, data: any) => payload.updateGlobal({ slug: slug as any, data, depth: 0 })
+const g = (slug: GlobalSlug, data: SeedData) => payload.updateGlobal({ slug, data: data as never, depth: 0 })
 
 await g('site-settings', {
   siteName: siteConfig.name,
@@ -312,7 +320,11 @@ await g('site-settings', {
   footer: {
     columns: footerColumns.map((c) => ({
       title: c.label,
-      links: c.links.map((l: any) => ({ label: l.label, href: l.href, external: !!l.external })),
+      links: c.links.map((l: { label: string; href: string; external?: boolean }) => ({
+        label: l.label,
+        href: l.href,
+        external: !!l.external,
+      })),
     })),
     statement: footerStatement,
     copyright: footerCopyright,
@@ -361,7 +373,7 @@ await g('home-page', {
   },
   follow: {
     heading: followHeading,
-    links: followLinks.map((l: any) => ({
+    links: followLinks.map((l: { label: string; caption: string; href: string; icon: string; external?: boolean }) => ({
       label: l.label,
       caption: l.caption,
       href: l.href,
@@ -374,7 +386,7 @@ await g('home-page', {
     heading: lines(bookingHeading),
     lede: bookingLede,
     scope: bookingScope.map((item) => ({ item })),
-    links: bookingLinks.map((l: any) => ({
+    links: bookingLinks.map((l: { label: string; value: string; href: string; external?: boolean }) => ({
       label: l.label,
       value: l.value,
       href: l.href,
@@ -448,8 +460,8 @@ for (const c of [
   'experiences-services',
   'performance-history',
   'gallery',
-]) {
-  counts[c] = (await payload.count({ collection: c as any, draft: true })).totalDocs
+] as CollectionSlug[]) {
+  counts[c] = (await payload.count({ collection: c, draft: true })).totalDocs
 }
 console.log('counts:', JSON.stringify(counts))
 }
