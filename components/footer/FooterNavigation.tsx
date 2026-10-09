@@ -1,22 +1,27 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { footerColumns } from "@/data/footer";
 import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
 
 /**
  * The footer's four columns.
  *
- * Every row is a real destination: an anchor on this page, another page on
- * this site, or an account the client runs. An anchor scrolls rather than
- * reloading — and holds still for anyone who has asked for less motion — while
- * a route change is left to `next/link` and an outbound link to the browser.
+ * Every row is a real destination: a homepage section, another page on this
+ * site, or an account the client runs. The section anchors (`#music`,
+ * `#about`, …) only exist on the homepage, so on any other page they become
+ * `/#section` and open the homepage at that section; on the homepage itself
+ * they scroll rather than reload — and hold still for anyone who has asked
+ * for less motion. A route change is left to `next/link` and an outbound
+ * link to the browser.
  *
  * One `nav`, four lists: a screen reader hears "Tours, list of 3 items", not
  * twelve links in a row with nothing to group them.
  */
 export function FooterNavigation() {
   const { footer } = useSiteData();
+  const onHome = usePathname() === "/";
   const cmsColumns = (footer?.columns ?? [])
     .filter((c) => hasText(c.title))
     .map((c) => ({
@@ -57,7 +62,11 @@ export function FooterNavigation() {
 
               return (
                 <li key={link.label}>
-                  {anchor ? (
+                  {anchor && !onHome ? (
+                    <Link href={`/${link.href}`} className="footer-column__link">
+                      {link.label}
+                    </Link>
+                  ) : anchor ? (
                     <a
                       href={link.href}
                       onClick={(event) => scrollToSection(event, link.href)}

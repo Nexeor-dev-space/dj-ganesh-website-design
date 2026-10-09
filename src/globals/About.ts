@@ -20,7 +20,8 @@ const About: GlobalConfig = {
       label: 'Section Labels',
       fields: [
         { name: 'intro', label: 'Intro Label', type: 'text' },
-        { name: 'story', label: 'Story Label', type: 'text' },
+        // No longer shown: the Story section's heading already says it.
+        { name: 'story', label: 'Story Label', type: 'text', admin: { hidden: true } },
         { name: 'identity', label: 'Identity / Sound Label', type: 'text' },
         { name: 'experience', label: 'Experience Label', type: 'text' },
         { name: 'sectionLabel', label: 'My Story Section Label', type: 'text' },
@@ -68,12 +69,12 @@ const About: GlobalConfig = {
       name: 'frames',
       label: 'Frames (Images)',
       fields: [
-        { name: 'stage', label: 'Stage Image', type: 'upload', relationTo: 'media' as any },
-        { name: 'portrait', label: 'Portrait Image', type: 'upload', relationTo: 'media' as any },
-        { name: 'decks', label: 'Decks Image', type: 'upload', relationTo: 'media' as any },
+        { name: 'stage', label: 'Stage Image', type: 'upload', relationTo: 'media' },
+        { name: 'portrait', label: 'Portrait Image', type: 'upload', relationTo: 'media' },
+        { name: 'decks', label: 'Decks Image', type: 'upload', relationTo: 'media' },
       ],
     },
-    { name: 'portrait', label: 'Closing Portrait Image', type: 'upload', relationTo: 'media' as any },
+    { name: 'portrait', label: 'Closing Portrait Image', type: 'upload', relationTo: 'media' },
     {
       type: 'group',
       name: 'careerStats',
@@ -101,7 +102,7 @@ const About: GlobalConfig = {
           name: 'milestones',
           label: 'Milestones',
           type: 'relationship',
-          relationTo: 'legacy-milestones' as any,
+          relationTo: 'legacy-milestones',
           hasMany: true,
           admin: { description: 'Choose the 3 milestones to preview (e.g. origin, taj, world-tour).' },
         },

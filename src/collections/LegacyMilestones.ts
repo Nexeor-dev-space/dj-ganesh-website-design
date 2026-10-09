@@ -31,7 +31,7 @@ const LegacyMilestones: CollectionConfig = {
     { name: 'title', label: 'Title', type: 'text', required: true },
     { name: 'description', label: 'Description', type: 'textarea' },
     { name: 'more', label: 'More / Detail Text', type: 'textarea', admin: { description: 'Expanded detail shown when the milestone is opened.' } },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' as any },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     { name: 'order', label: 'Display Order', type: 'number', admin: { description: 'Lower numbers appear first.' } },
     { name: 'publishedStatus', label: 'Published', type: 'checkbox', defaultValue: false, admin: { description: 'Untick to hide from the live site without deleting.' } },
   ],

@@ -49,10 +49,14 @@ export function AboutSection({
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
-  /** The strand whose paragraph stands in for the story, if any. */
-  const [strand, setStrand] = useState<number | null>(null);
-  /** Touch has no hover, so a tap toggles instead; a mouse click must not. */
-  const pointerType = useRef("mouse");
+  /**
+   * Which strand's paragraph stands in for the story. A click (or tap) locks
+   * one; hovering previews another over the lock, and leaving drops back to
+   * the lock — or to the story when nothing is locked.
+   */
+  const [locked, setLocked] = useState<number | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const strand = hovered ?? locked;
 
   // A strand without its own copy borrows the default for its name, so the
   // CMS can rename or reorder them without the hover going blank.
@@ -135,21 +139,20 @@ export function AboutSection({
                       type="button"
                       className="story-strand__button"
                       data-current={strand === index || undefined}
-                      aria-pressed={strand === index}
-                      onPointerDown={(event) => {
-                        pointerType.current = event.pointerType;
-                      }}
+                      aria-pressed={locked === index}
+                      // Hover is a mouse thing: a touch would fire it on the
+                      // way to the click and leave a phantom preview behind.
                       onPointerEnter={(event) => {
-                        if (event.pointerType === "mouse") setStrand(index);
+                        if (event.pointerType === "mouse") setHovered(index);
                       }}
                       onPointerLeave={(event) => {
-                        if (event.pointerType === "mouse") setStrand(null);
+                        if (event.pointerType === "mouse") setHovered(null);
                       }}
-                      onFocus={() => setStrand(index)}
-                      onBlur={() => setStrand(null)}
                       onClick={() => {
-                        if (pointerType.current === "mouse") return;
-                        setStrand((current) => (current === index ? null : index));
+                        setLocked((current) => (current === index ? null : index));
+                        // Unlocking while still pointed at it should show the
+                        // story straight away, not keep the hover preview up.
+                        setHovered(null);
                       }}
                     >
                       {name}

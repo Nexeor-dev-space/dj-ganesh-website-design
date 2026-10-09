@@ -90,7 +90,10 @@ export function ExperienceSection({
             style={delay(80)}
           >
             {experienceHeading[0]}{" "}
-            <span className="experience-title__accent">
+            <span
+              className="experience-title__accent"
+              data-text={experienceHeading[1]}
+            >
               {experienceHeading[1]}
             </span>
           </h2>

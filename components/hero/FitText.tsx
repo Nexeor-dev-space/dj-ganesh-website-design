@@ -58,6 +58,8 @@ export function FitText({ children, className, style }: FitTextProps) {
     <span ref={containerRef} className={className} style={{ ...style, display: "block", width: "100%" }}>
       <span
         ref={textRef}
+        /* Lets a style lay a copy of the text over itself (the footer's grain). */
+        data-text={children}
         style={{
           display: "inline-block",
           whiteSpace: "nowrap",

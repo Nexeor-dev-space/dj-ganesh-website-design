@@ -65,7 +65,7 @@ export const footerColumns = [
     links: [
       { label: "info@djganeshbombay.com", href: "mailto:info@djganeshbombay.com" },
       { label: "BMT Agency", href: "https://www.bmtagency.in", external: true },
-      { label: "Enquire", href: "#booking" },
+      { label: "Enquire", href: "/contact#booking" },
     ],
   },
 ] as const;

@@ -16,7 +16,7 @@ const Testimonials: CollectionConfig = {
     { name: 'testimonial', label: 'Testimonial', type: 'textarea', required: true },
     { name: 'eventType', label: 'Event / Type', type: 'text', admin: { placeholder: 'e.g. Royal Wedding, Club Night' } },
     { name: 'location', label: 'Location', type: 'text' },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' as any },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     { name: 'order', label: 'Display Order', type: 'number' },
     { name: 'publishedStatus', label: 'Published', type: 'checkbox', defaultValue: false },
   ],

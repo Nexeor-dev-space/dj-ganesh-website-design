@@ -32,9 +32,6 @@ export const bookingSectionLabel = "Booking";
  */
 export const bookingHeading = ["Ready to", "Book?"] as const;
 
-/** The closing line, set large under the question. */
-export const bookingStatement = "Let's make it a night.";
-
 /**
  * The v2 file's own sentence, naming its three agencies. The other supplied
  * file names BMT Agency alone, and that is the one the pass links to; the
@@ -55,12 +52,12 @@ export const bookingScope = [
 ] as const;
 
 /**
- * The one action in the section. `mailto:` is the site's actual booking
- * mechanism — swap `href` for a real endpoint if a booking form is ever added.
+ * The one action in the section. Like every "book" action on the site, it
+ * lands on the enquiry form at /contact#booking.
  */
 export const bookingCta = {
   label: "Book DJ Ganesh",
-  href: `mailto:${bookingEmail}`,
+  href: "/contact#booking",
 };
 
 export const bookingLinks: readonly BookingLink[] = [
