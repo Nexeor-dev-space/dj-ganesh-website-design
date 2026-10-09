@@ -709,8 +709,12 @@
   /* A band of the accent crosses the letterforms once, left to right, the
      moment a title is pointed at. Clipped to the text, so an accent word
      inside the title keeps its own colour and nothing around it moves —
-     no tracking change, no reflow, no wrapped line. Pointer screens only:
-     a phone has nothing to hover with.
+     no tracking change, no reflow, no wrapped line. Mouse and trackpad
+     only: `hover: hover` alone is not enough, because some phones report it
+     and then treat a tap as a hover. There the sweep fired on every tap, and
+     a browser forcing its own dark mode darkened the swept gradient, turning
+     the tapped title black. A touchscreen is a coarse pointer, so requiring
+     a fine one leaves phone titles exactly as they are.
 
      A transition rather than an animation. Most titles already run an
      entrance animation, and an `animation` set on hover replaced it — so
@@ -729,7 +733,7 @@
     background-position: 100% 0;
   }
 
-  @media (hover: hover) {
+  @media (hover: hover) and (pointer: fine) {
     main h1:hover,
     main h2:hover,
     main h1:hover .title-ink,
@@ -2126,14 +2130,15 @@
     padding-top: 0;
   }
 
-  /* Book buttons land on /contact#booking; the fixed navigation (64px, 80px
-     from tablets) would otherwise sit over the top of the form. */
-  #booking {
+  /* Links land on sections by id — /contact#booking from every Book button,
+     /#music and the rest from the footer. The fixed navigation (64px, 80px
+     from tablets) would otherwise sit over the top of the section. */
+  main section[id] {
     scroll-margin-top: 64px;
   }
 
   @media (width >= 768px) {
-    #booking {
+    main section[id] {
       scroll-margin-top: 80px;
     }
   }
