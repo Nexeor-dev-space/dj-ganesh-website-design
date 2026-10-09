@@ -1,8 +1,7 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { HeroBackground } from "@/components/hero/HeroBackground";
-import { SocialIcon } from "@/components/navigation/SocialIcon";
-import { bookingHref, socialLinks } from "@/lib/site";
+import { bookingHref } from "@/lib/site";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -11,12 +10,13 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  *
  * Built to the composition of the client's own site: the footage runs behind
  * the whole section, and the lockup sits centred on it in one column —
- * kicker, name, line, the booking button, the profiles, and the scroll cue at
- * the foot. That order is theirs; only the copy is this project's.
+ * kicker, name, line, the booking button, and the scroll cue at the foot.
+ * The profiles are not repeated here; the navigation above already carries
+ * them.
  *
- * Deliberately plainer than the sections below it: the name is set at a
- * readable display size rather than stretched to the width of the screen, and
- * the video is left to be the movement.
+ * The footage is left almost unshaded through the middle and the name is set
+ * large enough to own the frame; the type carries its own shadow rather than
+ * dimming the video to make room for it.
  */
 export function Hero({
   videoSrc,
@@ -47,32 +47,20 @@ export function Hero({
         </p>
 
         <div className="hero__ctas reveal" style={delay(600)}>
-          <a href={bookingHref} className="hero__btn">
-            Book DJ Ganesh
+          {/* Both carry the site's sweep: the label is wrapped so it drifts
+              with the panel rather than sitting still under it. */}
+          <a href={bookingHref} data-cursor="book" className="btn-primary">
+            <span>Book DJ Ganesh</span>
           </a>
 
-          <a href="#music" className="hero__link">
-            <span aria-hidden className="hero__link-mark">
+          <a href="#music" className="btn-secondary">
+            <span aria-hidden className="btn__mark">
               &#9654;
             </span>
-            Listen to Music
+            <span>Listen to Music</span>
           </a>
         </div>
 
-        <ul className="hero__socials reveal" style={delay(700)}>
-          {socialLinks.map((social) => (
-            <li key={social.label}>
-              <a
-                href={social.href}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={social.label}
-              >
-                <SocialIcon name={social.icon} className="h-[18px] w-auto" />
-              </a>
-            </li>
-          ))}
-        </ul>
       </Container>
 
       {/* Sits on the section rather than in the column, so it stays centred on

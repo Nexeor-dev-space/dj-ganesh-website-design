@@ -9,11 +9,18 @@ import {
   aboutHeading as defaultHeading,
   aboutSectionLabel as defaultLabel,
   aboutStory as defaultStory,
-  soundStrands as defaultStrands,
+  soundStrands as defaultStrandNames,
+  strandDescriptions,
 } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
+
+type SoundStrand = { name: string; description?: string };
+
+const defaultStrands: readonly SoundStrand[] = defaultStrandNames.map((name) => ({
+  name,
+}));
 
 /**
  * Section 04 — My Story.
@@ -35,13 +42,23 @@ export function AboutSection({
   aboutSectionLabel?: string;
   aboutHeading?: readonly string[];
   aboutStory?: readonly string[];
-  soundStrands?: readonly string[];
+  soundStrands?: readonly SoundStrand[];
   aboutCta?: { label: string; href: string };
   aboutPortrait?: { src: string; alt: string };
   careerStats?: readonly CareerStat[];
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
+  /** The strand whose paragraph stands in for the story, if any. */
+  const [strand, setStrand] = useState<number | null>(null);
+  /** Touch has no hover, so a tap toggles instead; a mouse click must not. */
+  const pointerType = useRef("mouse");
+
+  // A strand without its own copy borrows the default for its name, so the
+  // CMS can rename or reorder them without the hover going blank.
+  const strandCopy = soundStrands.map(
+    ({ name, description }) => description ?? strandDescriptions[name],
+  );
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -75,13 +92,13 @@ export function AboutSection({
 
       <Container className="relative z-10">
         <p
-          className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
+          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
           style={delay(0)}
         >
           {aboutSectionLabel}
         </p>
 
-        <div className="story-spread mt-xl md:mt-2xl">
+        <div className="story-spread mt-eyebrow">
           {/* The frame leads on a phone, where a tall column of type before any
               picture would read as a wall of text. */}
           <div className="reveal-scroll order-1 lg:order-2" style={delay(200)}>
@@ -101,26 +118,72 @@ export function AboutSection({
               {aboutHeading[2]}
             </h2>
 
-            <p className="story-strands reveal-scroll mt-lg" style={delay(180)}>
-              {soundStrands.map((strand, index) => (
-                <span key={strand}>
+            <div
+              className="story-strands reveal-scroll mt-heading"
+              style={delay(180)}
+              data-picked={strand != null || undefined}
+            >
+              {soundStrands.map(({ name }, index) => (
+                <span key={name} className="story-strand">
                   {index > 0 ? (
                     <span aria-hidden className="mr-sm text-white/20">
                       /
                     </span>
                   ) : null}
-                  {strand}
+                  {strandCopy[index] ? (
+                    <button
+                      type="button"
+                      className="story-strand__button"
+                      data-current={strand === index || undefined}
+                      aria-pressed={strand === index}
+                      onPointerDown={(event) => {
+                        pointerType.current = event.pointerType;
+                      }}
+                      onPointerEnter={(event) => {
+                        if (event.pointerType === "mouse") setStrand(index);
+                      }}
+                      onPointerLeave={(event) => {
+                        if (event.pointerType === "mouse") setStrand(null);
+                      }}
+                      onFocus={() => setStrand(index)}
+                      onBlur={() => setStrand(null)}
+                      onClick={() => {
+                        if (pointerType.current === "mouse") return;
+                        setStrand((current) => (current === index ? null : index));
+                      }}
+                    >
+                      {name}
+                    </button>
+                  ) : (
+                    name
+                  )}
                 </span>
               ))}
-            </p>
+            </div>
 
             <div className="max-w-[54ch]">
-              <p
-                className="reveal-scroll mt-xl text-[15px] leading-relaxed text-muted-foreground md:mt-2xl md:text-[17px]"
+              {/* Every version shares one grid cell, so the tallest sets the
+                  height and swapping between them never moves the page. */}
+              <div
+                className="story-swap reveal-scroll mt-heading text-[15px] leading-relaxed text-muted-foreground md:text-[17px]"
                 style={delay(260)}
+                aria-live="polite"
               >
-                {aboutStory[0]}
-              </p>
+                <p data-shown={strand == null || undefined} aria-hidden={strand != null || undefined}>
+                  {aboutStory[0]}
+                </p>
+                {strandCopy.map((copy, index) =>
+                  copy ? (
+                    <p
+                      key={soundStrands[index].name}
+                      data-shown={strand === index || undefined}
+                      aria-hidden={strand !== index || undefined}
+                    >
+                      {copy}
+                    </p>
+                  ) : null,
+                )}
+              </div>
 
               <p
                 className="reveal-scroll mt-lg text-[15px] leading-relaxed text-foreground md:text-[17px]"
@@ -133,14 +196,11 @@ export function AboutSection({
             <a
               href={aboutCta.href}
               data-cursor="book"
-              className="reveal-scroll group mt-2xl inline-flex items-center gap-md border-b border-white/25 pb-sm text-[11px] font-light uppercase tracking-[0.24em] transition-colors duration-300 hover:border-accent hover:text-accent md:text-[12px]"
+              className="reveal-scroll btn-tertiary mt-body"
               style={delay(380)}
             >
               {aboutCta.label}
-              <span
-                aria-hidden
-                className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1.5 motion-reduce:transition-none"
-              >
+              <span aria-hidden className="btn__arrow">
                 &rarr;
               </span>
             </a>
@@ -148,7 +208,7 @@ export function AboutSection({
         </div>
 
         {/* The career in figures, ruled across the foot of the spread. */}
-        <div className="reveal-scroll mt-2xl md:mt-3xl" style={delay(440)}>
+        <div className="reveal-scroll mt-block" style={delay(440)}>
           <CareerStats careerStats={careerStats} />
         </div>
       </Container>

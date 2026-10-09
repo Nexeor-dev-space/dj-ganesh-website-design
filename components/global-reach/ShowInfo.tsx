@@ -6,6 +6,11 @@ type ShowInfoProps = {
   shows?: readonly TourShow[];
   city: string;
   anchor: GlobeAnchor | null;
+  /** Held by a press: the panel then carries its own close. */
+  pinned: boolean;
+  /** Keeps the city hovered while the pointer is on the panel itself. */
+  onHover: (city: string | null) => void;
+  onClose: () => void;
 };
 
 /**
@@ -18,7 +23,14 @@ type ShowInfoProps = {
  * leader line so the globe is never covered, and below `md` it drops into
  * flow underneath, where a floating panel would only crowd the frame.
  */
-export function ShowInfo({ city, anchor, shows = defaultShows }: ShowInfoProps) {
+export function ShowInfo({
+  city,
+  anchor,
+  shows = defaultShows,
+  pinned,
+  onHover,
+  onClose,
+}: ShowInfoProps) {
   const cityKey = city.trim().toLowerCase();
   const show = shows.find((s) => s.city.toLowerCase() === cityKey) ?? null;
   const side = anchor?.side ?? "right";
@@ -27,6 +39,12 @@ export function ShowInfo({ city, anchor, shows = defaultShows }: ShowInfoProps) 
     <div
       className="show-info"
       data-anchored={anchor ? "true" : "false"}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") onHover(city);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType === "mouse") onHover(null);
+      }}
       style={
         anchor
           ? ({
@@ -37,6 +55,17 @@ export function ShowInfo({ city, anchor, shows = defaultShows }: ShowInfoProps) 
           : undefined
       }
     >
+      {pinned ? (
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label={`Close ${city}`}
+          className="show-info__close"
+        >
+          <span aria-hidden>&times;</span>
+        </button>
+      ) : null}
+
       <p className="show-info__label">{show ? "Next show · 2026" : "Open date"}</p>
       <p className="show-info__city">{city}</p>
 
@@ -50,10 +79,10 @@ export function ShowInfo({ city, anchor, shows = defaultShows }: ShowInfoProps) 
             href={show.ticketsUrl}
             target="_blank"
             rel="noreferrer noopener"
-            className="show-info__cta group"
+            className="btn-tertiary show-info__cta"
           >
             Get Tickets
-            <span aria-hidden className="show-info__arrow">
+            <span aria-hidden className="btn__arrow">
               &rarr;
             </span>
           </a>
@@ -66,10 +95,10 @@ export function ShowInfo({ city, anchor, shows = defaultShows }: ShowInfoProps) 
             href={`mailto:${bookingEmail}?subject=${encodeURIComponent(
               `Booking enquiry — ${city}`,
             )}`}
-            className="show-info__cta group"
+            className="btn-tertiary show-info__cta"
           >
             Enquire to Book
-            <span aria-hidden className="show-info__arrow">
+            <span aria-hidden className="btn__arrow">
               &rarr;
             </span>
           </a>

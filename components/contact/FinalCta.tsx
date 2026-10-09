@@ -45,7 +45,7 @@ export function FinalCta({
               className="reveal-scroll contact-final__line"
               style={delay(160 + index * 110)}
             >
-              {line}
+              <span className="title-ink">{line}</span>
             </span>
           ))}
         </h2>
@@ -57,11 +57,11 @@ export function FinalCta({
         <a
           href={cta.href}
           data-cursor="book"
-          className="reveal-scroll contact-final__cta"
+          className="reveal-scroll btn-primary contact-final__cta"
           style={delay(500)}
         >
-          {cta.label}
-          <span aria-hidden className="contact-final__arrow">
+          <span>{cta.label}</span>
+          <span aria-hidden className="btn__arrow">
             →
           </span>
         </a>

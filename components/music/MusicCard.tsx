@@ -93,10 +93,10 @@ export function MusicCard({ track, index, delay }: MusicCardProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Watch ${track.title} on YouTube — opens in a new tab`}
-          className="release-card__ytlink"
+          className="btn-tertiary release-card__ytlink"
         >
           Watch on YouTube
-          <span aria-hidden className="release-card__arrow">
+          <span aria-hidden className="btn__arrow">
             ↗
           </span>
         </a>

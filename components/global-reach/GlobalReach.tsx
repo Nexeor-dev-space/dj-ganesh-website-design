@@ -27,11 +27,19 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * it, and no part of it repeats what the globe already shows.
  *
  * The section owns the one piece of shared state, which city is active. A
- * pointer hover wins while it lasts; a click, a tap or a keyboard focus pins
- * one, so a touch visitor keeps the panel open until they choose another and
- * a keyboard visitor drives the globe by tabbing the strip. Everything the
- * globe can do is reachable from the two strips underneath it.
+ * pointer hover previews a city while it lasts; a click or a tap pins one,
+ * and it stays pinned until another is chosen, the panel is closed, the
+ * empty globe is pressed or Escape is hit. Keyboard focus previews only when
+ * the focus is visible, so a mouse click never leaves a city "hovered" by
+ * its own focus. The hover clears on a short delay rather than at once, so
+ * the pointer can cross the gap from a marker to its panel without the panel
+ * vanishing on the way. Everything the globe can do is reachable from the
+ * two strips underneath it.
  */
+
+/** How long a hover survives after the pointer leaves, in ms. */
+const HOVER_GRACE = 260;
+
 export function GlobalReach({
   tourName = defaultTourName,
   tourCities = defaultCities,
@@ -50,6 +58,30 @@ export function GlobalReach({
   const [anchor, setAnchor] = useState<GlobeAnchor | null>(null);
 
   const activeCity = hoveredCity ?? pinnedCity;
+  const hoverTimer = useRef<number | null>(null);
+
+  // A hover ends on a short delay; a new hover cancels the pending end.
+  const hoverCity = useCallback((city: string | null) => {
+    if (hoverTimer.current !== null) {
+      window.clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+    if (city === null) {
+      hoverTimer.current = window.setTimeout(() => {
+        setHoveredCity(null);
+        hoverTimer.current = null;
+      }, HOVER_GRACE);
+    } else {
+      setHoveredCity(city);
+    }
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -71,10 +103,24 @@ export function GlobalReach({
     return () => observer.disconnect();
   }, []);
 
-  // Pressing the pinned city again releases it, so a tap is its own undo.
-  const selectCity = useCallback((city: string) => {
-    setPinnedCity((current) => (current === city ? null : city));
+  // A press pins; pressing the empty globe, the panel's close or Escape
+  // releases. Pressing the pinned city again keeps it — a toggle that undid
+  // itself was the thing that felt broken.
+  const selectCity = useCallback((city: string | null) => {
+    setPinnedCity(city);
+    if (city === null) setHoveredCity(null);
   }, []);
+
+  const clearCity = useCallback(() => selectCity(null), [selectCity]);
+
+  useEffect(() => {
+    if (!pinnedCity) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") clearCity();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [pinnedCity, clearCity]);
 
   return (
     <section
@@ -117,13 +163,22 @@ export function GlobalReach({
               cities={tourCities}
               route={tourRoute}
               activeCity={activeCity}
-              onHoverCity={setHoveredCity}
+              onHoverCity={hoverCity}
               onSelectCity={selectCity}
               onAnchorChange={setAnchor}
             />
           </div>
 
-          {activeCity ? <ShowInfo city={activeCity} anchor={anchor} shows={tourShows} /> : null}
+          {activeCity ? (
+            <ShowInfo
+              city={activeCity}
+              anchor={anchor}
+              shows={tourShows}
+              pinned={pinnedCity === activeCity}
+              onHover={hoverCity}
+              onClose={clearCity}
+            />
+          ) : null}
         </div>
 
         <div className="reveal-scroll" style={delay(360)}>
@@ -131,7 +186,8 @@ export function GlobalReach({
             cities={tourCities}
             shows={tourShows}
             activeCity={activeCity}
-            onHover={setHoveredCity}
+            pinnedCity={pinnedCity}
+            onHover={hoverCity}
             onSelect={selectCity}
           />
         </div>
@@ -140,7 +196,8 @@ export function GlobalReach({
           <UpNext
             shows={tourShows}
             activeCity={activeCity}
-            onHover={setHoveredCity}
+            pinnedCity={pinnedCity}
+            onHover={hoverCity}
             onSelect={selectCity}
           />
         </div>
@@ -159,10 +216,12 @@ export function GlobalReach({
             href={`mailto:${bookingEmail}?subject=${encodeURIComponent(
               `Booking enquiry — ${tourName}`,
             )}`}
-            className="shows__enquiry"
+            className="btn-tertiary shows__enquiry"
           >
             Not on the list? Bring DJ Ganesh to your city
-            <span aria-hidden>&rarr;</span>
+            <span aria-hidden className="btn__arrow">
+              &rarr;
+            </span>
           </a>
         </p>
       </Container>

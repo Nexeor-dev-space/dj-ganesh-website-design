@@ -3,6 +3,10 @@ import type { SocialLink } from "@/types/site";
 /**
  * The Follow band — his accounts, and the one address that books him.
  *
+ * No longer rendered: the band was folded into the booking panel and the
+ * menu. Kept because `scripts/seed.ts` still seeds the CMS's `follow` group
+ * from it, and that group remains in the schema.
+ *
  * Every link and every caption here is carried over verbatim from the
  * client's own `socials` section; nothing is invented, and no account exists
  * here that does not exist there.

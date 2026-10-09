@@ -75,7 +75,7 @@ export function ExperienceSection({
       <Container className="relative z-10">
         <div className="experience-head">
           <p
-            className="reveal-scroll text-[10px] font-light uppercase tracking-[0.34em] text-accent md:text-[11px]"
+            className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
             style={delay(0)}
           >
             {experienceSectionLabel}

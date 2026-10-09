@@ -1,12 +1,10 @@
-import { milestones } from "@/lib/legacy";
-
 /**
  * The `/about` page.
  *
  * Every fact on this page already exists in the project: the biography comes
- * from `lib/about.ts` (the client's own `index.html` bio), the figures are the
- * client-supplied career stats, and the career preview is three entries lifted
- * from `lib/legacy.ts` verbatim. Nothing here adds a claim — the only new
+ * from `lib/about.ts` (the client's own `index.html` bio) and the figures are
+ * the client-supplied career stats. The archive and the experience sections
+ * render from their own data. Nothing here adds a claim — the only new
  * strings are section labels and the two calls to action.
  */
 
@@ -14,6 +12,7 @@ export const aboutPageLabels = {
   intro: "About",
   story: "The Story",
   identity: "The Sound",
+  /** Seeds the CMS's `labels.experience`; the page itself no longer reads it. */
   experience: "Experience",
 } as const;
 
@@ -51,20 +50,12 @@ export const aboutFrames = {
 } as const;
 
 /**
- * Three entries from the archive — the first, the award and the tour — as a
- * preview of the full history. Selected by id so the copy can never drift from
- * `lib/legacy.ts`.
- */
-export const experiencePreview = ["origin", "taj", "world-tour"]
-  .map((id) => milestones.find((milestone) => milestone.id === id))
-  .filter((milestone) => milestone !== undefined);
-
-/**
- * Both destinations are pages that do not exist yet. They are prepared here so
- * the links are written once, and are plain hrefs rather than `next/link` so
- * nothing breaks at build time while the routes are still missing.
+ * Seeds the CMS's `experiencePreview.experienceHref`. The about page no longer
+ * renders a preview — it carries the full archive — so nothing reads it.
  */
 export const experienceHref = "/performance-history";
+
+/** Written once here; a plain href so the outro stays a simple anchor. */
 export const bookingHref = "/contact";
 
 export const aboutOutro = {

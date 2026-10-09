@@ -196,7 +196,7 @@ export function AudioPlayToggle({ className }: { className?: string }) {
       aria-pressed={isPlaying}
       aria-label={src ? `${label} the hero mix` : "Hero mix not available yet"}
       className={[
-        "group flex items-center gap-sm text-[10px] font-light uppercase tracking-[0.24em]",
+        "group flex items-center gap-sm text-[12px] font-light uppercase tracking-[0.24em]",
         "text-white/70 transition-colors duration-200 hover:text-accent",
         "disabled:cursor-not-allowed disabled:text-white/25 disabled:hover:text-white/25",
         className,

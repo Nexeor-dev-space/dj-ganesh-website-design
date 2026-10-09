@@ -1,7 +1,10 @@
 import type { Statement } from "@/types/statement";
 
 /**
- * The statement plate.
+ * The statement line.
+ *
+ * The home page no longer sets this on its own plate; the line survives here
+ * because the music page prints it verbatim (`data/music-page.ts`).
  *
  * IMPORTANT — this is not a quote from DJ Ganesh, and it is not presented as
  * one. Neither supplied `index.html` contains a single first-person sentence

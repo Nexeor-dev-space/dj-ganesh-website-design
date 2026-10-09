@@ -52,8 +52,16 @@ const About: GlobalConfig = {
       name: 'soundStrands',
       label: 'Sound Strands',
       type: 'array',
-      admin: { description: 'The strands of the sound, e.g. Bollywood / Afrobeats / House.' },
-      fields: [{ name: 'strand', label: 'Strand', type: 'text', required: true }],
+      admin: { description: 'The strands of the sound, e.g. Bollywood / Afrobeats / House. On the home page, hovering a strand swaps the story paragraph for its description.' },
+      fields: [
+        { name: 'strand', label: 'Strand', type: 'text', required: true },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          admin: { description: 'Shown in place of the story paragraph while this strand is hovered on the home page.' },
+        },
+      ],
     },
     {
       type: 'group',

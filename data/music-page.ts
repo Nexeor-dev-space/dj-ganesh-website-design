@@ -1,5 +1,5 @@
 import { statement } from "@/data/statement";
-import { allReleasesUrl, tracks } from "@/data/tracks";
+import { allReleasesUrl, spotifyUrl, tracks } from "@/data/tracks";
 import { soundStrands } from "@/lib/about";
 
 /**
@@ -34,4 +34,4 @@ export const musicPageStrands = soundStrands;
 /** Read from the archive rather than written down, so it cannot drift. */
 export const musicPageCount = tracks.length;
 
-export { allReleasesUrl, tracks };
+export { allReleasesUrl, spotifyUrl, tracks };
