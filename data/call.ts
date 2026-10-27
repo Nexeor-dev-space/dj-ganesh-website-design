@@ -1,5 +1,10 @@
 /**
- * The closing call — the band before the footer.
+ * The closing call.
+ *
+ * No longer rendered: the band is folded into the booking section
+ * (`data/booking.ts`). Kept because `scripts/seed.ts` still seeds the CMS's
+ * `callBand` group from it, and that group remains in the schema.
+ *
  *
  * The copy is the booking block from `djganesh-v2/index.html`, carried over as
  * it stands: its heading, its sentence and the three agencies it names.

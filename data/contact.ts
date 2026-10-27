@@ -69,11 +69,12 @@ export const bookingInfo = {
   copy: "To help us respond quickly, please include your event date, location, venue, event type and expected audience in your enquiry.",
 };
 
+/** No longer rendered — the page ends on the enquiry note. Kept for the seed. */
 export const finalCta = {
   heading: ["Have an event", "in mind?"] as const,
   lede: "Let's talk.",
   label: "Make an enquiry",
-  href: "#booking-enquiry",
+  href: "#booking",
 };
 
 export { bookingEmail };

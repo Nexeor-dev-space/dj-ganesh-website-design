@@ -1,7 +1,7 @@
 import { sql } from '@payloadcms/db-postgres'
 import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."enum_contact_submissions_status" AS ENUM('new', 'read', 'responded');
   CREATE TABLE "contact_submissions" (
@@ -370,7 +370,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "home_page_hero_hero_hero_video_poster_idx" ON "home_page" USING btree ("hero_hero_video_poster_id");`)
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+export async function down({ db }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
    ALTER TABLE "contact_submissions" DISABLE ROW LEVEL SECURITY;
   ALTER TABLE "site_settings_footer_columns_links" DISABLE ROW LEVEL SECURITY;

@@ -64,7 +64,7 @@ export function GallerySection({
       className="gallery section-block relative overflow-hidden"
     >
       <Container className="relative z-10">
-        <h2 id="gallery-title" className="gallery__title reveal-scroll" style={delay(0)}>
+        <h2 id="gallery-title" className="section-title gallery__title reveal-scroll" style={delay(0)}>
           {gallerySectionLabel}
         </h2>
 

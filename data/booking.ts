@@ -25,11 +25,22 @@ import type { BookingLink } from "@/types/booking";
 
 export const bookingSectionLabel = "Booking";
 
-/** Three lines, so the closing statement lands one beat at a time. */
-export const bookingHeading = ["Let's", "Make It", "A Night."] as const;
+/**
+ * The question, two lines so it lands on its own; the second carries the
+ * accent. Carried over from the closing block of `djganesh-v2/index.html`,
+ * which used to be its own band above this section.
+ */
+export const bookingHeading = ["Ready to", "Book?"] as const;
 
-/** The source's own question, carried over as the lede. */
-export const bookingLede = "Want DJ Ganesh at your event?";
+/**
+ * The v2 file's own sentence, naming its three agencies. The other supplied
+ * file names BMT Agency alone, and that is the one the pass links to; the
+ * other two are named here as the source writes them, unlinked. That same v2
+ * file books through `booking@djganesh.com`; the site keeps the one address
+ * it already uses rather than introducing a second.
+ */
+export const bookingLede =
+  "For bookings and inquiries, reach out through BMT Agency, Black Hat Talent, or VStar Entertainment.";
 
 /** The five occasions the source names, in its order. */
 export const bookingScope = [
@@ -41,12 +52,12 @@ export const bookingScope = [
 ] as const;
 
 /**
- * The one action in the section. `mailto:` is the site's actual booking
- * mechanism — swap `href` for a real endpoint if a booking form is ever added.
+ * The one action in the section. Like every "book" action on the site, it
+ * lands on the enquiry form at /contact#booking.
  */
 export const bookingCta = {
   label: "Book DJ Ganesh",
-  href: `mailto:${bookingEmail}`,
+  href: "/contact#booking",
 };
 
 export const bookingLinks: readonly BookingLink[] = [

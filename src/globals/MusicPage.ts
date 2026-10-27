@@ -33,6 +33,12 @@ const MusicPage: GlobalConfig = {
         { name: 'sectionLabel', label: 'Section Label', type: 'text', admin: { placeholder: 'e.g. Latest Drops' } },
         { name: 'heading', label: 'Heading', type: 'text', admin: { placeholder: 'e.g. The Music' } },
         { name: 'allReleasesUrl', label: 'All Releases URL', type: 'text' },
+        {
+          name: 'spotifyUrl',
+          label: 'Spotify URL',
+          type: 'text',
+          admin: { description: 'The "Listen on Spotify" link under the home page music player and at the foot of the Music page.' },
+        },
       ],
     },
   ],

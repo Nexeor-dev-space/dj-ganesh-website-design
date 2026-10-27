@@ -17,7 +17,6 @@ import {
   contactDesks,
   contactMeta,
   enquiryMeta,
-  finalCta,
 } from "@/data/contact";
 import { getContactBooking } from "@/lib/cms/queries";
 
@@ -59,12 +58,6 @@ export default async function ContactPage() {
     heading: str(cms?.bookingInfoBlock?.heading, bookingInfo.heading),
     copy: str(cms?.bookingInfoBlock?.copy, bookingInfo.copy),
   };
-  const cta = {
-    heading: lines(cms?.finalCta?.heading, finalCta.heading),
-    lede: str(cms?.finalCta?.lede, finalCta.lede),
-    label: str(cms?.finalCta?.label, finalCta.label),
-    href: str(cms?.finalCta?.href, finalCta.href),
-  };
   const desks = [
     {
       ...contactDesks[0],
@@ -94,7 +87,7 @@ export default async function ContactPage() {
         <ContactHero meta={meta} />
 
         <RevealSection
-          id="booking-enquiry"
+          id="booking"
           aria-labelledby="enquiry-title"
           className="section-block contact-enquiry relative overflow-hidden"
         >
@@ -131,7 +124,7 @@ export default async function ContactPage() {
         </RevealSection>
 
         <DirectContact desks={desks} socials={socials} />
-        <FinalCta info={info} cta={cta} />
+        <FinalCta info={info} />
       </main>
 
       <Footer />

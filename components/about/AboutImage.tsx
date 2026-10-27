@@ -17,14 +17,18 @@ export function AboutImage({
 } = {}) {
   return (
     <figure data-cursor="explore" className="story-frame">
-      <Image
-        src={aboutPortrait.src}
-        alt={aboutPortrait.alt}
-        fill
-        /* Keeps him and the raised arm in frame as the crop widens. */
-        className="hero-photo object-cover object-[54%_46%] sm:object-[52%_44%] lg:object-[50%_42%]"
-        sizes="(min-width: 1024px) 52vw, 100vw"
-      />
+      {/* The frame turns sticky on desktop; `fill` wants a parent it
+          recognises as positioned, so the image sits in its own layer. */}
+      <div className="absolute inset-0">
+        <Image
+          src={aboutPortrait.src}
+          alt={aboutPortrait.alt}
+          fill
+          /* Keeps him and the raised arm in frame as the crop widens. */
+          className="hero-photo object-cover object-[54%_46%] sm:object-[52%_44%] lg:object-[50%_42%]"
+          sizes="(min-width: 1024px) 52vw, 100vw"
+        />
+      </div>
 
       <div className="story-frame__fade" aria-hidden />
       <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />

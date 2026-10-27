@@ -100,6 +100,9 @@ const ContactBooking: GlobalConfig = {
       type: 'group',
       name: 'finalCta',
       label: 'Contact Final CTA',
+      // The contact page no longer renders this block; hidden so nobody edits
+      // copy that never shows. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         {
           name: 'heading',

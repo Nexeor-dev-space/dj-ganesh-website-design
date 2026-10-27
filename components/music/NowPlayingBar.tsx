@@ -109,8 +109,8 @@ export function NowPlayingBar() {
         {/* Title + waveform — its own line on phones, where a single row
             would squeeze the title down to two letters. */}
         <div className="order-first w-full min-w-0 md:order-none md:w-auto md:flex-1">
-          <p className="flex items-baseline gap-sm text-[11px] font-light uppercase tracking-[0.24em]">
-            <span className="text-white/35 tabular-nums">
+          <p className="flex items-baseline gap-sm text-[12px] font-light uppercase tracking-[0.24em]">
+            <span className="text-white/65 tabular-nums">
               {String(currentIndex + 1).padStart(2, "0")}
             </span>
             <span className="truncate text-foreground">{currentTrack.title}</span>
@@ -118,7 +118,7 @@ export function NowPlayingBar() {
           <AudioVisualizer className="mt-sm hidden h-6 w-full md:block" />
         </div>
 
-        <p className="shrink-0 text-[11px] font-light tabular-nums text-white/45">
+        <p className="shrink-0 text-[12px] font-light tabular-nums text-white/65">
           <span className={isPlaying ? "text-accent" : undefined}>
             {formatTime(currentTime)}
           </span>
@@ -133,7 +133,7 @@ export function NowPlayingBar() {
           target="_blank"
           rel="noreferrer noopener"
           aria-label={`Watch ${currentTrack.title} on YouTube`}
-          className="hidden shrink-0 text-[10px] font-light uppercase tracking-[0.24em] text-white/45 transition-colors duration-200 hover:text-accent lg:block"
+          className="hidden shrink-0 text-[12px] font-light uppercase tracking-[0.24em] text-white/65 transition-colors duration-200 hover:text-accent lg:block"
         >
           YouTube <span aria-hidden>↗</span>
         </a>

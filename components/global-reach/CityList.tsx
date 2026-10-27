@@ -7,6 +7,8 @@ type CityListProps = {
   cities?: readonly TourCity[];
   shows?: readonly TourShow[];
   activeCity: string | null;
+  /** The city held by a press, as opposed to merely pointed at. */
+  pinnedCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
 };
@@ -29,6 +31,7 @@ export function CityList({
   cities: tourCities = defaultCities,
   shows = defaultShows,
   activeCity,
+  pinnedCity,
   onHover,
   onSelect,
 }: CityListProps) {
@@ -47,6 +50,7 @@ export function CityList({
               type="button"
               className="city-run__city"
               data-active={activeCity === city.name}
+              data-pinned={pinnedCity === city.name}
               data-booked={Boolean(show)}
               /* The globe already carries this city's date and venue; the
                  label says which cities have one so the strip is readable
@@ -56,14 +60,18 @@ export function CityList({
                   ? `View the ${city.name} show, ${show.day} ${show.month} 2026 at ${show.venue}`
                   : `View shows in ${city.name} — no date announced`
               }
-              aria-pressed={activeCity === city.name}
+              aria-pressed={pinnedCity === city.name}
               onPointerEnter={(event) => {
                 if (event.pointerType === "mouse") onHover(city.name);
               }}
               onPointerLeave={(event) => {
                 if (event.pointerType === "mouse") onHover(null);
               }}
-              onFocus={() => onHover(city.name)}
+              onFocus={(event) => {
+                // Only a visible focus previews: a mouse click focuses too,
+                // and treating that as a hover left cities stuck "hovered".
+                if (event.currentTarget.matches(":focus-visible")) onHover(city.name);
+              }}
               onBlur={() => onHover(null)}
               onClick={() => onSelect(city.name)}
             >

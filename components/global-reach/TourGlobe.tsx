@@ -18,7 +18,8 @@ type TourGlobeProps = {
   route?: readonly string[];
   activeCity: string | null;
   onHoverCity: (city: string | null) => void;
-  onSelectCity: (city: string) => void;
+  /** `null` when the press lands on the empty globe, which releases a pin. */
+  onSelectCity: (city: string | null) => void;
   onAnchorChange: (anchor: GlobeAnchor | null) => void;
 };
 
@@ -214,15 +215,15 @@ export function TourGlobe({
     const drawSphere = () => {
       // A faint atmosphere so the globe reads as a body, not a scatter of dots.
       const halo = ctx.createRadialGradient(cx, cy, radius * 0.82, cx, cy, radius * 1.14);
-      halo.addColorStop(0, "rgba(255, 255, 255, 0.045)");
-      halo.addColorStop(0.55, "rgba(255, 213, 0, 0.035)");
+      halo.addColorStop(0, "rgba(255, 255, 255, 0.08)");
+      halo.addColorStop(0.55, "rgba(255, 213, 0, 0.06)");
       halo.addColorStop(1, "rgba(255, 255, 255, 0)");
       ctx.fillStyle = halo;
       ctx.beginPath();
       ctx.arc(cx, cy, radius * 1.14, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.07)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -236,7 +237,7 @@ export function TourGlobe({
     const drawLand = (reveal: number) => {
       for (const bucket of bucketPaths) bucket.length = 0;
 
-      const size = radius > 220 ? 1.5 : 1.2;
+      const size = radius > 220 ? 1.8 : 1.4;
       // The cloud is sampled for a full-size globe. On a phone the same dots
       // land within a couple of pixels of each other and read as a solid ball,
       // so half of them are dropped rather than drawn on top of one another.
@@ -264,7 +265,7 @@ export function TourGlobe({
 
         // Dots near the limb fade out, which gives the sphere its curvature.
         const depth = (b + 0.5) / BUCKETS;
-        ctx.fillStyle = `rgba(255, 255, 255, ${((0.1 + depth * 0.3) * reveal).toFixed(3)})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${((0.2 + depth * 0.5) * reveal).toFixed(3)})`;
         for (let i = 0; i < coords.length; i += 2) {
           ctx.fillRect(coords[i] - size / 2, coords[i + 1] - size / 2, size, size);
         }
@@ -334,11 +335,11 @@ export function TourGlobe({
       // and again while the city is still arriving.
       const facing = Math.min(1, p.z * 2.6) * appear;
       if (facing <= 0.001) return;
-      const base = city.hub ? 3.6 : 2.8;
+      const base = city.hub ? 4.4 : 3.6;
 
       const glowRadius = base * (isActive ? 6 : 3);
       const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowRadius);
-      glow.addColorStop(0, `rgba(${ACCENT}, ${(isActive ? 0.5 : 0.2) * facing})`);
+      glow.addColorStop(0, `rgba(${ACCENT}, ${(isActive ? 0.55 : 0.3) * facing})`);
       glow.addColorStop(1, `rgba(${ACCENT}, 0)`);
       ctx.fillStyle = glow;
       ctx.beginPath();
@@ -356,11 +357,13 @@ export function TourGlobe({
         }
       }
 
+      // Every city is a marker in the accent — a date announced or not —
+      // with the route's cities a touch brighter and the active one white.
       ctx.fillStyle = isActive
         ? `rgba(255, 255, 255, ${facing.toFixed(3)})`
         : onRoute
-          ? `rgba(${ACCENT}, ${(0.92 * facing).toFixed(3)})`
-          : `rgba(255, 255, 255, ${(0.55 * facing).toFixed(3)})`;
+          ? `rgba(${ACCENT}, ${(0.95 * facing).toFixed(3)})`
+          : `rgba(${ACCENT}, ${(0.75 * facing).toFixed(3)})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, isActive ? base + 1 : base, 0, Math.PI * 2);
       ctx.fill();
@@ -370,7 +373,7 @@ export function TourGlobe({
       // Labels only where the surface faces us squarely enough to read.
       if (p.z < 0.3) return;
 
-      const labelSize = width < 640 ? 9 : 10;
+      const labelSize = width < 640 ? 10 : 11;
       ctx.font = `${isActive || city.hub ? 600 : 400} ${labelSize}px ui-sans-serif, system-ui, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = (city.labelDy ?? 0) < 0 ? "bottom" : "top";
@@ -379,8 +382,8 @@ export function TourGlobe({
       ctx.fillStyle = isActive
         ? `rgba(${ACCENT}, ${labelAlpha.toFixed(3)})`
         : city.hub
-          ? `rgba(255, 255, 255, ${(0.82 * labelAlpha).toFixed(3)})`
-          : `rgba(255, 255, 255, ${(0.45 * labelAlpha).toFixed(3)})`;
+          ? `rgba(255, 255, 255, ${(0.92 * labelAlpha).toFixed(3)})`
+          : `rgba(255, 255, 255, ${(0.72 * labelAlpha).toFixed(3)})`;
       // Keep the label inside the canvas — near the limb the offset can push
       // a name off the edge, where it would simply be clipped mid-word.
       const label = city.name.toUpperCase();
@@ -586,7 +589,12 @@ export function TourGlobe({
         event.clientY,
         event.pointerType === "mouse" ? 18 : 28,
       );
-      if (hit) selectHandlerRef.current(hit);
+      // A press on the empty sphere releases whatever is pinned; one on a
+      // marker pins that city. Presses outside the sphere do nothing.
+      const rect = canvas.getBoundingClientRect();
+      const onSphere =
+        Math.hypot(event.clientX - rect.left - cx, event.clientY - rect.top - cy) <= radius;
+      if (hit || onSphere) selectHandlerRef.current(hit);
     };
 
     canvas.addEventListener("pointermove", onPointerMove);

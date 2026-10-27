@@ -1,7 +1,7 @@
 import { sql } from '@payloadcms/db-postgres'
 import type { MigrateUpArgs, MigrateDownArgs } from '@payloadcms/db-postgres'
 
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."enum_upcoming_shows_show_status" AS ENUM('upcoming', 'past', 'cancelled');
   CREATE TYPE "public"."enum_upcoming_shows_status" AS ENUM('draft', 'published');
@@ -677,7 +677,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "contact_booking_social_links_parent_id_idx" ON "contact_booking_social_links" USING btree ("_parent_id");`)
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
+export async function down({ db }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
    DROP TABLE "users_sessions" CASCADE;
   DROP TABLE "users" CASCADE;

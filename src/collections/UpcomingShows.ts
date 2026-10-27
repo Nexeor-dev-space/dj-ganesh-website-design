@@ -32,7 +32,7 @@ const UpcomingShows: CollectionConfig = {
       name: 'poster',
       label: 'Event Poster / Image',
       type: 'upload',
-      relationTo: 'media' as any,
+      relationTo: 'media',
     },
     {
       name: 'ticketUrl',

@@ -20,7 +20,7 @@ const Gallery: CollectionConfig = {
       type: 'array',
       minRows: 1,
       fields: [
-        { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' as any, required: true },
+        { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', required: true },
         { name: 'caption', label: 'Caption', type: 'text' },
       ],
     },

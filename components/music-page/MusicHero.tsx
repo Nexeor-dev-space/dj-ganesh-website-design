@@ -4,10 +4,8 @@ import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import {
-  musicPageCount,
   musicPageLabels,
   musicPageStatement,
-  musicPageStrands,
   musicPageTitle,
 } from "@/data/music-page";
 
@@ -16,25 +14,20 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 /**
  * 01 — The way in.
  *
- * One word at page scale, the bio's own line about the sound under it, and the
- * two facts the archive can actually state about itself: how many tracks it
- * holds and what they are made of. Deliberately short — the listening starts
- * one screen down, and a full viewport of type would only delay it.
+ * One word at page scale and the bio's own line about the sound under it.
+ * Deliberately short — the listening starts right below, and a full viewport
+ * of type would only delay it.
  */
 type MusicHeroProps = {
   intro?: string;
   title?: string;
   statement?: string;
-  strands?: readonly string[];
-  count?: number;
 };
 
 export function MusicHero({
   intro = musicPageLabels.intro,
   title = musicPageTitle,
   statement = musicPageStatement,
-  strands = musicPageStrands,
-  count = musicPageCount,
 }: MusicHeroProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
@@ -60,25 +53,6 @@ export function MusicHero({
         <p className="reveal-scroll music-hero__statement" style={delay(180)}>
           {statement}
         </p>
-
-        <div className="reveal-scroll music-hero__meta" style={delay(260)}>
-          <p className="music-hero__strands">
-            {strands.map((strand, index) => (
-              <span key={strand}>
-                {index > 0 ? (
-                  <span aria-hidden className="mx-sm text-white/25">
-                    /
-                  </span>
-                ) : null}
-                {strand}
-              </span>
-            ))}
-          </p>
-
-          <p className="music-hero__count">
-            {count} tracks · Play in full
-          </p>
-        </div>
       </Container>
     </section>
   );

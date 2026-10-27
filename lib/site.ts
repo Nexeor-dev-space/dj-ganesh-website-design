@@ -28,7 +28,8 @@ export const navLinks = [
 ] as const;
 
 /** Where the navigation's accent button goes. */
-export const bookingHref = "/contact";
+/** Every "book" action lands on the enquiry form, not the top of /contact. */
+export const bookingHref = "/contact#booking";
 
 /**
  * Profiles shown in the navigation rail.
@@ -49,5 +50,10 @@ export const socialLinks = [
     label: "YouTube",
     href: "https://www.youtube.com/@DJGANESH_DJG",
     icon: "youtube",
+  },
+  {
+    label: "Spotify",
+    href: "https://open.spotify.com/artist/7xN2ufjWKVWZnhZJu8DKDn",
+    icon: "spotify",
   },
 ] as const satisfies readonly SocialLink[];

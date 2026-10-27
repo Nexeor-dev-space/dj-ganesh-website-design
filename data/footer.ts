@@ -6,9 +6,8 @@ import type { FooterSocialLink } from "@/types/footer";
  * Anchors point at section ids that exist in this build — verified against the
  * rendered sections, not copied from the old markup, which linked to pages and
  * sections this site does not have. Social handles and the copyright line come
- * verbatim from the client's existing `index.html`; no account is invented,
- * and platforms absent from the source (Spotify, SoundCloud) are simply not
- * listed.
+ * verbatim from the client's existing `index.html`, plus the Spotify artist
+ * page the client supplied later; no account is invented.
  */
 
 /**
@@ -42,6 +41,11 @@ export const footerColumns = [
         href: "https://www.youtube.com/@DJGANESH_DJG",
         external: true,
       },
+      {
+        label: "Spotify · DJ Ganesh",
+        href: "https://open.spotify.com/artist/7xN2ufjWKVWZnhZJu8DKDn",
+        external: true,
+      },
     ],
   },
   {
@@ -61,7 +65,7 @@ export const footerColumns = [
     links: [
       { label: "info@djganeshbombay.com", href: "mailto:info@djganeshbombay.com" },
       { label: "BMT Agency", href: "https://www.bmtagency.in", external: true },
-      { label: "Enquire", href: "#booking" },
+      { label: "Enquire", href: "/contact#booking" },
     ],
   },
 ] as const;
@@ -94,7 +98,10 @@ export const footerSocialLinks = [
 /** Secondary, deliberately quiet — the Booking section owns the real CTA. */
 export const footerContactEmail = "info@djganeshbombay.com";
 
-/** The frame the site closes on. */
+/**
+ * Seeds the CMS's footer `statement`; the footer no longer prints a rail,
+ * so nothing on the site reads it.
+ */
 export const footerStatement = "Follow the sound";
 
 /** Carried over verbatim from the source footer. */

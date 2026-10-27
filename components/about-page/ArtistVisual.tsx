@@ -87,7 +87,7 @@ export function ArtistVisual({
 
             <h2
               id="about-sound-title"
-              className="reveal-scroll about-visual__strands mt-lg md:mt-xl"
+              className="reveal-scroll about-visual__strands mt-eyebrow"
               style={delay(160)}
             >
               {strands.map((strand, index) => (

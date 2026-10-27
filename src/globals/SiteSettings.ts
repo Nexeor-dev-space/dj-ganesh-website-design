@@ -10,8 +10,8 @@ const SiteSettings: GlobalConfig = {
   access: { read: () => true },
   fields: [
     { name: 'siteName', label: 'Site / Brand Name', type: 'text', required: true },
-    { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' as any },
-    { name: 'favicon', label: 'Favicon', type: 'upload', relationTo: 'media' as any },
+    { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
+    { name: 'favicon', label: 'Favicon', type: 'upload', relationTo: 'media' },
     {
       type: 'group',
       name: 'seo',

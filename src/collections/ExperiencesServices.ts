@@ -15,7 +15,7 @@ const ExperiencesServices: CollectionConfig = {
     { name: 'title', label: 'Title', type: 'text', required: true },
     { name: 'shortDescription', label: 'Short Description', type: 'text', required: true },
     { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea' },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' as any },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     {
       name: 'features',
       label: 'Features / Highlights',

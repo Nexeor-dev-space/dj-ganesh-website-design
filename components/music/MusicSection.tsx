@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { MusicCard } from "@/components/music/MusicCard";
 import { MusicProvider } from "@/components/music/MusicProvider";
+import { VinylCarousel } from "@/components/music/VinylCarousel";
 import {
-  allReleasesUrl as defaultAllReleasesUrl,
+  spotifyUrl as defaultSpotifyUrl,
   musicHeading as defaultHeading,
   musicSectionLabel as defaultLabel,
   tracks as defaultTracks,
@@ -15,33 +15,26 @@ import type { Track } from "@/types/music";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
-/** Stagger between cards, in ms. */
-const STEP = 90;
-
 /**
  * Section 03 — Latest Drops.
  *
- * The catalogue as a grid of release cards, rebuilt from the client's own
- * releases section: centred header, four cards, one link out to the channel.
+ * The releases as records in their sleeves: one at the centre with its
+ * neighbours in at the edges, arrows either side, and the record sliding out
+ * of its sleeve to play — see `VinylCarousel`.
  *
- * This replaced a rack of rotating CD cases. The rack was one release at a
- * time behind a carousel, which put three of the four out of sight and made
- * the artwork the subject instead of the music; the cards show the whole
- * catalogue at once and give each release its title, genre and video.
- *
- * `MusicProvider` wraps the section, so all four cards are views of one audio
+ * `MusicProvider` wraps the section, so every sleeve is a view of one audio
  * element — which is what makes "only one track at a time" a property of the
- * section rather than something each card has to remember.
+ * section rather than something each sleeve has to remember.
  */
 export function MusicSection({
   musicSectionLabel = defaultLabel,
   musicHeading = defaultHeading,
-  allReleasesUrl = defaultAllReleasesUrl,
+  spotifyUrl = defaultSpotifyUrl,
   tracks = defaultTracks,
 }: {
   musicSectionLabel?: string;
   musicHeading?: string;
-  allReleasesUrl?: string;
+  spotifyUrl?: string;
   tracks?: Track[];
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -91,39 +84,15 @@ export function MusicSection({
             </h2>
           </div>
 
-          <ul className="releases__grid">
-            {tracks.map((track, index) => (
-              <MusicCard
-                key={track.id}
-                track={track}
-                index={index}
-                delay={200 + index * STEP}
-              />
-            ))}
-          </ul>
+          <VinylCarousel style={delay(200)} spotifyUrl={spotifyUrl} />
 
-          <div
-            className="reveal-scroll releases__cta"
-            style={delay(200 + tracks.length * STEP)}
-          >
-            <a
-              href={allReleasesUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="releases__button btn-sweep"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.2c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8ZM9.5 15.6V8.4l6.3 3.6-6.3 3.6Z" />
-              </svg>
-              All Releases on YouTube
-              <span aria-hidden className="releases__button-arrow">
+          <div className="reveal-scroll releases__cta" style={delay(320)}>
+            {/* The section is the four latest; the archive is all of them. */}
+            <Link href="/music" className="btn-tertiary">
+              View the full archive
+              <span aria-hidden className="btn__arrow">
                 →
               </span>
-            </a>
-
-            {/* The section is the four latest; the archive is all of them. */}
-            <Link href="/music" className="releases__archive">
-              View the full archive <span aria-hidden>→</span>
             </Link>
           </div>
         </Container>

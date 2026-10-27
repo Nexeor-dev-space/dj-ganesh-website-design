@@ -21,7 +21,7 @@ const PerformanceHistory: CollectionConfig = {
       ],
     },
     { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' as any },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     {
       name: 'category',
       label: 'Category / Geography',

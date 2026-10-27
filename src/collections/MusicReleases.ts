@@ -27,7 +27,7 @@ const MusicReleases: CollectionConfig = {
       required: true,
     },
     { name: 'artist', label: 'Artist / Credits', type: 'text' },
-    { name: 'artwork', label: 'Artwork', type: 'upload', relationTo: 'media' as any },
+    { name: 'artwork', label: 'Artwork', type: 'upload', relationTo: 'media' },
     {
       name: 'youtubeUrl',
       label: 'YouTube URL',

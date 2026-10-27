@@ -1,9 +1,13 @@
 'use client'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 type Sub = { id: number | string; name?: string; email?: string; eventType?: string; status?: string; createdAt?: string }
 
-const SITE = 'http://localhost:3000'
+// The admin is served by the same app as the site, so the site is at the root
+// of whatever host this is — a hard-coded localhost sent editors in
+// production to their own machine.
+const SITE = ''
 
 async function count(slug: string, where = ''): Promise<number | null> {
   try {
@@ -59,10 +63,10 @@ export default function Dashboard() {
   }, [])
 
   const stat = (label: string, key: string, href: string) => (
-    <a href={href} style={card} key={key}>
+    <Link href={href} style={card} key={key}>
       <div style={{ fontSize: 28, fontWeight: 800, color: '#ff6b00' }}>{counts[key] ?? '–'}</div>
       <div style={{ fontSize: 13, opacity: 0.85 }}>{label}</div>
-    </a>
+    </Link>
   )
 
   return (
@@ -70,9 +74,9 @@ export default function Dashboard() {
       <h2 style={{ marginBottom: 4 }}>Welcome back</h2>
       <p style={{ opacity: 0.75, marginTop: 0 }}>Quick actions and a snapshot of your site.</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, margin: '16px 0' }}>
-        <a style={btn} href="/admin/globals/home-page">Edit Home Page</a>
-        <a style={btn} href="/admin/collections/upcoming-shows/create">Add Show</a>
-        <a style={btn} href="/admin/collections/music-releases/create">Add Music</a>
+        <Link style={btn} href="/admin/globals/home-page">Edit Home Page</Link>
+        <Link style={btn} href="/admin/collections/upcoming-shows/create">Add Show</Link>
+        <Link style={btn} href="/admin/collections/music-releases/create">Add Music</Link>
         <a style={btn} href={SITE + '/'} target="_blank" rel="noreferrer">View live site</a>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12 }}>
@@ -87,12 +91,12 @@ export default function Dashboard() {
       ) : (
         <div style={{ display: 'grid', gap: 8 }}>
           {subs.map((s) => (
-            <a key={s.id} style={card} href={`/admin/collections/contact-submissions/${s.id}`}>
+            <Link key={s.id} style={card} href={`/admin/collections/contact-submissions/${s.id}`}>
               <strong>{s.name}</strong> <span style={{ opacity: 0.7 }}>· {s.email}</span>
               <div style={{ fontSize: 12, opacity: 0.7 }}>
                 {s.eventType || 'Enquiry'} · {s.status} · {s.createdAt ? new Date(s.createdAt).toLocaleString() : ''}
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}
