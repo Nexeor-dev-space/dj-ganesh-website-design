@@ -44,3 +44,17 @@ export const galleryItems = [
     href: "https://www.youtube.com/watch?v=VL2xSyB0dQE",
   },
 ] as const;
+
+/**
+ * The reel that opens the gallery, ahead of the covers: footage from his
+ * latest headline nights, with those nights listed beside it.
+ */
+export const galleryFeature = {
+  videoSrc: "/videos/recent-big-shows.mp4",
+  poster: "/images/recent-big-shows-poster.jpg",
+  label: "Recent Big Shows",
+  shows: [
+    "Emraan Hashmi at Quake Hyderabad",
+    "Honey Singh at Surf Club Dubai",
+  ],
+} as const;
