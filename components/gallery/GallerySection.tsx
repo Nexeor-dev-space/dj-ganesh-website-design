@@ -37,6 +37,7 @@ export function GallerySection({
   galleryItems?: readonly { src: string; alt: string; href: string }[];
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -59,6 +60,28 @@ export function GallerySection({
     return () => observer.disconnect();
   }, []);
 
+  // Play the reel while it is on screen. Reduced-motion visitors start it
+  // themselves from the controls.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -74,13 +97,16 @@ export function GallerySection({
 
         <figure className="gallery__feature reveal-scroll" style={delay(60)}>
           <div className="gallery__video-frame">
-            {/* Nothing is fetched until the visitor presses play: the poster
-                stands in, and the file streams from its first second. */}
+            {/* Muted so the browser lets it autoplay; nothing is fetched until
+                it scrolls into view, and it pauses again once out of it. */}
             <video
+              ref={videoRef}
               className="gallery__video"
               src={galleryFeature.videoSrc}
               poster={galleryFeature.poster}
               preload="none"
+              muted
+              loop
               controls
               playsInline
             />

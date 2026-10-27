@@ -3392,18 +3392,30 @@
     color: var(--foreground);
   }
 
-  /* The reel ahead of the covers: full width on a phone, the footage taking
-     two-thirds beside its list of nights from a laptop up. */
+  /* The reel ahead of the covers, the full width of the grid, with its
+     nights in one line underneath. */
   .gallery__feature {
     display: grid;
     gap: var(--space-md);
     margin: 0 0 var(--rhythm-block);
   }
 
-  @media (width >= 1024px) {
-    .gallery__feature {
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-      align-items: end;
+  @media (width >= 768px) {
+    .gallery__shows {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .gallery__shows-title {
+      margin: 0;
+    }
+
+    .gallery__shows-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
     }
   }
 
