@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import {
+  galleryFeature,
   galleryItems as defaultItems,
   gallerySectionLabel as defaultLabel,
 } from "@/data/gallery";
@@ -15,6 +16,9 @@ const STEP = 70;
 
 /**
  * Section — Gallery.
+ *
+ * Opens on the recent-shows reel with the nights it was cut from, then the
+ * six covers.
  *
  * Six covers on one ruled grid, held back to grey until pointed at. Built to
  * the client's own composition: a 16:9 tile, a hairline between them rather
@@ -67,6 +71,29 @@ export function GallerySection({
         <h2 id="gallery-title" className="section-title gallery__title reveal-scroll" style={delay(0)}>
           {gallerySectionLabel}
         </h2>
+
+        <figure className="gallery__feature reveal-scroll" style={delay(60)}>
+          <div className="gallery__video-frame">
+            {/* Nothing is fetched until the visitor presses play: the poster
+                stands in, and the file streams from its first second. */}
+            <video
+              className="gallery__video"
+              src={galleryFeature.videoSrc}
+              poster={galleryFeature.poster}
+              preload="none"
+              controls
+              playsInline
+            />
+          </div>
+          <figcaption className="gallery__shows">
+            <h3 className="gallery__shows-title">{galleryFeature.label}</h3>
+            <ul className="gallery__shows-list">
+              {galleryFeature.shows.map((show) => (
+                <li key={show}>{show}</li>
+              ))}
+            </ul>
+          </figcaption>
+        </figure>
 
         <ul className="gallery__grid">
           {galleryItems.map((item, index) => (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/layout/Container";
@@ -16,7 +17,7 @@ import {
 import type { SocialLink } from "@/types/site";
 
 /**
- * Fixed navigation bar: outlined wordmark on the left, social rail, a single
+ * Fixed navigation bar: the logo on the left, social rail, a single
  * accent call-to-action and a hamburger that opens the full-screen menu.
  * Links live in the overlay so the bar itself stays quiet at every width.
  *
@@ -95,9 +96,16 @@ export function Navbar() {
             onClick={(event) => toTopIfCurrent(event, "/")}
             className="group inline-flex items-center px-4 py-2 transition-opacity duration-200 hover:opacity-80 md:px-6 md:py-2.5"
           >
-            <span className="font-display text-[13px] font-bold uppercase leading-none tracking-[0.28em] md:text-[15px]">
-              DJ<span className="text-accent">&nbsp;Ganesh</span>
-            </span>
+            {/* The client's mark: white on transparent, cropped tight, so its
+                height alone sets the size. */}
+            <Image
+              src="/images/logo-dj-ganesh.png"
+              alt=""
+              width={1004}
+              height={148}
+              priority
+              className="h-6 w-auto md:h-8"
+            />
           </Link>
 
           <div className="flex items-center gap-sm">

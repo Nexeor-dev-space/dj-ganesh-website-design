@@ -3392,6 +3392,60 @@
     color: var(--foreground);
   }
 
+  /* The reel ahead of the covers: full width on a phone, the footage taking
+     two-thirds beside its list of nights from a laptop up. */
+  .gallery__feature {
+    display: grid;
+    gap: var(--space-md);
+    margin: 0 0 var(--rhythm-block);
+  }
+
+  @media (width >= 1024px) {
+    .gallery__feature {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      align-items: end;
+    }
+  }
+
+  .gallery__video-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #060606;
+  }
+
+  .gallery__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gallery__shows-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-consul), var(--font-display);
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+
+  .gallery__shows-list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--foreground);
+    font-size: 1rem;
+  }
+
+  .gallery__shows-list li {
+    padding-left: 1rem;
+    border-left: 2px solid var(--accent);
+  }
+
   /* A hairline between tiles rather than a gutter, so the six read as one
      sheet. Two columns on a phone, as the client's own grid does; the covers
      carry their titles in the artwork and stay readable at half width. */
