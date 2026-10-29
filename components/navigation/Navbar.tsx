@@ -103,7 +103,13 @@ export function Navbar() {
               alt=""
               width={1004}
               height={148}
-              priority
+              /* The largest thing on screen as the page opens, so it is
+                 fetched first. `preload` replaces the deprecated `priority`
+                 in Next 16; `sizes` matches the 24px / 32px tall render so a
+                 phone fetches a small file rather than the full width. */
+              preload
+              fetchPriority="high"
+              sizes="(min-width: 768px) 217px, 163px"
               className="h-6 w-auto md:h-8"
             />
           </Link>
