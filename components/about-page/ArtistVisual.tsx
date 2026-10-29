@@ -59,9 +59,9 @@ export function ArtistVisual({
                 alt={portrait.alt}
                 fill
                 className="about-visual__image object-cover object-[50%_28%]"
-                sizes="(min-width: 1024px) 44vw, 100vw"
+                sizes="(min-width: 1024px) 32vw, 100vw"
+                quality={90}
               />
-              <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
             </div>
 
             <div
@@ -74,9 +74,9 @@ export function ArtistVisual({
                 alt={decks.alt}
                 fill
                 className="about-visual__image object-cover object-[52%_42%]"
-                sizes="(min-width: 1024px) 26vw, 60vw"
+                sizes="(min-width: 1024px) 17vw, 60vw"
+                quality={90}
               />
-              <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
             </div>
           </div>
 

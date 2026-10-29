@@ -233,10 +233,17 @@ for (const [i, t] of testimonials.entries()) {
   )
 }
 
+// A card is found by its current title or any it used to have, so renaming one
+// in code updates the CMS card instead of adding a second beside it.
+const formerTitles: Record<string, string[]> = { 'Club Nights': ['Club Residencies'] }
+const offeringWhere = (title: string): Where => ({
+  or: [title, ...(formerTitles[title] ?? [])].map((t) => ({ title: { equals: t } })),
+})
+
 for (const [i, o] of offerings.entries()) {
   await upsert(
     'experiences-services',
-    { title: { equals: o.title } },
+    offeringWhere(o.title),
     {
       title: o.title,
       shortDescription: o.summary,
@@ -305,7 +312,7 @@ for (const [i, t] of testimonials.entries()) {
 }
 const offeringImg = [wall('wedding'), artworkIds[2], aboutDecks]
 for (const [i, o] of offerings.entries()) {
-  await upsert('experiences-services', { title: { equals: o.title } }, { image: offeringImg[i] })
+  await upsert('experiences-services', offeringWhere(o.title), { image: offeringImg[i] })
 }
 }
 
@@ -431,7 +438,9 @@ await g('music-page', {
 await g('contact-booking', {
   bookingEmail,
   enquiryEmail: bookingEmail,
-  agency: { agencyName: 'BMT Agency', agencyWebsite: 'https://www.bmtagency.in' },
+  // No agency of record: bookings go through Black Hat Talent or VStar (named in
+  // the call band) or to Ganesh directly.
+  agency: { agencyName: null, agencyWebsite: null },
   socialLinks: footerSocialLinks.filter((s) => s.icon !== 'email').map((s) => ({ platform: s.icon, url: s.href })),
   bookingCtaText: bookingCta.label,
   // The site-wide Book CTA (used by the Navbar) historically points at /contact

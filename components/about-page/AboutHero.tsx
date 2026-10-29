@@ -4,7 +4,7 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { aboutFrames, aboutPageLabels, aboutStatement } from "@/data/about-page";
+import { aboutFrames, aboutPageLabels } from "@/data/about-page";
 import { aboutParagraphs } from "@/data/about-page";
 import { careerStart, soundStrands } from "@/lib/about";
 import { siteConfig } from "@/lib/site";
@@ -21,7 +21,6 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  */
 type AboutHeroProps = {
   intro?: string;
-  statement?: string;
   strands?: readonly string[];
   since?: string;
   lede?: string;
@@ -30,7 +29,6 @@ type AboutHeroProps = {
 
 export function AboutHero({
   intro = aboutPageLabels.intro,
-  statement = aboutStatement,
   strands = soundStrands,
   since = careerStart,
   lede = aboutParagraphs[2],
@@ -50,14 +48,14 @@ export function AboutHero({
           src={stage.src}
           alt={stage.alt}
           fill
-          priority
+          preload
           sizes="100vw"
-          /* Holds his face and the lit wall behind him as the crop narrows. */
-          className="about-hero__image object-cover object-[46%_34%] md:object-[48%_38%]"
+          quality={90}
+          /* Keeps the decks and the lit crowd in frame as the crop narrows. */
+          className="about-hero__image object-cover object-[50%_55%] md:object-[50%_45%]"
         />
         <div className="about-hero__fade" aria-hidden />
 
-        <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
       </div>
 
       <Container className="about-hero__body relative z-10">
@@ -73,9 +71,6 @@ export function AboutHero({
           {siteConfig.name}
         </h1>
 
-        <p className="reveal-scroll about-hero__statement" style={delay(180)}>
-          {statement}
-        </p>
 
         <div className="reveal-scroll about-hero__meta" style={delay(260)}>
           <p className="about-hero__strands">
@@ -91,7 +86,8 @@ export function AboutHero({
             ))}
           </p>
 
-          <p className="about-hero__since">Mumbai · {since}</p>
+          {/* No year until the revised bio arrives; the city stands alone. */}
+          <p className="about-hero__since">Mumbai{since ? ` · ${since}` : ""}</p>
         </div>
 
         <p className="reveal-scroll about-hero__lede" style={delay(340)}>

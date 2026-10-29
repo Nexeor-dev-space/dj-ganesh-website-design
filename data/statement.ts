@@ -24,12 +24,12 @@ import type { Statement } from "@/types/statement";
 export const statementLabel = "The Statement";
 
 export const statement: Statement = {
-  /** Verbatim from the client's bio: "Bollywood, Afrobeats and house, mixed into one." */
-  lines: ["Bollywood, Afrobeats", "and house, mixed", "into one."],
+  /** Retired as a title: the plate no longer leads with the bio's line. */
+  lines: [],
   /** False until the line above is something he actually said. */
   spoken: false,
   /** Set in the name face, the way the banner and footer are. */
   name: "DJ Ganesh",
   /** The small line under the signature. */
-  note: "The BollyAfro sound · Mumbai, 1998 —",
+  note: "The BollyAfro sound · Mumbai —",
 };

@@ -35,16 +35,12 @@ export function Hero({
 
       <Container className="hero__inner relative z-10">
         <p className="hero__kicker reveal" style={delay(300)}>
-          BollyAfro Pioneer
+          Wedding DJ &amp; BollyAfro Pioneer
         </p>
 
         <h1 id="hero-title" className="hero__title reveal" style={delay(400)}>
           DJ Ganesh
         </h1>
-
-        <p className="hero__sub reveal" style={delay(500)}>
-          Est. 1998 · Mumbai, India
-        </p>
 
         <div className="hero__ctas reveal" style={delay(600)}>
           {/* Both carry the site's sweep: the label is wrapped so it drifts

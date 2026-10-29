@@ -1,4 +1,4 @@
-import type { Offering } from "@/types/experience";
+import type { Offering, Venue } from "@/types/experience";
 
 /**
  * The Experience — what he is actually booked for.
@@ -12,6 +12,18 @@ export const experienceSectionLabel = "What I Do";
 
 /** Set in two lines so it breaks like the other section titles. */
 export const experienceHeading = ["The", "Experience"] as const;
+
+/**
+ * The rooms the Club Nights card pictures. The photos are stand-ins from the
+ * site's own library — swap `image` for each venue's own shot when it lands.
+ * Keyed by title in the about page, so the CMS card picks them up too.
+ */
+// TODO: replace with venue photos from Club 77 London, Surf Club Dubai and Kenya.
+export const clubNightVenues: readonly Venue[] = [
+  { name: "Club 77 London", image: "/images/s-2.jpg" },
+  { name: "Surf Club Dubai", image: "/images/hero-beach-club-mumbai.jpg" },
+  { name: "Kenya", image: "/images/s-3.jpg" },
+];
 
 export const offerings: readonly Offering[] = [
   {
@@ -28,15 +40,16 @@ export const offerings: readonly Offering[] = [
   },
   {
     id: "02",
-    title: "Club Residencies",
+    title: "Club Nights",
     summary:
-      "Resident at Bastian (Mumbai, Bengaluru, Goa), Surf Club Dubai and Willingdon Sports Club. Every weekend is a sold-out headline set.",
+      "Club nights at Club 77 London, Surf Club Dubai, Kenya and Bastian (Mumbai, Bengaluru, Goa): peak-hour BollyAfro for the room.",
     points: [
-      "Bastian Mumbai · Bengaluru · Goa",
-      "Surf Club Dubai & Willingdon Club",
-      "Peak-hour BollyAfro every weekend",
+      "Club 77 London · Surf Club Dubai",
+      "Kenya · Bastian Mumbai, Bengaluru, Goa",
+      "Peak-hour BollyAfro sets",
     ],
     cta: "Reserve VIP",
+    venues: clubNightVenues,
   },
   {
     id: "03",

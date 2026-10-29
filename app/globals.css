@@ -15,7 +15,11 @@
   --border: rgba(255, 255, 255, 0.12);
 
   /* The single signature accent — electric, atmospheric, used sparingly. */
-  --accent: #ffd500;
+  /* Emerald. Near-black text reads on it at ~7.6:1, so filled buttons keep
+     their dark labels; white would only reach ~2.9:1. */
+  --accent: #10b26c;
+  /* The deeper shade a button sweeps to on hover. */
+  --accent-hover: #0e9a5d;
 
   /* Layout */
   --container-max-width: 1440px;
@@ -103,6 +107,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -494,20 +499,7 @@
     text-wrap: balance;
   }
 
-  .hero__sub {
-    margin: var(--space-md) 0 0;
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.9);
-  }
 
-  @media (width >= 768px) {
-    .hero__sub {
-      font-size: 12px;
-    }
-  }
 
   /* Stacked on a phone so the button is a full-width target, side by side as
      soon as there is room for both. */
@@ -1501,7 +1493,7 @@
   .artwork-glow {
     background: radial-gradient(
       120% 90% at 50% 100%,
-      rgba(255, 213, 0, 0.16) 0%,
+      rgba(16, 178, 108, 0.16) 0%,
       transparent 62%
     );
   }
@@ -1625,12 +1617,12 @@
   .release-card:hover,
   .release-card:focus-within {
     transform: translateY(-6px);
-    border-color: rgba(255, 213, 0, 0.28);
+    border-color: rgba(16, 178, 108, 0.28);
     box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
   .release-card[data-current] {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(16, 178, 108, 0.4);
   }
 
   /* The artwork is the control: one button, the whole frame. */
@@ -1879,7 +1871,7 @@
 
   .vinyl__item[data-active] .vinyl__sleeve:hover,
   .vinyl__item[data-active] .vinyl__sleeve:focus-visible {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(16, 178, 108, 0.4);
   }
 
   .vinyl__item[data-active] .vinyl__sleeve:hover .vinyl__art,
@@ -1964,7 +1956,7 @@
     inset: 33.5%;
     overflow: hidden;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(255, 213, 0, 0.45);
+    box-shadow: 0 0 0 1px rgba(16, 178, 108, 0.45);
   }
 
   .vinyl__label-art {
@@ -2153,6 +2145,192 @@
     margin-top: 0;
   }
 
+  /* ---- Nonstop Sets ------------------------------------------------------- */
+
+  .nonstop__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .nonstop__title {
+    margin-top: var(--rhythm-eyebrow);
+  }
+
+  .nonstop__lede {
+    max-width: 52ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .nonstop__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-md);
+    margin: var(--rhythm-block) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width >= 640px) {
+    .nonstop__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 1024px) {
+    .nonstop__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .nonstop-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.018);
+    transition:
+      border-color 400ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+
+  .nonstop-card:hover,
+  .nonstop-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .nonstop-card__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #050505;
+  }
+
+  .nonstop-card__art {
+    object-fit: cover;
+    filter: brightness(0.66);
+    transition: filter 420ms var(--ease-out);
+  }
+
+  .nonstop-card:hover .nonstop-card__art,
+  .nonstop-card:focus-visible .nonstop-card__art {
+    filter: brightness(0.86);
+  }
+
+  .nonstop-card__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    background-color: rgba(5, 5, 5, 0.42);
+    color: #ffffff;
+  }
+
+  .nonstop-card__play svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .nonstop-card:hover .nonstop-card__play {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .nonstop-card__length {
+    position: absolute;
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    padding: 3px 8px;
+    border-radius: 2px;
+    background-color: rgba(5, 5, 5, 0.72);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .nonstop-card__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+  }
+
+  .nonstop-card__info .release-card__tag {
+    margin: 0;
+  }
+
+  .nonstop-card__name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .nonstop__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-xl);
+    margin-top: var(--rhythm-body);
+  }
+
+  /* ---- Venue photos on the Club Nights card ------------------------------ */
+
+  .exp-card__venues {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xs);
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .exp-card__venue {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .exp-card__venue-frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: var(--surface);
+  }
+
+  .exp-card__venue-img {
+    object-fit: cover;
+    filter: brightness(0.8);
+  }
+
+  .exp-card__venue-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted-foreground);
+  }
+
   /* ---- Playlist (on /music) ---------------------------------------------- */
 
   .playlist {
@@ -2201,7 +2379,7 @@
   }
 
   .playlist__row[data-current] {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(16, 178, 108, 0.4);
   }
 
   .playlist__thumb {
@@ -2620,15 +2798,20 @@
   /* The career figures as a ruled band rather than four cards. Two abreast on
      a phone, where four columns would crush "Years behind the decks" into a
      stack of single words. */
+  /* One figure per row on a phone; side by side from tablets, one column per
+     figure however many the CMS holds (three now that the years-behind-the-
+     decks figure is gone), so a missing one never leaves a gap. */
   .story-facts {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     margin: 0;
   }
 
   @media (width >= 768px) {
     .story-facts {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
     }
   }
 
@@ -2642,27 +2825,12 @@
     border-top: 1px solid var(--border);
   }
 
-  /* Hairlines between, not around: the band reads as one ruled row. Every
-     card rules off its neighbour on a phone except the ones opening a row. */
-  .story-fact + .story-fact {
-    padding-left: var(--space-md);
-    border-left: 1px solid var(--border);
-  }
-
-  .story-fact:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
+  /* Hairlines between, not around: the band reads as one ruled row. Stacked
+     on a phone, the top rules already divide them. */
   @media (width >= 768px) {
-    .story-fact:nth-child(odd) {
+    .story-fact + .story-fact {
       padding-left: var(--space-md);
       border-left: 1px solid var(--border);
-    }
-
-    .story-fact:first-child {
-      padding-left: 0;
-      border-left: 0;
     }
   }
 
@@ -2682,7 +2850,7 @@
 
   .story-fact__suffix {
     font-size: 0.62em;
-    color: rgba(255, 213, 0, 0.55);
+    color: rgba(16, 178, 108, 0.55);
   }
 
   .story-fact__label {
@@ -2708,7 +2876,7 @@
     pointer-events: none;
     background: radial-gradient(
       46% 46% at 74% 42%,
-      rgba(255, 213, 0, 0.05) 0%,
+      rgba(16, 178, 108, 0.05) 0%,
       transparent 70%
     );
   }
@@ -2870,7 +3038,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 42% at 72% 12%,
-      rgba(255, 213, 0, 0.045) 0%,
+      rgba(16, 178, 108, 0.045) 0%,
       transparent 68%
     );
   }
@@ -3079,7 +3247,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 44% at 50% 38%,
-      rgba(255, 213, 0, 0.045) 0%,
+      rgba(16, 178, 108, 0.045) 0%,
       transparent 72%
     );
   }
@@ -3730,7 +3898,7 @@
     pointer-events: none;
     background: radial-gradient(
       54% 48% at 50% 58%,
-      rgba(255, 213, 0, 0.04) 0%,
+      rgba(16, 178, 108, 0.04) 0%,
       transparent 72%
     );
   }
@@ -3841,8 +4009,8 @@
      travelling sideways, and a card that rises as it passes reads as the run
      jolting rather than as the card answering the pointer. */
   .reaction-card:hover {
-    border-color: rgba(255, 213, 0, 0.4);
-    background-color: rgba(255, 213, 0, 0.03);
+    border-color: rgba(16, 178, 108, 0.4);
+    background-color: rgba(16, 178, 108, 0.03);
   }
 
   .reaction-card__head {
@@ -3873,7 +4041,7 @@
   }
 
   .reaction-card:hover .reaction-card__mark {
-    color: rgba(255, 213, 0, 0.32);
+    color: rgba(16, 178, 108, 0.32);
   }
 
   .reaction-card__quote {
@@ -3973,7 +4141,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 46% at 74% 62%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(16, 178, 108, 0.06) 0%,
       transparent 70%
     );
   }
@@ -4654,22 +4822,54 @@
     overflow: hidden;
   }
 
+  /* Light enough for the crowd and the phone lights to come through; the
+     fade below darkens only where the type sits. */
   .about-hero__image {
-    filter: contrast(1.05) brightness(0.62);
+    filter: brightness(0.85);
   }
 
   /* Holds the picture down far enough for the type to read on it, without
      flattening it to black. */
+  /* Dark behind the type, clear elsewhere: the title and lines sit on the
+     left, so the shade runs off to the right, and the foot of the frame
+     blends into the page. On a phone the type spans the width, so the shade
+     is even across it instead. */
   .about-hero__fade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(5, 5, 5, 0.82) 0%,
-      rgba(5, 5, 5, 0.58) 38%,
-      rgba(5, 5, 5, 0.86) 78%,
-      var(--background) 100%
-    );
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(5, 5, 5, 0.45) 0%,
+        transparent 22%,
+        transparent 62%,
+        var(--background) 100%
+      ),
+      linear-gradient(
+        to right,
+        rgba(5, 5, 5, 0.6) 0%,
+        rgba(5, 5, 5, 0.6) 55%,
+        rgba(5, 5, 5, 0.2) 100%
+      );
+  }
+
+  @media (width >= 768px) {
+    .about-hero__fade {
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(5, 5, 5, 0.4) 0%,
+          transparent 20%,
+          transparent 66%,
+          var(--background) 100%
+        ),
+        linear-gradient(
+          to right,
+          rgba(5, 5, 5, 0.72) 0%,
+          rgba(5, 5, 5, 0.45) 45%,
+          rgba(5, 5, 5, 0.05) 100%
+        );
+    }
   }
 
   .about-hero__name {
@@ -4772,7 +4972,7 @@
   /* The career in figures, ruled across the foot of the spread. */
   .about-figures {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-lg) var(--space-md);
     margin: var(--space-3xl) 0 0;
     padding-top: var(--space-lg);
@@ -4781,7 +4981,9 @@
 
   @media (width >= 768px) {
     .about-figures {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
       gap: var(--space-xl);
       margin-top: var(--space-4xl);
     }
@@ -4817,8 +5019,11 @@
   }
 
   @media (width >= 1024px) {
+    /* The photos take about a third of the row (they used to take over
+       half), so the portrait sits at a size its detail holds up at and the
+       words get the room. */
     .about-visual__spread {
-      grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+      grid-template-columns: minmax(0, 36fr) minmax(0, 64fr);
       gap: var(--space-3xl);
       align-items: center;
     }
@@ -4973,7 +5178,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 52% at 22% 34%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(16, 178, 108, 0.06) 0%,
       transparent 70%
     );
   }
@@ -5270,7 +5475,7 @@
   .btn-sweep,
   .btn-primary,
   .btn-secondary {
-    --sweep-bg: var(--accent);
+    --sweep-bg: var(--accent-hover);
     --sweep-ink: #050505;
     --sweep-drift: 4px;
 
@@ -5404,7 +5609,7 @@
   .btn-primary:focus-visible,
   .btn-secondary:hover,
   .btn-secondary:focus-visible {
-    box-shadow: 0 14px 40px rgba(255, 213, 0, 0.22);
+    box-shadow: 0 14px 40px rgba(16, 178, 108, 0.22);
   }
 
   /* A glyph on its own small disc — the play mark, a platform badge. It
@@ -5779,7 +5984,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 48% at 22% 34%,
-      rgba(255, 213, 0, 0.07) 0%,
+      rgba(16, 178, 108, 0.07) 0%,
       transparent 70%
     );
   }
@@ -5859,7 +6064,7 @@
     pointer-events: none;
     background: radial-gradient(
       48% 44% at 78% 18%,
-      rgba(255, 213, 0, 0.05) 0%,
+      rgba(16, 178, 108, 0.05) 0%,
       transparent 70%
     );
   }
@@ -6044,9 +6249,9 @@
   /* ---- Sent -------------------------------------------------------------- */
 
   .enquiry-done {
-    border: 1px solid rgba(255, 213, 0, 0.3);
+    border: 1px solid rgba(16, 178, 108, 0.3);
     padding: clamp(28px, 5vw, 56px);
-    background-color: rgba(255, 213, 0, 0.04);
+    background-color: rgba(16, 178, 108, 0.04);
   }
 
   .enquiry-done:focus-visible {
@@ -6225,7 +6430,7 @@
     pointer-events: none;
     background: radial-gradient(
       50% 46% at 68% 60%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(16, 178, 108, 0.06) 0%,
       transparent 70%
     );
   }

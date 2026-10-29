@@ -8,7 +8,7 @@ export const siteConfig: SiteConfig = {
   name: "DJ Ganesh",
   title: "DJ Ganesh | Official Website",
   description:
-    "Official website of DJ Ganesh — DJ, performer and BollyAfro artist.",
+    "Wedding DJ for celebrations around the world, and the pioneer of BollyAfro: Bollywood, Afrobeats and house, mixed into one. Based in Mumbai, playing 50+ countries.",
   locale: "en",
 };
 

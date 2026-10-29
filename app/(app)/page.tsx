@@ -12,6 +12,7 @@ import { GlobalReach } from "@/components/global-reach/GlobalReach";
 import { Hero } from "@/components/hero/Hero";
 import { StagesSection } from "@/components/stages/StagesSection";
 import { MusicSection } from "@/components/music/MusicSection";
+import { NonstopSets } from "@/components/nonstop/NonstopSets";
 import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
 import { TrustedBy } from "@/components/trusted/TrustedBy";
 import { Navbar } from "@/components/navigation/Navbar";
@@ -247,6 +248,9 @@ export default async function HomePage() {
           spotifyUrl={str(musicPage?.homeSection?.spotifyUrl)}
           tracks={tracks}
         />
+
+        {/* Long-form mixes, straight after the singles. */}
+        <NonstopSets />
         <TrustedBy
           trustedLabel={str(home?.trustedBy?.label)}
           trustedNames={strings(home?.trustedBy?.names, "name")}

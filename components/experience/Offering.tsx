@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import { experienceCtaHref as defaultCtaHref } from "@/data/experience";
 import type { Offering as OfferingData } from "@/types/experience";
@@ -54,6 +55,25 @@ export function Offering({
         <h3 className="exp-card__title">{offering.title}</h3>
 
         <p className="exp-card__summary">{offering.summary}</p>
+
+        {offering.venues?.length ? (
+          <ul className="exp-card__venues" aria-label="Venues">
+            {offering.venues.map((venue) => (
+              <li key={venue.name} className="exp-card__venue">
+                <span className="exp-card__venue-frame">
+                  <Image
+                    src={venue.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 120px, 30vw"
+                    className="exp-card__venue-img"
+                  />
+                </span>
+                <span className="exp-card__venue-name">{venue.name}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
         {/* The list is wrapped rather than collapsed directly: a grid with
             three items would only size its first row from the template, and
