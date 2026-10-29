@@ -2,6 +2,7 @@ import * as migration_20260930_105147_baseline_pre_cms from './20260930_105147_b
 import * as migration_20260930_105220_add_cms_editability from './20260930_105220_add_cms_editability';
 import * as migration_20261008_055719_add_strand_descriptions from './20261008_055719_add_strand_descriptions';
 import * as migration_20261008_061224_add_music_spotify_url from './20261008_061224_add_music_spotify_url';
+import * as migration_20261029_101115_cms_nonstop_reel_hero_venues from './20261029_101115_cms_nonstop_reel_hero_venues';
 
 export const migrations = [
   {
@@ -22,6 +23,11 @@ export const migrations = [
   {
     up: migration_20261008_061224_add_music_spotify_url.up,
     down: migration_20261008_061224_add_music_spotify_url.down,
-    name: '20261008_061224_add_music_spotify_url'
+    name: '20261008_061224_add_music_spotify_url',
+  },
+  {
+    up: migration_20261029_101115_cms_nonstop_reel_hero_venues.up,
+    down: migration_20261029_101115_cms_nonstop_reel_hero_venues.down,
+    name: '20261029_101115_cms_nonstop_reel_hero_venues'
   },
 ];

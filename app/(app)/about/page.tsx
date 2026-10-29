@@ -11,7 +11,6 @@ import { ExperienceSection } from "@/components/experience/ExperienceSection";
 import { Footer } from "@/components/footer/Footer";
 import { LegacySection } from "@/components/legacy/LegacySection";
 import { Navbar } from "@/components/navigation/Navbar";
-import { clubNightVenues } from "@/data/experience";
 import { aboutFrames } from "@/data/about-page";
 import {
   getAbout,
@@ -55,7 +54,7 @@ function frame(
 export const metadata: Metadata = {
   title: "DJ Ganesh — About",
   description:
-    "DJ Ganesh built the BollyAfro sound in Mumbai: Bollywood, Afrobeats and house, mixed into one. From private nights for the Ambani family to stages in 50+ countries.",
+    "DJ Ganesh built the BollyAfro sound in Mumbai. From private nights for the Ambani family to stages in 50+ countries.",
 };
 
 export default async function AboutPage() {
@@ -88,8 +87,10 @@ export default async function AboutPage() {
         summary: s.shortDescription,
         points: (s.features ?? []).map((f) => f.feature),
         cta: s.ctaText ?? "",
-        // The venue photos live in code, not the CMS; the card claims them by title.
-        venues: /club nights/i.test(s.title) ? clubNightVenues : undefined,
+        // Optional per-card venue photos from the CMS; none show until uploaded.
+        venues: (s.venuePhotos ?? [])
+          .map((v) => ({ name: v.name, image: resolveMedia(v.image).url }))
+          .filter((v): v is { name: string; image: string } => Boolean(v.image)),
       }))
     : undefined;
 
@@ -99,10 +100,6 @@ export default async function AboutPage() {
 
       <main>
         <AboutHero
-          intro={str(about?.labels?.intro)}
-          strands={strands.length ? strands : undefined}
-          since={str(about?.story?.careerStart)}
-          lede={str(paragraphs[2])}
           stage={frame(about?.frames?.stage, aboutFrames.stage)}
         />
         <ArtistStory
@@ -111,7 +108,6 @@ export default async function AboutPage() {
         />
         <ArtistVisual
           label={str(about?.labels?.identity)}
-          statement={str(about?.story?.statement)}
           strands={strands.length ? strands : undefined}
           portrait={frame(about?.frames?.portrait, aboutFrames.portrait)}
           decks={frame(about?.frames?.decks, aboutFrames.decks)}

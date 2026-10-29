@@ -499,8 +499,6 @@
     text-wrap: balance;
   }
 
-
-
   /* Stacked on a phone so the button is a full-width target, side by side as
      soon as there is room for both. */
   .hero__ctas {
@@ -844,8 +842,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-xl);
-    padding-block: var(--space-xl) var(--space-lg);
+    /* Every size in the menu is the smaller of its designed value and a
+       share of the screen's height (svh: the height with the browser's bars
+       showing), so tall screens look exactly as designed and short ones —
+       laptops at 720–768px tall — shrink until it all fits, unscrolled. */
+    gap: min(var(--space-xl), 4.5svh);
+    padding-block: min(var(--space-xl), 4svh) min(var(--space-lg), 3svh);
     text-align: center;
     /* The name band runs 100vw, a scrollbar's width wider than this box
        whenever it scrolls; clip that, and keep the scroll itself (a short
@@ -860,7 +862,7 @@
 
   @media (width >= 768px) {
     .menu {
-      padding-block: var(--space-2xl);
+      padding-block: min(var(--space-2xl), 5svh);
     }
   }
 
@@ -868,7 +870,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
+    gap: min(var(--space-sm), 1.8svh);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -877,7 +879,7 @@
   .menu__link {
     display: inline-block;
     font-family: var(--font-consul), var(--font-display);
-    font-size: clamp(34px, 7vw, 64px);
+    font-size: min(clamp(34px, 7vw, 64px), 7svh);
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -922,7 +924,7 @@
   }
 
   .menu-marquee__label {
-    margin: 0 0 var(--space-md);
+    margin: 0 0 min(var(--space-md), 2.2svh);
     padding-inline: var(--container-padding);
     text-wrap: balance;
     font-size: 12px;
@@ -940,7 +942,7 @@
   }
 
   .menu-row + .menu-row {
-    margin-top: var(--space-sm);
+    margin-top: min(var(--space-sm), 1.4svh);
   }
 
   .menu-marquee:hover .menu-row {
@@ -967,7 +969,7 @@
     gap: clamp(16px, 2vw, 28px);
     padding-right: clamp(16px, 2vw, 28px);
     font-family: var(--font-display);
-    font-size: clamp(18px, 2.6vw, 30px);
+    font-size: min(clamp(18px, 2.6vw, 30px), 3.4svh);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -981,6 +983,14 @@
   }
 
   /* The same diamond the homepage bands use between names. */
+  /* Phones on their side: too short for the name strip at any size, so the
+     menu keeps just the pages and the accounts. */
+  @media (height < 500px) {
+    .menu-marquee {
+      display: none;
+    }
+  }
+
   .menu-row__mark {
     font-size: 0.5em;
     line-height: 1;
@@ -1801,7 +1811,8 @@
     opacity: 0.4;
     filter: grayscale(0.4) brightness(0.55);
     transform: translate(-50%, -50%)
-      translateX(calc(var(--offset) * var(--sleeve) * var(--spread))) scale(0.6);
+      translateX(calc(var(--offset) * var(--sleeve) * var(--spread) + var(--drag, 0px)))
+      scale(0.6);
     transition:
       transform 650ms var(--ease-in-out),
       opacity 650ms var(--ease-in-out),
@@ -1816,7 +1827,17 @@
     z-index: 3;
     opacity: 1;
     filter: none;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) translateX(var(--drag, 0px)) scale(1);
+  }
+
+  /* Swipe: horizontal drags belong to the rack, vertical ones to the page;
+     while a finger is down the sleeves track it with no easing lag. */
+  .vinyl__stage {
+    touch-action: pan-y;
+  }
+
+  .vinyl__stage[data-dragging] .vinyl__item {
+    transition-duration: 0ms, 650ms, 650ms;
   }
 
   /* Anything two or more away is off the rack: hidden while it wraps round. */
@@ -3286,7 +3307,10 @@
     content: attr(data-text);
     content: attr(data-text) / "";
     position: absolute;
-    inset: 0;
+    /* Runs past the right edge: tight letter-spacing lets the last glyph's
+       ink overhang its box, and the mask would otherwise clip it, leaving a
+       white sliver of the letter beneath showing. */
+    inset: 0 -0.2em 0 0;
     color: var(--accent);
     -webkit-mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
     mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
@@ -3645,9 +3669,10 @@
     }
   }
 
+  /* The photographs' own 5:4, so nothing important is cropped. */
   .gallery__item {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 5 / 4;
     overflow: hidden;
     background-color: #060606;
   }
@@ -4582,11 +4607,13 @@
   .stage-row__item {
     display: flex;
     align-items: center;
-    gap: clamp(16px, 2.2vw, 40px);
-    padding-right: clamp(16px, 2.2vw, 40px);
+    gap: clamp(12px, 1.6vw, 24px);
+    padding-right: clamp(12px, 1.6vw, 24px);
     white-space: nowrap;
     font-family: var(--font-display);
-    font-size: clamp(30px, 5.4vw, 76px);
+    /* About half its old size: a moving strip under "The Rooms", not a
+       second heading competing with it. */
+    font-size: clamp(20px, 2.7vw, 38px);
     font-weight: 700;
     line-height: 1.08;
     letter-spacing: -0.02em;
@@ -4801,17 +4828,18 @@
 
   /* ---- Opening frame ------------------------------------------------------ */
 
+  /* A photo strip under the fixed navigation (64px, 80px from tablets);
+     the page's words start with The Story below it. */
   .about-hero {
-    /* Clears the fixed navigation, then holds the name well down the frame. */
-    padding-top: clamp(120px, 18vh, 200px);
-    padding-bottom: clamp(28px, 4vh, 48px);
+    margin-top: 64px;
+    height: clamp(180px, 30vh, 280px);
     background-color: var(--background);
   }
 
-  @media (width >= 1024px) {
+  @media (width >= 768px) {
     .about-hero {
-      padding-top: clamp(180px, 22vh, 260px);
-      padding-bottom: clamp(40px, 5vh, 64px);
+      margin-top: 80px;
+      height: clamp(240px, 36vh, 420px);
     }
   }
 
@@ -4834,104 +4862,11 @@
      left, so the shade runs off to the right, and the foot of the frame
      blends into the page. On a phone the type spans the width, so the shade
      is even across it instead. */
+  /* No type sits on the strip now: just a soft blend into the page below. */
   .about-hero__fade {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(
-        to bottom,
-        rgba(5, 5, 5, 0.45) 0%,
-        transparent 22%,
-        transparent 62%,
-        var(--background) 100%
-      ),
-      linear-gradient(
-        to right,
-        rgba(5, 5, 5, 0.6) 0%,
-        rgba(5, 5, 5, 0.6) 55%,
-        rgba(5, 5, 5, 0.2) 100%
-      );
-  }
-
-  @media (width >= 768px) {
-    .about-hero__fade {
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(5, 5, 5, 0.4) 0%,
-          transparent 20%,
-          transparent 66%,
-          var(--background) 100%
-        ),
-        linear-gradient(
-          to right,
-          rgba(5, 5, 5, 0.72) 0%,
-          rgba(5, 5, 5, 0.45) 45%,
-          rgba(5, 5, 5, 0.05) 100%
-        );
-    }
-  }
-
-  .about-hero__name {
-    margin: var(--rhythm-eyebrow) 0 0;
-    font-family: var(--font-laura), var(--font-display);
-    font-weight: 400;
-    font-size: clamp(46px, 12vw, 150px);
-    line-height: 0.86;
-    letter-spacing: -0.045em;
-    text-transform: uppercase;
-  }
-
-  .about-hero__statement {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 18ch;
-    font-family: var(--font-display);
-    font-size: clamp(22px, 3.4vw, 44px);
-    font-weight: 700;
-    line-height: 1.14;
-    letter-spacing: -0.03em;
-    color: rgba(255, 255, 255, 0.94);
-    text-wrap: balance;
-  }
-
-  .about-hero__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-sm) var(--space-xl);
-    margin-top: var(--space-xl);
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-  }
-
-  @media (width >= 768px) {
-    .about-hero__meta {
-      font-size: 12px;
-    }
-  }
-
-  .about-hero__strands {
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  .about-hero__since {
-    color: rgba(255, 255, 255, 0.65);
-  }
-
-  .about-hero__lede {
-    margin: var(--space-lg) 0 0;
-    max-width: 46ch;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--muted-foreground);
-  }
-
-  @media (width >= 768px) {
-    .about-hero__lede {
-      font-size: 17px;
-    }
+    background: linear-gradient(to bottom, transparent 55%, var(--background) 100%);
   }
 
   /* ---- The story ---------------------------------------------------------- */
@@ -4953,10 +4888,17 @@
     max-width: 54ch;
   }
 
+  /* The homepage bio's size and colour: 15px, 17px from tablets. */
   .about-story__paragraph {
-    font-size: clamp(17px, 1.9vw, 22px);
-    line-height: 1.62;
-    color: rgba(255, 255, 255, 0.66);
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .about-story__paragraph {
+      font-size: 17px;
+    }
   }
 
   .about-story__paragraph + .about-story__paragraph {
@@ -5088,16 +5030,6 @@
     margin-inline: var(--space-sm);
     color: rgba(255, 255, 255, 0.4);
   }
-
-  .about-visual__line {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 34ch;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--muted-foreground);
-  }
-
-
 
   /* ---- Hand-off to booking ------------------------------------------------ */
 

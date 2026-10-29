@@ -12,38 +12,39 @@
  */
 export const gallerySectionLabel = "Gallery";
 
-export const galleryItems = [
+/**
+ * Six photographs from the Quake night (credit @echofilmers), ordered so no
+ * two similar shots touch, side by side or stacked, in either the three-up
+ * desktop grid or the two-up phone grid: the two Ganesh-and-Emraan close-ups
+ * sit at 1 and 5, the two smoke-cannon shots at 2 and 6. Display only; a tile
+ * has no link unless `href` is set.
+ */
+export const galleryItems: readonly { src: string; alt: string; href?: string }[] = [
   {
-    src: "/images/g-1.jpg",
-    alt: "DJ Ganesh live set at Surf Club, Dubai",
-    href: "https://www.youtube.com/watch?v=vgNg9iClDgg",
+    src: "/images/gallery-00665.jpg",
+    alt: "DJ Ganesh and Emraan Hashmi at the decks, arms up in front of a packed club",
   },
   {
-    src: "/images/g-2.jpg",
-    alt: "Tujhe Bhula Diya × Adore You — DJ Ganesh × Rodolphe",
-    href: "https://www.youtube.com/watch?v=K38k0QOFB0E",
+    src: "/images/gallery-07499.jpg",
+    alt: "DJ Ganesh at the decks, smoke cannons firing over the crowd",
   },
   {
-    src: "/images/g-3.jpg",
-    alt: "Bastian Breakdown Set by DJ Ganesh, Bastian At The Top",
-    href: "https://www.youtube.com/watch?v=48tKPl_g9u0",
+    src: "/images/gallery-09602.jpg",
+    alt: "Emraan Hashmi on stage at Quake, phones raised in the crowd",
   },
   {
-    src: "/images/g-4.jpg",
-    alt: "DJ Ganesh Sundowner Set, recorded live at Bastian Beach Mumbai",
-    href: "https://www.youtube.com/watch?v=1_jgwm910bE",
+    src: "/images/gallery-09863.jpg",
+    alt: "Red lasers over a packed floor at Quake, Barsaate on the screens",
   },
   {
-    src: "/images/g-5.jpg",
-    alt: "One hour live set in Bengaluru, Wednesday night at Bastian Garden City",
-    href: "https://www.youtube.com/watch?v=loIcmkQnis4",
+    src: "/images/gallery-00400.jpg",
+    alt: "DJ Ganesh beside Emraan Hashmi at the desk as he takes the mic",
   },
   {
-    src: "/images/g-6.jpg",
-    alt: "DJ Ganesh Valentine Mixtape 2026",
-    href: "https://www.youtube.com/watch?v=VL2xSyB0dQE",
+    src: "/images/gallery-00529.jpg",
+    alt: "Looking out over a crowd of phone lights between two smoke cannons",
   },
-] as const;
+];
 
 /**
  * The reel that opens the gallery, ahead of the covers: footage from his

@@ -12,6 +12,7 @@ import {
   nonstopPodcastUrl,
   nonstopSets,
   nonstopSpotifyUrl,
+  type NonstopSet,
 } from "@/data/nonstop";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -23,7 +24,21 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * sets also live: Spotify and the Apple Podcasts archive. Placeholder links
  * (`#`) open nothing new, so they stay in the tab rather than a blank one.
  */
-export function NonstopSets() {
+export function NonstopSets({
+  label = nonstopLabel,
+  heading = nonstopHeading,
+  lede = nonstopLede,
+  sets = nonstopSets,
+  spotifyUrl = nonstopSpotifyUrl,
+  podcastUrl = nonstopPodcastUrl,
+}: {
+  label?: string;
+  heading?: readonly string[];
+  lede?: string;
+  sets?: readonly NonstopSet[];
+  spotifyUrl?: string;
+  podcastUrl?: string;
+} = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -36,21 +51,24 @@ export function NonstopSets() {
     >
       <Container className="relative z-10">
         <p className="reveal-scroll nonstop__label" style={delay(0)}>
-          {nonstopLabel}
+          {label}
         </p>
 
         <h2 id="nonstop-title" className="reveal-scroll section-title nonstop__title" style={delay(80)}>
-          {nonstopHeading[0]}
-          <br />
-          {nonstopHeading[1]}
+          {heading.map((line, index) => (
+            <span key={line}>
+              {index > 0 ? <br /> : null}
+              {line}
+            </span>
+          ))}
         </h2>
 
         <p className="reveal-scroll nonstop__lede" style={delay(160)}>
-          {nonstopLede}
+          {lede}
         </p>
 
         <ul className="nonstop__grid">
-          {nonstopSets.map((set, index) => {
+          {sets.map((set, index) => {
             const placeholder = set.href === "#";
             return (
               <li key={set.title} className="reveal-scroll" style={delay(240 + index * 90)}>
@@ -87,14 +105,14 @@ export function NonstopSets() {
         </ul>
 
         <div className="reveal-scroll nonstop__links" style={delay(520)}>
-          <a href={nonstopSpotifyUrl} target="_blank" rel="noopener noreferrer" className="btn-tertiary">
+          <a href={spotifyUrl} target="_blank" rel="noopener noreferrer" className="btn-tertiary">
             Listen on Spotify
             <SocialIcon name="spotify" className="btn__brand" />
           </a>
 
           <a
-            href={nonstopPodcastUrl}
-            {...(nonstopPodcastUrl === "#" ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+            href={podcastUrl}
+            {...(podcastUrl === "#" ? {} : { target: "_blank", rel: "noopener noreferrer" })}
             className="btn-tertiary"
           >
             Apple Podcasts archive

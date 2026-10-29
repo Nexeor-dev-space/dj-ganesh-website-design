@@ -21,7 +21,8 @@ const { siteConfig, navLinks, socialLinks } = await ld('../lib/site.ts')
 const { statement, statementLabel } = await ld('../data/statement.ts')
 const { stageRows, stagesSectionLabel, stagesHeading, stagesLede, stagesCtaHref, stagesCtaLabel } = await ld('../lib/stages.ts')
 const { trustedNames, trustedLabel } = await ld('../data/trusted.ts')
-const { galleryItems, gallerySectionLabel } = await ld('../data/gallery.ts')
+const { galleryItems, gallerySectionLabel, galleryFeature } = await ld('../data/gallery.ts')
+const { nonstopLabel, nonstopHeading, nonstopLede, nonstopSets, nonstopSpotifyUrl, nonstopPodcastUrl } = await ld('../data/nonstop.ts')
 const { followHeading, followLinks } = await ld('../data/follow.ts')
 const { experienceSectionLabel, experienceHeading, experienceCtaHref, offerings } = await ld('../data/experience.ts')
 const { tourCities, tourShows } = await ld('../lib/tour.ts')
@@ -344,7 +345,28 @@ await g('navigation', {
 })
 
 await g('home-page', {
-  hero: { heroVideo },
+  hero: {
+    heroVideo,
+    heroHeading: 'DJ Ganesh',
+    heroSubheading: 'Wedding DJ & BollyAfro Pioneer',
+    heroCtaText: 'Book DJ Ganesh',
+    heroCtaUrl: '/contact#booking',
+    heroSecondaryCtaText: 'Listen to Music',
+    heroSecondaryCtaUrl: '#music',
+  },
+  nonstop: {
+    label: nonstopLabel,
+    heading: lines(nonstopHeading),
+    lede: nonstopLede,
+    sets: nonstopSets.map((x: { title: string; tag: string; length: string; href: string }) => ({
+      title: x.title,
+      tag: x.tag,
+      length: x.length,
+      url: x.href,
+    })),
+    spotifyUrl: nonstopSpotifyUrl,
+    podcastUrl: nonstopPodcastUrl,
+  },
   globalReach: {
     locations: tourCities.map((c) => ({
       city: c.name,
@@ -376,7 +398,9 @@ await g('home-page', {
   trustedBy: { label: trustedLabel, names: trustedNames.map((name) => ({ name })) },
   galleryStrip: {
     label: gallerySectionLabel,
-    items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt, href: it.href })),
+    reelLabel: galleryFeature.label,
+    bigShows: galleryFeature.shows.map((show: string) => ({ show })),
+    items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt })),
   },
   follow: {
     heading: followHeading,
@@ -470,7 +494,7 @@ for (const c of [
   'performance-history',
   'gallery',
 ] as CollectionSlug[]) {
-  counts[c] = (await payload.count({ collection: c, draft: true })).totalDocs
+  counts[c] = (await payload.count({ collection: c })).totalDocs
 }
 console.log('counts:', JSON.stringify(counts))
 }

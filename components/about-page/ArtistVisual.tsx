@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { aboutFrames, aboutPageLabels, aboutStatement } from "@/data/about-page";
+import { aboutFrames, aboutPageLabels } from "@/data/about-page";
 import { soundStrands } from "@/lib/about";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -24,7 +24,6 @@ type Frame = { src: string; alt: string };
 
 type ArtistVisualProps = {
   label?: string;
-  statement?: string;
   strands?: readonly string[];
   portrait?: Frame;
   decks?: Frame;
@@ -32,7 +31,6 @@ type ArtistVisualProps = {
 
 export function ArtistVisual({
   label = aboutPageLabels.identity,
-  statement = aboutStatement,
   strands = soundStrands,
   portrait = aboutFrames.portrait,
   decks = aboutFrames.decks,
@@ -101,10 +99,6 @@ export function ArtistVisual({
                 </span>
               ))}
             </h2>
-
-            <p className="reveal-scroll about-visual__line" style={delay(260)}>
-              {statement}
-            </p>
           </div>
         </div>
       </Container>

@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import { CustomCursor } from "@/components/interactions/CustomCursor";
 import { siteConfig } from "@/lib/site";
 import { SiteDataProvider, type SiteData } from "@/components/site/SiteDataProvider";
-import { getContactBooking, getNavigation, getSiteSettings } from "@/lib/cms/queries";
+import { getContactBooking, getHomePage, getNavigation, getSiteSettings } from "@/lib/cms/queries";
 import "../globals.css";
 
 const inter = Inter({
@@ -57,15 +57,22 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const [settings, navigation, contact] = await Promise.all([
+  const [settings, navigation, contact, home] = await Promise.all([
     getSiteSettings(),
     getNavigation(),
     getContactBooking(),
+    getHomePage(),
   ]);
 
   // Plain, serializable subsets only — no functions or class instances cross
   // the server/client boundary.
   const siteData: SiteData = {
+    menuNames: {
+      stages: (home?.stages?.stages ?? [])
+        .filter((st) => st.name)
+        .map((st) => ({ name: st.name, ...(st.featured ? { featured: true } : {}) })),
+      trusted: (home?.trustedBy?.names ?? []).map((n) => n.name).filter((n): n is string => Boolean(n)),
+    },
     nav: navigation
       ? {
           items: (navigation.items ?? []).map((i) => ({
