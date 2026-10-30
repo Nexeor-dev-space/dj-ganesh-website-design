@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutFrames, aboutPageLabels } from "@/data/about-page";
 import { soundStrands } from "@/lib/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -89,7 +90,7 @@ export function ArtistVisual({
               style={delay(160)}
             >
               {strands.map((strand, index) => (
-                <span key={strand} className="about-visual__strand">
+                <span key={itemKey(strand, index)} className="about-visual__strand">
                   {strand}
                   {index < strands.length - 1 ? (
                     <span aria-hidden className="about-visual__slash">

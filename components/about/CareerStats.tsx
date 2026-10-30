@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/interactions/environment";
 import { careerStats as defaultStats } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
+import { itemKey } from "@/lib/keys";
 
 /** How long every figure takes to reach its number, in ms. */
 const DURATION = 1600;
@@ -86,8 +87,8 @@ export function CareerStats({
 
   return (
     <dl ref={listRef} className="story-facts">
-      {careerStats.map((stat) => (
-        <div key={stat.label} className="story-fact">
+      {careerStats.map((stat, index) => (
+        <div key={itemKey(stat, index)} className="story-fact">
           {/* Label first in the markup so a screen reader hears "Gigs played,
               5000+"; the band is flipped in CSS to put the figure on top. */}
           <dt className="story-fact__label">{stat.label}</dt>

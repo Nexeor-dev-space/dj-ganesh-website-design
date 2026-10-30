@@ -14,6 +14,7 @@ import {
   nonstopSpotifyUrl,
   type NonstopSet,
 } from "@/data/nonstop";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -21,8 +22,9 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * Nonstop Sets — long-form mixes, after the singles in Music.
  *
  * Three set cards that open the video on YouTube, then the two places the
- * sets also live: Spotify and the Apple Podcasts archive. Placeholder links
- * (`#`) open nothing new, so they stay in the tab rather than a blank one.
+ * sets also live: Spotify and the Apple Podcasts archive. A set with no
+ * video yet (`#`) is a plain card, not a link; it becomes one, labelled
+ * "Watch … on YouTube", once its URL is filled in.
  */
 export function NonstopSets({
   label = nonstopLabel,
@@ -56,7 +58,7 @@ export function NonstopSets({
 
         <h2 id="nonstop-title" className="reveal-scroll section-title nonstop__title" style={delay(80)}>
           {heading.map((line, index) => (
-            <span key={line}>
+            <span key={itemKey(line, index)}>
               {index > 0 ? <br /> : null}
               {line}
             </span>
@@ -69,36 +71,50 @@ export function NonstopSets({
 
         <ul className="nonstop__grid">
           {sets.map((set, index) => {
-            const placeholder = set.href === "#";
-            return (
-              <li key={set.title} className="reveal-scroll" style={delay(240 + index * 90)}>
-                <a
-                  href={set.href}
-                  {...(placeholder ? {} : { target: "_blank", rel: "noopener noreferrer" })}
-                  className="nonstop-card"
-                  aria-label={`Watch ${set.title} on YouTube`}
-                >
-                  <span className="nonstop-card__frame">
-                    <Image
-                      src={set.image}
-                      alt=""
-                      fill
-                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-                      className="nonstop-card__art"
-                    />
-                    <span className="nonstop-card__play" aria-hidden>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </span>
-                    <span className="nonstop-card__length">{set.length}</span>
+            const placeholder = !set.href || set.href === "#";
+            const body = (
+              <>
+                <span className="nonstop-card__frame">
+                  <Image
+                    src={set.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                    className="nonstop-card__art"
+                  />
+                  <span className="nonstop-card__play" aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
                   </span>
+                  <span className="nonstop-card__length">{set.length}</span>
+                </span>
 
-                  <span className="nonstop-card__info">
-                    <span className="release-card__tag">{set.tag}</span>
-                    <span className="nonstop-card__name">{set.title}</span>
+                <span className="nonstop-card__info">
+                  <span className="release-card__tag">{set.tag}</span>
+                  <span className="nonstop-card__name">
+                    {set.title}
+                    {placeholder ? <span className="sr-only">, coming soon</span> : null}
                   </span>
-                </a>
+                </span>
+              </>
+            );
+            return (
+              <li key={itemKey(set, index)} className="reveal-scroll" style={delay(240 + index * 90)}>
+                {/* No video yet: a plain card, not a link that goes nowhere. */}
+                {placeholder ? (
+                  <div className="nonstop-card">{body}</div>
+                ) : (
+                  <a
+                    href={set.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nonstop-card"
+                    aria-label={`Watch ${set.title} on YouTube`}
+                  >
+                    {body}
+                  </a>
+                )}
               </li>
             );
           })}

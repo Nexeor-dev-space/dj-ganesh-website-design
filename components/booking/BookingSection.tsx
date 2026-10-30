@@ -10,6 +10,7 @@ import {
   bookingScope as defaultScope,
   bookingSectionLabel as defaultLabel,
 } from "@/data/booking";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -99,7 +100,7 @@ export function BookingSection({
             <h2 id="booking-title" className="section-title booking-title">
               {bookingHeading.map((line, index) => (
                 <span
-                  key={line}
+                  key={itemKey(line, index)}
                   className={`reveal-scroll booking-title__line${
                     index === bookingHeading.length - 1
                       ? " booking-title__accent"
@@ -117,8 +118,8 @@ export function BookingSection({
             </p>
 
             <ul className="reveal-scroll booking-scope" style={delay(400)}>
-              {bookingScope.map((occasion) => (
-                <li key={occasion}>{occasion}</li>
+              {bookingScope.map((occasion, i) => (
+                <li key={itemKey(occasion, i)}>{occasion}</li>
               ))}
             </ul>
           </div>
@@ -133,8 +134,8 @@ export function BookingSection({
             </a>
 
             <dl className="booking-links">
-              {bookingLinks.map((link) => (
-                <div key={link.label} className="booking-links__row">
+              {bookingLinks.map((link, i) => (
+                <div key={itemKey(link, i)} className="booking-links__row">
                   <dt>{link.label}</dt>
                   <dd>
                     <a

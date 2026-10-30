@@ -12,6 +12,7 @@ import {
   type EnquiryErrors,
   type EnquiryValues,
 } from "@/lib/enquiry";
+import { itemKey } from "@/lib/keys";
 
 type Status = "idle" | "sending" | "sent" | "failed";
 
@@ -178,8 +179,8 @@ export function BookingForm({
               className="enquiry-input"
             >
               <option value="">Select an event type</option>
-              {eventTypes.map((type) => (
-                <option key={type} value={type}>
+              {eventTypes.map((type, index) => (
+                <option key={itemKey(type, index)} value={type}>
                   {type}
                 </option>
               ))}

@@ -70,7 +70,7 @@ export default async function ContactPage() {
   ];
   const cmsSocials = (cms?.socialLinks ?? [])
     .filter((x) => platformLabel[x.platform] && x.url)
-    .map((x) => ({ label: platformLabel[x.platform], href: x.url }));
+    .map((x) => ({ id: x.id, label: platformLabel[x.platform], href: x.url }));
   // The CMS socialLinks model has no "email" platform, but the original
   // "Stay connected" list ends with an Email tile (connectLinks). Keep it by
   // appending any code links (e.g. Email) not representable as a social platform,

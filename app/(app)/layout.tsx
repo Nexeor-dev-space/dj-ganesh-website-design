@@ -33,12 +33,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     menuNames: {
       stages: (home?.stages?.stages ?? [])
         .filter((st) => st.name)
-        .map((st) => ({ name: st.name, ...(st.featured ? { featured: true } : {}) })),
+        .map((st) => ({ id: st.id, name: st.name, ...(st.featured ? { featured: true } : {}) })),
       trusted: (home?.trustedBy?.names ?? []).map((n) => n.name).filter((n): n is string => Boolean(n)),
     },
     nav: navigation
       ? {
           items: (navigation.items ?? []).map((i) => ({
+            id: i.id,
             label: i.label,
             url: i.url,
             isExternal: i.isExternal ?? null,
@@ -54,8 +55,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     footer: settings?.footer
       ? {
           columns: settings.footer.columns?.map((c) => ({
+            id: c.id,
             title: c.title,
             links: c.links?.map((l) => ({
+              id: l.id,
               label: l.label,
               href: l.href,
               external: l.external ?? null,

@@ -15,6 +15,7 @@ import {
   useSiteData,
 } from "@/components/site/SiteDataProvider";
 import type { SocialLink } from "@/types/site";
+import { itemKey } from "@/lib/keys";
 
 /**
  * Fixed navigation bar: the logo on the left, social rail, a single
@@ -123,8 +124,8 @@ export function Navbar() {
               the menu all fit on one line. */}
           <div className="flex items-center gap-xs min-[480px]:gap-sm">
             <ul className="hidden items-center gap-xs sm:flex">
-              {socials.map((social) => (
-                <li key={social.label}>
+              {socials.map((social, index) => (
+                <li key={itemKey(social, index)}>
                   <a
                     href={social.href}
                     target="_blank"
@@ -191,7 +192,7 @@ export function Navbar() {
                   : pathname.startsWith(link.href);
 
               return (
-                <li key={link.href}>
+                <li key={itemKey(link, index)}>
                   <Link
                     href={link.href}
                     onClick={(event) => {
@@ -211,8 +212,8 @@ export function Navbar() {
 
           {/* The accounts as bare marks, right under the pages. */}
           <ul className="reveal menu__socials" style={{ "--reveal-delay": "260ms" } as React.CSSProperties}>
-            {socials.map((social) => (
-              <li key={social.label}>
+            {socials.map((social, i) => (
+              <li key={itemKey(social, i)}>
                 <a
                   href={social.href}
                   target="_blank"

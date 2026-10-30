@@ -13,6 +13,7 @@ import {
   strandDescriptions,
 } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -131,7 +132,7 @@ export function AboutSection({
               data-picked={strand != null || undefined}
             >
               {soundStrands.map(({ name }, index) => (
-                <span key={name} className="story-strand">
+                <span key={index} className="story-strand">
                   {index > 0 ? (
                     <span aria-hidden className="mr-sm text-white/20">
                       /
@@ -181,7 +182,7 @@ export function AboutSection({
                 {strandCopy.map((copy, index) =>
                   copy ? (
                     <p
-                      key={soundStrands[index].name}
+                      key={itemKey(copy, index)}
                       data-shown={strand === index || undefined}
                       aria-hidden={strand !== index || undefined}
                     >

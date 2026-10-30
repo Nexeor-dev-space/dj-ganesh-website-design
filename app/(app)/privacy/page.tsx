@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/Container";
 import { Navbar } from "@/components/navigation/Navbar";
 import { privacyPolicy } from "@/data/privacy";
 import { getPrivacyPolicy } from "@/lib/cms/queries";
+import { itemKey } from "@/lib/keys";
 
 export const metadata: Metadata = {
   title: "DJ Ganesh — Privacy Policy",
@@ -23,7 +24,7 @@ export default async function PrivacyPage() {
   const cms = await getPrivacyPolicy();
   const cmsSections = (cms?.sections ?? [])
     .filter((s) => s.heading && s.body)
-    .map((s) => ({ heading: s.heading, body: s.body }));
+    .map((s) => ({ id: s.id, heading: s.heading, body: s.body }));
 
   const title = str(cms?.title) ?? privacyPolicy.title;
   const updated = str(cms?.updated) ?? privacyPolicy.updated;
@@ -41,8 +42,8 @@ export default async function PrivacyPage() {
           <p className="policy__intro">{intro}</p>
 
           <div className="policy__sections">
-            {sections.map((section) => (
-              <section key={section.heading} className="policy__section">
+            {sections.map((section, index) => (
+              <section key={itemKey(section, index)} className="policy__section">
                 <h2 className="policy__heading">{section.heading}</h2>
                 <p className="policy__body">{section.body}</p>
               </section>

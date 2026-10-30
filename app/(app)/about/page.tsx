@@ -89,8 +89,8 @@ export default async function AboutPage() {
         cta: s.ctaText ?? "",
         // Optional per-card venue photos from the CMS; none show until uploaded.
         venues: (s.venuePhotos ?? [])
-          .map((v) => ({ name: v.name, image: resolveMedia(v.image).url }))
-          .filter((v): v is { name: string; image: string } => Boolean(v.image)),
+          .map((v) => ({ id: v.id, name: v.name, image: resolveMedia(v.image).url }))
+          .filter((v): v is typeof v & { image: string } => Boolean(v.image)),
       }))
     : undefined;
 

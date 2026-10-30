@@ -2296,8 +2296,9 @@
       transform 400ms var(--ease-out);
   }
 
-  .nonstop-card:hover,
-  .nonstop-card:focus-visible {
+  /* Only a card with a video reacts: a placeholder is not a link. */
+  a.nonstop-card:hover,
+  a.nonstop-card:focus-visible {
     transform: translateY(-4px);
     border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   }
@@ -2316,8 +2317,8 @@
     transition: filter 420ms var(--ease-out);
   }
 
-  .nonstop-card:hover .nonstop-card__art,
-  .nonstop-card:focus-visible .nonstop-card__art {
+  a.nonstop-card:hover .nonstop-card__art,
+  a.nonstop-card:focus-visible .nonstop-card__art {
     filter: brightness(0.86);
   }
 
@@ -2341,7 +2342,7 @@
     height: 20px;
   }
 
-  .nonstop-card:hover .nonstop-card__play {
+  a.nonstop-card:hover .nonstop-card__play {
     border-color: var(--accent);
     color: var(--accent);
   }

@@ -6,6 +6,7 @@ import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutParagraphs } from "@/data/about-page";
 import { careerStats } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -57,7 +58,7 @@ export function ArtistStory({
           <div className="about-story__text">
             {paragraphs.map((paragraph, index) => (
               <p
-                key={paragraph}
+                key={itemKey(paragraph, index)}
                 className={`reveal-scroll about-story__paragraph ${
                   index === paragraphs.length - 1
                     ? "about-story__paragraph--close"
@@ -74,7 +75,7 @@ export function ArtistStory({
         <dl className="about-figures">
           {stats.map((stat, index) => (
             <div
-              key={stat.label}
+              key={itemKey(stat, index)}
               className="reveal-scroll about-figure"
               style={delay(420 + index * 70)}
             >

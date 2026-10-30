@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { CSSProperties } from "react";
 import { experienceCtaHref as defaultCtaHref } from "@/data/experience";
 import type { Offering as OfferingData } from "@/types/experience";
+import { itemKey } from "@/lib/keys";
 
 type OfferingProps = {
   offering: OfferingData;
@@ -58,8 +59,8 @@ export function Offering({
 
         {offering.venues?.length ? (
           <ul className="exp-card__venues" aria-label="Venues">
-            {offering.venues.map((venue) => (
-              <li key={venue.name} className="exp-card__venue">
+            {offering.venues.map((venue, index) => (
+              <li key={itemKey(venue, index)} className="exp-card__venue">
                 <span className="exp-card__venue-frame">
                   <Image
                     src={venue.image}
@@ -81,8 +82,8 @@ export function Offering({
             state. One child, one row, one thing to animate. */}
         <div className="exp-card__points">
           <ul className="exp-card__points-list">
-            {offering.points.map((point) => (
-              <li key={point} className="exp-card__point">
+            {offering.points.map((point, index) => (
+              <li key={itemKey(point, index)} className="exp-card__point">
                 {point}
               </li>
             ))}

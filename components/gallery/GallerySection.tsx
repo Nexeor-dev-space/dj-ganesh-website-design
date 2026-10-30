@@ -8,6 +8,7 @@ import {
   galleryItems as defaultItems,
   gallerySectionLabel as defaultLabel,
 } from "@/data/gallery";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -117,8 +118,8 @@ export function GallerySection({
           <figcaption className="gallery__shows">
             <h3 className="gallery__shows-title">{feature.label}</h3>
             <ul className="gallery__shows-list">
-              {feature.shows.map((show) => (
-                <li key={show}>{show}</li>
+              {feature.shows.map((show, index) => (
+                <li key={itemKey(show, index)}>{show}</li>
               ))}
             </ul>
           </figcaption>
@@ -127,7 +128,7 @@ export function GallerySection({
         <ul className="gallery__grid">
           {galleryItems.map((item, index) => (
             <li
-              key={item.src}
+              key={itemKey(item, index)}
               className="gallery__item reveal-scroll"
               style={delay(120 + index * STEP)}
             >

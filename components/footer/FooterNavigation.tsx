@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { footerColumns } from "@/data/footer";
 import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
+import { itemKey } from "@/lib/keys";
 
 /**
  * The footer's four columns.
@@ -51,9 +52,9 @@ export function FooterNavigation() {
 
   return (
     <nav aria-label="Footer navigation" className="footer-columns">
-      {columns.map((column) => (
+      {columns.map((column, index) => (
         <div
-          key={column.label}
+          key={itemKey(column, index)}
           className={
             /* An email address can't break, so its column takes the full
                width on a phone rather than a half. */
@@ -65,12 +66,12 @@ export function FooterNavigation() {
           <h3 className="footer-column__label">{column.label}</h3>
 
           <ul className="footer-column__list">
-            {column.links.map((link) => {
+            {column.links.map((link, linkIndex) => {
               const external = "external" in link && link.external;
               const anchor = link.href.startsWith("#");
 
               return (
-                <li key={link.label}>
+                <li key={itemKey(link, linkIndex)}>
                   {anchor && !onHome ? (
                     <Link href={`/${link.href}`} className="footer-column__link">
                       {link.label}

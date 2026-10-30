@@ -108,6 +108,7 @@ export default async function HomePage() {
   const cities: TourCity[] = (home?.globalReach?.locations ?? [])
     .filter((l) => l.city && typeof l.lat === "number" && typeof l.lng === "number")
     .map((l) => ({
+      id: l.id,
       name: l.city,
       lat: l.lat as number,
       lng: l.lng as number,
@@ -124,7 +125,7 @@ export default async function HomePage() {
   /* Stages: CMS is a flat list; the three marquee rows are presentation. --- */
   const flatStages: Stage[] = (home?.stages?.stages ?? [])
     .filter((s) => s.name)
-    .map((s) => ({ name: s.name, ...(s.featured ? { featured: true } : {}) }));
+    .map((s) => ({ id: s.id, name: s.name, ...(s.featured ? { featured: true } : {}) }));
   const stageRows = flatStages.length
     ? (() => {
         const size = Math.ceil(flatStages.length / 3);
@@ -158,6 +159,7 @@ export default async function HomePage() {
     const rows = (about?.careerStats?.stats ?? [])
       .filter((s) => s.label && Number.isFinite(Number(s.value)))
       .map((s) => ({
+        id: s.id,
         value: Number(s.value),
         ...(s.suffix ? { suffix: s.suffix } : {}),
         label: s.label,
@@ -225,6 +227,7 @@ export default async function HomePage() {
   const nonstopSets = (ns?.sets ?? [])
     .filter((x) => x.title)
     .map((x, i) => ({
+      id: x.id,
       title: x.title,
       tag: x.tag ?? "",
       length: x.length ?? "",
@@ -238,6 +241,7 @@ export default async function HomePage() {
     const rows = (bs?.links ?? [])
       .filter((l) => l.label && l.href)
       .map((l) => ({
+        id: l.id,
         label: l.label,
         value: l.value ?? "",
         href: l.href,

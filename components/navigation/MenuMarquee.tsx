@@ -3,6 +3,7 @@ import { useSiteData } from "@/components/site/SiteDataProvider";
 import { stageRows as codeStageRows } from "@/lib/stages";
 import { trustedNames as codeTrustedNames } from "@/data/trusted";
 import type { Stage } from "@/types/stages";
+import { itemKey } from "@/lib/keys";
 
 /**
  * The trust marquee inside the menu.
@@ -59,10 +60,10 @@ export function MenuMarquee() {
         {rows.map((row, rowIndex) => {
           const group = (
             <ul className="menu-row__group">
-              {row.map((item) => {
+              {row.map((item, i) => {
                 return (
                   <li
-                    key={item.name}
+                    key={itemKey(item, i)}
                     className="menu-row__item"
                     data-featured={item.featured ? "true" : undefined}
                   >
