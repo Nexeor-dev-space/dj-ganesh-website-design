@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutFrames } from "@/data/about-page";
-import { siteConfig } from "@/lib/site";
 
 
 /**
@@ -26,7 +25,7 @@ export function AboutHero({
   return (
     <section
       ref={ref}
-      aria-labelledby="about-page-title"
+      aria-hidden
       data-visible={visible}
       className="about-hero relative overflow-hidden"
     >
@@ -45,10 +44,7 @@ export function AboutHero({
       </div>
 
       {/* The photo alone, as a strip under the navigation; the page's
-          words start with The Story. The heading stays for screen readers. */}
-      <h1 id="about-page-title" className="sr-only">
-        About {siteConfig.name}
-      </h1>
+          words, and its heading, start with The Story. */}
     </section>
   );
 }

@@ -41,9 +41,9 @@ export function ArtistStory({
       <Container className="relative z-10">
         <div className="about-story__spread">
           {/* No eyebrow: it only said "The Story" over a heading that says
-              the same. */}
+              the same. The page's main heading. */}
           <div>
-            <h2
+            <h1
               id="about-story-title"
               className="reveal-scroll section-title"
               style={delay(0)}
@@ -51,7 +51,7 @@ export function ArtistStory({
               The
               <br />
               Story
-            </h2>
+            </h1>
           </div>
 
           <div className="about-story__text">
