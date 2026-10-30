@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { fontVariables } from "../fonts";
 import { CustomCursor } from "@/components/interactions/CustomCursor";
+import { HashGuard } from "@/components/site/HashGuard";
 import { siteConfig } from "@/lib/site";
 import { SiteDataProvider, type SiteData } from "@/components/site/SiteDataProvider";
 import { getContactBooking, getHomePage, getNavigation, getSiteSettings } from "@/lib/cms/queries";
@@ -86,6 +87,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {/* The site's own cursor — a ring and a dot, on every route. Wide
             precise-pointer screens only; it renders nothing anywhere else. */}
         <CustomCursor />
+
+        {/* An unknown "#…" on any page goes to the 404, like a wrong path. */}
+        <HashGuard />
       </body>
     </html>
   );

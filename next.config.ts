@@ -23,6 +23,18 @@ const config: NextConfig = {
       },
     ],
   },
+  // The /dev sandbox is a development tool: on the live site its address
+  // goes nowhere, so it gets the site's own 404 like any unknown URL.
+  async rewrites() {
+    return {
+      beforeFiles:
+        process.env.NODE_ENV === 'production'
+          ? [{ source: '/dev/:path*', destination: '/__not-found' }]
+          : [],
+      afterFiles: [],
+      fallback: [],
+    }
+  },
   async redirects() {
     return [
       {
