@@ -110,6 +110,7 @@ export interface Config {
     'contact-booking': ContactBooking;
     about: About;
     'music-page': MusicPage;
+    'privacy-policy': PrivacyPolicy;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -118,6 +119,7 @@ export interface Config {
     'contact-booking': ContactBookingSelect<false> | ContactBookingSelect<true>;
     about: AboutSelect<false> | AboutSelect<true>;
     'music-page': MusicPageSelect<false> | MusicPageSelect<true>;
+    'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
   };
   locale: null;
   widgets: {
@@ -1331,6 +1333,27 @@ export interface MusicPage {
   createdAt?: string | null;
 }
 /**
+ * The /privacy page, linked from the footer and the booking form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy".
+ */
+export interface PrivacyPolicy {
+  id: number;
+  title?: string | null;
+  updated?: string | null;
+  intro?: string | null;
+  sections?:
+    | {
+        heading: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1845,6 +1868,25 @@ export interface MusicPageSelect<T extends boolean = true> {
         heading?: T;
         allReleasesUrl?: T;
         spotifyUrl?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy_select".
+ */
+export interface PrivacyPolicySelect<T extends boolean = true> {
+  title?: T;
+  updated?: T;
+  intro?: T;
+  sections?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

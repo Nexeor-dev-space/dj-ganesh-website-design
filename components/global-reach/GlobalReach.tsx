@@ -113,6 +113,30 @@ export function GlobalReach({
 
   const clearCity = useCallback(() => selectCity(null), [selectCity]);
 
+  /**
+   * A city picked from the list below the globe. On a phone the globe can be
+   * scrolled out of sight by then, and its turn to the city is the point of
+   * the tap, so the page glides back until the whole sphere sits under the
+   * navigation. Already fully in view, nothing moves.
+   */
+  const globeRef = useRef<HTMLDivElement>(null);
+  const selectFromList = useCallback(
+    (city: string) => {
+      selectCity(city);
+      const globe = globeRef.current;
+      if (!globe || window.matchMedia("(min-width: 768px)").matches) return;
+      const nav = document.querySelector("header")?.getBoundingClientRect().bottom ?? 64;
+      const box = globe.getBoundingClientRect();
+      if (box.top >= nav && box.bottom <= window.innerHeight) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({
+        top: window.scrollY + box.top - nav - 8,
+        behavior: reduce ? "auto" : "smooth",
+      });
+    },
+    [selectCity],
+  );
+
   useEffect(() => {
     if (!pinnedCity) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -158,7 +182,7 @@ export function GlobalReach({
         </p>
 
         <div className="reveal-scroll shows__stage" style={delay(260)}>
-          <div className="shows__globe">
+          <div ref={globeRef} className="shows__globe">
             <TourGlobe
               cities={tourCities}
               route={tourRoute}
@@ -188,7 +212,7 @@ export function GlobalReach({
             activeCity={activeCity}
             pinnedCity={pinnedCity}
             onHover={hoverCity}
-            onSelect={selectCity}
+            onSelect={selectFromList}
           />
         </div>
 
@@ -198,7 +222,7 @@ export function GlobalReach({
             activeCity={activeCity}
             pinnedCity={pinnedCity}
             onHover={hoverCity}
-            onSelect={selectCity}
+            onSelect={selectFromList}
           />
         </div>
 

@@ -22,6 +22,7 @@ const { statement, statementLabel } = await ld('../data/statement.ts')
 const { stageRows, stagesSectionLabel, stagesHeading, stagesLede, stagesCtaHref, stagesCtaLabel } = await ld('../lib/stages.ts')
 const { trustedNames, trustedLabel } = await ld('../data/trusted.ts')
 const { galleryItems, gallerySectionLabel, galleryFeature } = await ld('../data/gallery.ts')
+const { privacyPolicy } = await ld('../data/privacy.ts')
 const { nonstopLabel, nonstopHeading, nonstopLede, nonstopSets, nonstopSpotifyUrl, nonstopPodcastUrl } = await ld('../data/nonstop.ts')
 const { followHeading, followLinks } = await ld('../data/follow.ts')
 const { experienceSectionLabel, experienceHeading, experienceCtaHref, offerings } = await ld('../data/experience.ts')
@@ -482,6 +483,13 @@ await g('contact-booking', {
     ctaLabel: call.ctaLabel,
     agencies: call.agencies.map((name) => ({ name })),
   },
+})
+
+await g('privacy-policy', {
+  title: privacyPolicy.title,
+  updated: privacyPolicy.updated,
+  intro: privacyPolicy.intro,
+  sections: privacyPolicy.sections.map((x: { heading: string; body: string }) => ({ heading: x.heading, body: x.body })),
 })
 
 for (const c of [

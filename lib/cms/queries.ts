@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import type {
-  SiteSetting, Navigation, HomePage, About, MusicPage, ContactBooking,
+  SiteSetting, Navigation, HomePage, About, MusicPage, ContactBooking, PrivacyPolicy,
   UpcomingShow, MusicRelease, PerformanceHistory, Gallery, LegacyMilestone,
   Testimonial, ExperiencesService,
 } from '../../payload-types'
@@ -50,6 +50,7 @@ export const getHomePage = global<HomePage>('home-page')
 export const getAbout = global<About>('about')
 export const getMusicPage = global<MusicPage>('music-page')
 export const getContactBooking = global<ContactBooking>('contact-booking')
+export const getPrivacyPolicy = global<PrivacyPolicy>('privacy-policy')
 
 export const getUpcomingShows = collection<UpcomingShow>('upcoming-shows', { showStatus: { equals: 'upcoming' } })
 export const getMusicReleases = collection<MusicRelease>('music-releases', published)
