@@ -6,6 +6,7 @@ import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutParagraphs } from "@/data/about-page";
 import { careerStats } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -41,9 +42,9 @@ export function ArtistStory({
       <Container className="relative z-10">
         <div className="about-story__spread">
           {/* No eyebrow: it only said "The Story" over a heading that says
-              the same. */}
+              the same. The page's main heading. */}
           <div>
-            <h2
+            <h1
               id="about-story-title"
               className="reveal-scroll section-title"
               style={delay(0)}
@@ -51,13 +52,13 @@ export function ArtistStory({
               The
               <br />
               Story
-            </h2>
+            </h1>
           </div>
 
           <div className="about-story__text">
             {paragraphs.map((paragraph, index) => (
               <p
-                key={paragraph}
+                key={itemKey(paragraph, index)}
                 className={`reveal-scroll about-story__paragraph ${
                   index === paragraphs.length - 1
                     ? "about-story__paragraph--close"
@@ -74,7 +75,7 @@ export function ArtistStory({
         <dl className="about-figures">
           {stats.map((stat, index) => (
             <div
-              key={stat.label}
+              key={itemKey(stat, index)}
               className="reveal-scroll about-figure"
               style={delay(420 + index * 70)}
             >

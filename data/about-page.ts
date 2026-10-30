@@ -28,24 +28,24 @@ export const aboutStatement = "Bollywood, Afrobeats and house, mixed into one.";
  * and reads as a wall set as one block at this size.
  */
 export const aboutParagraphs = [
-  "Started behind the decks in Mumbai, 1998, where DJ Ganesh built the BollyAfro sound: Bollywood, Afrobeats and house, mixed into one.",
-  "From private nights for the Ambani family to stages in 45+ countries, he is now one of India's most booked DJs.",
+  "Started behind the decks in Mumbai, where DJ Ganesh built the BollyAfro sound: Bollywood, Afrobeats and house, mixed into one.",
+  "From private nights for the Ambani family to stages in 50+ countries, he is now one of India's most booked DJs.",
   "Now on a global world tour in 2026, the journey continues.",
 ] as const;
 
 /** The two frames this page is told through — both already in the project. */
 export const aboutFrames = {
   stage: {
-    src: "/images/about.jpg",
-    alt: "DJ Ganesh performing behind the decks, his name on the screen behind him",
+    src: "/images/about-hero-00448.jpg",
+    alt: "A packed arena lit by phone lights, seen from behind DJ Ganesh at the decks",
   },
   portrait: {
-    src: "/images/dj-ganesh.jpg",
-    alt: "DJ Ganesh photographed at an event",
+    src: "/images/dj-ganesh-07541.jpg",
+    alt: "DJ Ganesh, arms outstretched, in front of a packed club crowd",
   },
   decks: {
-    src: "/images/dj-about.jpg",
-    alt: "DJ Ganesh behind the decks",
+    src: "/images/dj-about-00023.jpg",
+    alt: "A packed club under red lights, Emraan Hashmi alongside DJ Ganesh on the screens",
   },
 } as const;
 

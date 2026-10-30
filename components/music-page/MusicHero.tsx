@@ -5,7 +5,6 @@ import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import {
   musicPageLabels,
-  musicPageStatement,
   musicPageTitle,
 } from "@/data/music-page";
 
@@ -21,13 +20,11 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 type MusicHeroProps = {
   intro?: string;
   title?: string;
-  statement?: string;
 };
 
 export function MusicHero({
   intro = musicPageLabels.intro,
   title = musicPageTitle,
-  statement = musicPageStatement,
 }: MusicHeroProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
@@ -50,9 +47,6 @@ export function MusicHero({
           {title}
         </h1>
 
-        <p className="reveal-scroll music-hero__statement" style={delay(180)}>
-          {statement}
-        </p>
       </Container>
     </section>
   );

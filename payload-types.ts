@@ -110,6 +110,7 @@ export interface Config {
     'contact-booking': ContactBooking;
     about: About;
     'music-page': MusicPage;
+    'privacy-policy': PrivacyPolicy;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -118,6 +119,7 @@ export interface Config {
     'contact-booking': ContactBookingSelect<false> | ContactBookingSelect<true>;
     about: AboutSelect<false> | AboutSelect<true>;
     'music-page': MusicPageSelect<false> | MusicPageSelect<true>;
+    'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
   };
   locale: null;
   widgets: {
@@ -383,6 +385,16 @@ export interface ExperiencesService {
   shortDescription: string;
   detailedDescription?: string | null;
   image?: (number | null) | Media;
+  /**
+   * Optional small photos shown on the card, each with the venue name under it.
+   */
+  venuePhotos?:
+    | {
+        image: number | Media;
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   features?:
     | {
         feature: string;
@@ -716,6 +728,13 @@ export interface ExperiencesServicesSelect<T extends boolean = true> {
   shortDescription?: T;
   detailedDescription?: T;
   image?: T;
+  venuePhotos?:
+    | T
+    | {
+        image?: T;
+        name?: T;
+        id?: T;
+      };
   features?:
     | T
     | {
@@ -872,6 +891,8 @@ export interface HomePage {
     heroImage?: (number | null) | Media;
     heroCtaText?: string | null;
     heroCtaUrl?: string | null;
+    heroSecondaryCtaText?: string | null;
+    heroSecondaryCtaUrl?: string | null;
     /**
      * Full-bleed hero background video (video/* accepted). Falls back to /videos/dj-ganesh.mp4.
      */
@@ -989,8 +1010,45 @@ export interface HomePage {
         }[]
       | null;
   };
+  /**
+   * The long-form sets band after Music. Empty fields fall back to the built-in copy.
+   */
+  nonstop?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    sets?:
+      | {
+          title: string;
+          tag?: string | null;
+          length?: string | null;
+          image?: (number | null) | Media;
+          url?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    spotifyUrl?: string | null;
+    podcastUrl?: string | null;
+  };
   galleryStrip?: {
     label?: string | null;
+    /**
+     * The video above the photos. Falls back to /videos/recent-big-shows.mp4.
+     */
+    reelVideo?: (number | null) | Media;
+    reelPoster?: (number | null) | Media;
+    reelLabel?: string | null;
+    bigShows?:
+      | {
+          show: string;
+          id?: string | null;
+        }[]
+      | null;
     items?:
       | {
           image?: (number | null) | Media;
@@ -1179,7 +1237,7 @@ export interface About {
   };
   story?: {
     /**
-     * e.g. "The" / "BollyAfro" / "Pioneer".
+     * e.g. "Wedding &" / "BollyAfro" / "Pioneer".
      */
     heading?:
       | {
@@ -1275,6 +1333,27 @@ export interface MusicPage {
   createdAt?: string | null;
 }
 /**
+ * The /privacy page, linked from the footer and the booking form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy".
+ */
+export interface PrivacyPolicy {
+  id: number;
+  title?: string | null;
+  updated?: string | null;
+  intro?: string | null;
+  sections?:
+    | {
+        heading: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1360,6 +1439,8 @@ export interface HomePageSelect<T extends boolean = true> {
         heroImage?: T;
         heroCtaText?: T;
         heroCtaUrl?: T;
+        heroSecondaryCtaText?: T;
+        heroSecondaryCtaUrl?: T;
         heroVideo?: T;
         heroVideoPoster?: T;
       };
@@ -1465,10 +1546,43 @@ export interface HomePageSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  nonstop?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        sets?:
+          | T
+          | {
+              title?: T;
+              tag?: T;
+              length?: T;
+              image?: T;
+              url?: T;
+              id?: T;
+            };
+        spotifyUrl?: T;
+        podcastUrl?: T;
+      };
   galleryStrip?:
     | T
     | {
         label?: T;
+        reelVideo?: T;
+        reelPoster?: T;
+        reelLabel?: T;
+        bigShows?:
+          | T
+          | {
+              show?: T;
+              id?: T;
+            };
         items?:
           | T
           | {
@@ -1754,6 +1868,25 @@ export interface MusicPageSelect<T extends boolean = true> {
         heading?: T;
         allReleasesUrl?: T;
         spotifyUrl?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy_select".
+ */
+export interface PrivacyPolicySelect<T extends boolean = true> {
+  title?: T;
+  updated?: T;
+  intro?: T;
+  sections?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

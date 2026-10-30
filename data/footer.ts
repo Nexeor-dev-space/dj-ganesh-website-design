@@ -64,7 +64,6 @@ export const footerColumns = [
     label: "Booking",
     links: [
       { label: "info@djganeshbombay.com", href: "mailto:info@djganeshbombay.com" },
-      { label: "BMT Agency", href: "https://www.bmtagency.in", external: true },
       { label: "Enquire", href: "/contact#booking" },
     ],
   },
@@ -106,4 +105,4 @@ export const footerStatement = "Follow the sound";
 
 /** Carried over verbatim from the source footer. */
 export const footerCopyright =
-  "© 2026 DJ Ganesh (Ganesh Ranganathan) · Dj Ganesh Bombay · Est. 1998";
+  "© 2026 DJ Ganesh (Ganesh Ranganathan) · Dj Ganesh Bombay";

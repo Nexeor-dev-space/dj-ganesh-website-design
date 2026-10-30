@@ -106,9 +106,11 @@ export function StagesSection({
             {stagesHeading[1]}
           </h2>
 
-          <p className="reveal-scroll stages-lede" style={delay(160)}>
-            {stagesLede}
-          </p>
+          {stagesLede ? (
+            <p className="reveal-scroll stages-lede" style={delay(160)}>
+              {stagesLede}
+            </p>
+          ) : null}
         </div>
       </Container>
 

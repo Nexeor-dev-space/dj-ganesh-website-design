@@ -23,7 +23,7 @@ type TourGlobeProps = {
   onAnchorChange: (anchor: GlobeAnchor | null) => void;
 };
 
-const ACCENT = "255, 213, 0"; // --accent as an rgb triplet, for alpha compositing
+const ACCENT = "16, 178, 108"; // --accent as an rgb triplet, for alpha compositing
 
 /** Degrees of spin per frame while nothing is focused — one turn takes ~3 min. */
 const IDLE_SPIN = 0.035;
@@ -216,7 +216,7 @@ export function TourGlobe({
       // A faint atmosphere so the globe reads as a body, not a scatter of dots.
       const halo = ctx.createRadialGradient(cx, cy, radius * 0.82, cx, cy, radius * 1.14);
       halo.addColorStop(0, "rgba(255, 255, 255, 0.08)");
-      halo.addColorStop(0.55, "rgba(255, 213, 0, 0.06)");
+      halo.addColorStop(0.55, `rgba(${ACCENT}, 0.06)`);
       halo.addColorStop(1, "rgba(255, 255, 255, 0)");
       ctx.fillStyle = halo;
       ctx.beginPath();

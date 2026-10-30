@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { FitText } from "@/components/hero/FitText";
@@ -80,7 +82,15 @@ export function Footer() {
         </div>
 
         <div className="reveal-scroll footer-bar" style={delay(380)}>
-          <p className="footer-bar__credit">{copyright}</p>
+          <p className="footer-bar__credit">
+            {copyright}
+            <span aria-hidden className="footer-bar__sep">
+              ·
+            </span>
+            <Link href="/privacy" className="footer-bar__privacy">
+              Privacy Policy
+            </Link>
+          </p>
 
           <button type="button" onClick={backToTop} className="btn-tertiary footer-link">
             Back to top

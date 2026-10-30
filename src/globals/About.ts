@@ -36,10 +36,11 @@ const About: GlobalConfig = {
           name: 'heading',
           label: 'Heading Lines',
           type: 'array',
-          admin: { description: 'e.g. "The" / "BollyAfro" / "Pioneer".' },
+          admin: { description: 'e.g. "Wedding &" / "BollyAfro" / "Pioneer".' },
           fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
         },
-        { name: 'statement', label: 'Opening Statement', type: 'textarea' },
+        // No longer shown anywhere: the bio carries the line instead.
+        { name: 'statement', label: 'Opening Statement', type: 'textarea', admin: { hidden: true } },
         {
           name: 'paragraphs',
           label: 'Story Paragraphs',

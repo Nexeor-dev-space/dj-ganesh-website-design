@@ -1,48 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Serif_Display, Inter } from "next/font/google";
-import localFont from "next/font/local";
+import { fontVariables } from "../fonts";
 import { CustomCursor } from "@/components/interactions/CustomCursor";
+import { HashGuard } from "@/components/site/HashGuard";
 import { siteConfig } from "@/lib/site";
 import { SiteDataProvider, type SiteData } from "@/components/site/SiteDataProvider";
-import { getContactBooking, getNavigation, getSiteSettings } from "@/lib/cms/queries";
+import { getContactBooking, getHomePage, getNavigation, getSiteSettings } from "@/lib/cms/queries";
 import "../globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-// The quote face on the wall of love. The client's own site sets its
-// testimonials in DM Serif Display, and the italic is the whole character of
-// that block — nothing already loaded here has a serif to stand in for it.
-const dmSerif = DM_Serif_Display({
-  subsets: ["latin"],
-  display: "swap",
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-});
-
-// Section headings — a single client-supplied weight, so no bold/italic
-// variants are declared.
-const consul = localFont({
-  src: "../../public/fonts/Consul.ttf",
-  display: "swap",
-  weight: "400",
-  style: "normal",
-  variable: "--font-consul",
-});
-
-// The name itself: the banner lockup and the footer signature. Also one
-// weight only.
-const laura = localFont({
-  src: "../../public/fonts/LAURA.otf",
-  display: "swap",
-  weight: "400",
-  style: "normal",
-  variable: "--font-laura",
-});
 
 export const metadata: Metadata = {
   title: siteConfig.title,
@@ -57,18 +20,26 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const [settings, navigation, contact] = await Promise.all([
+  const [settings, navigation, contact, home] = await Promise.all([
     getSiteSettings(),
     getNavigation(),
     getContactBooking(),
+    getHomePage(),
   ]);
 
   // Plain, serializable subsets only — no functions or class instances cross
   // the server/client boundary.
   const siteData: SiteData = {
+    menuNames: {
+      stages: (home?.stages?.stages ?? [])
+        .filter((st) => st.name)
+        .map((st) => ({ id: st.id, name: st.name, ...(st.featured ? { featured: true } : {}) })),
+      trusted: (home?.trustedBy?.names ?? []).map((n) => n.name).filter((n): n is string => Boolean(n)),
+    },
     nav: navigation
       ? {
           items: (navigation.items ?? []).map((i) => ({
+            id: i.id,
             label: i.label,
             url: i.url,
             isExternal: i.isExternal ?? null,
@@ -84,8 +55,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     footer: settings?.footer
       ? {
           columns: settings.footer.columns?.map((c) => ({
+            id: c.id,
             title: c.title,
             links: c.links?.map((l) => ({
+              id: l.id,
               label: l.label,
               href: l.href,
               external: l.external ?? null,
@@ -109,7 +82,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={siteConfig.locale}
-      className={`${inter.variable} ${consul.variable} ${laura.variable} ${dmSerif.variable}`}
+      className={fontVariables}
     >
       <body>
         <SiteDataProvider value={siteData}>{children}</SiteDataProvider>
@@ -117,6 +90,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {/* The site's own cursor — a ring and a dot, on every route. Wide
             precise-pointer screens only; it renders nothing anywhere else. */}
         <CustomCursor />
+
+        {/* An unknown "#…" on any page goes to the 404, like a wrong path. */}
+        <HashGuard />
       </body>
     </html>
   );

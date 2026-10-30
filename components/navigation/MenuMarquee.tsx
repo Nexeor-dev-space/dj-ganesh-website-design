@@ -1,6 +1,9 @@
 import type { CSSProperties } from "react";
-import { stageRows } from "@/lib/stages";
-import { trustedNames } from "@/data/trusted";
+import { useSiteData } from "@/components/site/SiteDataProvider";
+import { stageRows as codeStageRows } from "@/lib/stages";
+import { trustedNames as codeTrustedNames } from "@/data/trusted";
+import type { Stage } from "@/types/stages";
+import { itemKey } from "@/lib/keys";
 
 /**
  * The trust marquee inside the menu.
@@ -17,19 +20,38 @@ import { trustedNames } from "@/data/trusted";
  */
 const trustedLabel = "Trusted by, and the rooms he plays";
 
-/** The names for each row: one stage row, then a third of the trusted names. */
-const rows = stageRows.map((stages, index) => {
-  const share = Math.ceil(trustedNames.length / stageRows.length);
-  const names = trustedNames.slice(index * share, (index + 1) * share);
-  return [
-    ...stages.map((stage) => ({ name: stage.name, featured: stage.featured })),
-    ...names.map((name) => ({ name, featured: true })),
-  ];
-});
+/**
+ * The names for each row: one stage row, then a third of the trusted names.
+ * Follows the CMS lists (Home Page → Stages and Trusted By) when they hold
+ * anything, and the built-in lists otherwise.
+ */
+function buildRows(stages: readonly (readonly Stage[])[], trusted: readonly string[]) {
+  return stages.map((row, index) => {
+    const share = Math.ceil(trusted.length / stages.length);
+    const names = trusted.slice(index * share, (index + 1) * share);
+    return [
+      ...row.map((stage) => ({ name: stage.name, featured: stage.featured })),
+      ...names.map((name) => ({ name, featured: true })),
+    ];
+  });
+}
+
+/** Deals a flat CMS list into three rows, as the Stages section does. */
+function threeRows(flat: readonly Stage[]): Stage[][] {
+  const size = Math.ceil(flat.length / 3);
+  return [0, 1, 2].map((i) => flat.slice(i * size, (i + 1) * size)).filter((r) => r.length);
+}
 
 const durations = [38, 46, 42] as const;
 
 export function MenuMarquee() {
+  const { menuNames } = useSiteData();
+  const cmsStages = menuNames?.stages ?? [];
+  const rows = buildRows(
+    cmsStages.length ? threeRows(cmsStages) : codeStageRows,
+    menuNames?.trusted?.length ? menuNames.trusted : codeTrustedNames,
+  );
+
   return (
     <div className="menu-marquee" aria-label={trustedLabel}>
       <p className="menu-marquee__label">{trustedLabel}</p>
@@ -38,10 +60,10 @@ export function MenuMarquee() {
         {rows.map((row, rowIndex) => {
           const group = (
             <ul className="menu-row__group">
-              {row.map((item) => {
+              {row.map((item, i) => {
                 return (
                   <li
-                    key={item.name}
+                    key={itemKey(item, i)}
                     className="menu-row__item"
                     data-featured={item.featured ? "true" : undefined}
                   >

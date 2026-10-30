@@ -1,15 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import type { CSSProperties } from "react";
-import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { aboutFrames, aboutPageLabels, aboutStatement } from "@/data/about-page";
-import { aboutParagraphs } from "@/data/about-page";
-import { careerStart, soundStrands } from "@/lib/about";
-import { siteConfig } from "@/lib/site";
+import { aboutFrames } from "@/data/about-page";
 
-const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
 /**
  * The opening frame.
@@ -20,20 +14,10 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * gutters.
  */
 type AboutHeroProps = {
-  intro?: string;
-  statement?: string;
-  strands?: readonly string[];
-  since?: string;
-  lede?: string;
   stage?: { src: string; alt: string };
 };
 
 export function AboutHero({
-  intro = aboutPageLabels.intro,
-  statement = aboutStatement,
-  strands = soundStrands,
-  since = careerStart,
-  lede = aboutParagraphs[2],
   stage = aboutFrames.stage,
 }: AboutHeroProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
@@ -41,7 +25,7 @@ export function AboutHero({
   return (
     <section
       ref={ref}
-      aria-labelledby="about-page-title"
+      aria-hidden
       data-visible={visible}
       className="about-hero relative overflow-hidden"
     >
@@ -50,54 +34,17 @@ export function AboutHero({
           src={stage.src}
           alt={stage.alt}
           fill
-          priority
+          preload
           sizes="100vw"
-          /* Holds his face and the lit wall behind him as the crop narrows. */
-          className="about-hero__image object-cover object-[46%_34%] md:object-[48%_38%]"
+          quality={90}
+          /* Keeps the decks and the lit crowd in frame as the crop narrows. */
+          className="about-hero__image object-cover object-[50%_55%] md:object-[50%_45%]"
         />
         <div className="about-hero__fade" aria-hidden />
-
-        <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
       </div>
 
-      <Container className="about-hero__body relative z-10">
-        <p className="reveal-scroll about-label" style={delay(0)}>
-          {intro}
-        </p>
-
-        <h1
-          id="about-page-title"
-          className="reveal-scroll about-hero__name"
-          style={delay(90)}
-        >
-          {siteConfig.name}
-        </h1>
-
-        <p className="reveal-scroll about-hero__statement" style={delay(180)}>
-          {statement}
-        </p>
-
-        <div className="reveal-scroll about-hero__meta" style={delay(260)}>
-          <p className="about-hero__strands">
-            {strands.map((strand, index) => (
-              <span key={strand}>
-                {index > 0 ? (
-                  <span aria-hidden className="mx-sm text-white/25">
-                    /
-                  </span>
-                ) : null}
-                {strand}
-              </span>
-            ))}
-          </p>
-
-          <p className="about-hero__since">Mumbai · {since}</p>
-        </div>
-
-        <p className="reveal-scroll about-hero__lede" style={delay(340)}>
-          {lede}
-        </p>
-      </Container>
+      {/* The photo alone, as a strip under the navigation; the page's
+          words, and its heading, start with The Story. */}
     </section>
   );
 }

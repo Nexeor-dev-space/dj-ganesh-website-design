@@ -22,7 +22,7 @@ const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
 export const metadata: Metadata = {
   title: "DJ Ganesh — Music",
   description:
-    "The full listening archive: mixes and mashups by DJ Ganesh — Bollywood, Afrobeats and house, mixed into one. Play every track in full.",
+    "The full listening archive: mixes and mashups by DJ Ganesh, wedding DJ and BollyAfro pioneer. Play every track in full.",
 };
 
 /**
@@ -48,7 +48,6 @@ export default async function MusicPage() {
           <MusicHero
             intro={str(page?.labels?.intro)}
             title={str(page?.pageTitle)}
-            statement={str(page?.statement)}
           />
           <MusicArchive spotifyUrl={str(page?.homeSection?.spotifyUrl)} />
           <ContinueListening

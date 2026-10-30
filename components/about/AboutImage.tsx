@@ -27,11 +27,11 @@ export function AboutImage({
           /* Keeps him and the raised arm in frame as the crop widens. */
           className="hero-photo object-cover object-[54%_46%] sm:object-[52%_44%] lg:object-[50%_42%]"
           sizes="(min-width: 1024px) 52vw, 100vw"
+          quality={90}
         />
       </div>
 
       <div className="story-frame__fade" aria-hidden />
-      <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
     </figure>
   );
 }

@@ -10,6 +10,11 @@ import { createContext, useContext, type ReactNode } from "react";
  * keep their own hardcoded constants, so an empty CMS renders today's site.
  */
 export type SiteData = {
+  /** Names for the menu's scrolling strip, from Home Page → Stages / Trusted By. */
+  menuNames?: {
+    stages?: { name: string; featured?: boolean }[] | null;
+    trusted?: string[] | null;
+  } | null;
   nav?: {
     items?: {
       label?: string | null;

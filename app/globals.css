@@ -15,7 +15,11 @@
   --border: rgba(255, 255, 255, 0.12);
 
   /* The single signature accent — electric, atmospheric, used sparingly. */
-  --accent: #ffd500;
+  /* Emerald. Near-black text reads on it at ~7.6:1, so filled buttons keep
+     their dark labels; white would only reach ~2.9:1. */
+  --accent: #10b26c;
+  /* The deeper shade a button sweeps to on hover. */
+  --accent-hover: #0e9a5d;
 
   /* Layout */
   --container-max-width: 1440px;
@@ -103,6 +107,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -494,21 +499,6 @@
     text-wrap: balance;
   }
 
-  .hero__sub {
-    margin: var(--space-md) 0 0;
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  @media (width >= 768px) {
-    .hero__sub {
-      font-size: 12px;
-    }
-  }
-
   /* Stacked on a phone so the button is a full-width target, side by side as
      soon as there is room for both. */
   .hero__ctas {
@@ -851,9 +841,15 @@
     min-height: 100%;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-xl);
-    padding-block: var(--space-xl) var(--space-lg);
+    /* Centred as one group: spreading the three blocks to the top and bottom
+       left big empty bands around the social icons on tall phones. */
+    justify-content: center;
+    /* Every size in the menu is the smaller of its designed value and a
+       share of the screen's height (svh: the height with the browser's bars
+       showing), so tall screens look exactly as designed and short ones —
+       laptops at 720–768px tall — shrink until it all fits, unscrolled. */
+    gap: min(var(--space-xl), 4.5svh);
+    padding-block: min(var(--space-xl), 4svh) min(var(--space-lg), 3svh);
     text-align: center;
     /* The name band runs 100vw, a scrollbar's width wider than this box
        whenever it scrolls; clip that, and keep the scroll itself (a short
@@ -868,7 +864,7 @@
 
   @media (width >= 768px) {
     .menu {
-      padding-block: var(--space-2xl);
+      padding-block: min(var(--space-2xl), 5svh);
     }
   }
 
@@ -876,7 +872,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
+    gap: min(var(--space-sm), 1.8svh);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -885,7 +881,7 @@
   .menu__link {
     display: inline-block;
     font-family: var(--font-consul), var(--font-display);
-    font-size: clamp(34px, 7vw, 64px);
+    font-size: min(clamp(34px, 7vw, 64px), 7svh);
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -930,7 +926,7 @@
   }
 
   .menu-marquee__label {
-    margin: 0 0 var(--space-md);
+    margin: 0 0 min(var(--space-md), 2.2svh);
     padding-inline: var(--container-padding);
     text-wrap: balance;
     font-size: 12px;
@@ -948,7 +944,7 @@
   }
 
   .menu-row + .menu-row {
-    margin-top: var(--space-sm);
+    margin-top: min(var(--space-sm), 1.4svh);
   }
 
   .menu-marquee:hover .menu-row {
@@ -975,7 +971,7 @@
     gap: clamp(16px, 2vw, 28px);
     padding-right: clamp(16px, 2vw, 28px);
     font-family: var(--font-display);
-    font-size: clamp(18px, 2.6vw, 30px);
+    font-size: min(clamp(18px, 2.6vw, 30px), 3.4svh);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -989,6 +985,14 @@
   }
 
   /* The same diamond the homepage bands use between names. */
+  /* Phones on their side: too short for the name strip at any size, so the
+     menu keeps just the pages and the accounts. */
+  @media (height < 500px) {
+    .menu-marquee {
+      display: none;
+    }
+  }
+
   .menu-row__mark {
     font-size: 0.5em;
     line-height: 1;
@@ -1136,7 +1140,9 @@
     position: relative;
     /* Tall enough to be the dominant object on the page without pushing the
        strips below it off a laptop screen. */
-    height: clamp(320px, 78vw, 420px);
+    /* Also capped by the screen's height on phones, so the globe, the city
+       card and the full city list fit one screen after a tap. */
+    height: clamp(260px, min(78vw, 40svh), 420px);
   }
 
   @media (min-width: 640px) {
@@ -1151,7 +1157,47 @@
     }
 
     .shows__globe {
-      height: clamp(460px, 54vw, 660px);
+      height: clamp(460px, 54vw, 600px);
+    }
+  }
+
+  /* Wide screens: the globe holds the left half, the cities and the next
+     dates sit beside it as its key. */
+  .shows__side {
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .shows__layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: center;
+      margin-top: var(--space-xl);
+    }
+
+    .shows__stage {
+      margin-top: 0;
+    }
+
+    /* About 520px on a 1440px screen. */
+    .shows__globe {
+      height: clamp(400px, 36vw, 540px);
+    }
+  }
+
+  .shows__side-label {
+    margin-top: var(--space-xl);
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--accent);
+  }
+
+  @media (min-width: 1024px) {
+    .shows__side-label {
+      margin-top: 0;
     }
   }
 
@@ -1262,6 +1308,35 @@
     color: var(--muted-foreground);
   }
 
+  /* Phones: the card sits in flow between the globe and the city list, so
+     it is kept small enough for globe, card and list to share one screen. */
+  @media (width < 768px) {
+    .show-info {
+      margin-top: var(--space-sm);
+      padding: 12px var(--space-sm);
+    }
+
+    .show-info__label {
+      font-size: 11px;
+    }
+
+    .show-info__city {
+      margin-top: 6px;
+      font-size: 17px;
+    }
+
+    .show-info__date,
+    .show-info__venue {
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    .show-info .show-info__cta {
+      margin-top: var(--space-xs);
+      min-height: 32px;
+    }
+  }
+
   /* ---- The nine cities ---------------------------------------------------
 
      One run, centred, with the globe's own marker repeated as a dot ahead of
@@ -1273,7 +1348,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 2px var(--space-md);
-    margin-top: var(--space-xl);
+    margin-top: var(--space-xs);
   }
 
   .city-run__city {
@@ -1335,7 +1410,6 @@
   @media (min-width: 768px) {
     .city-run {
       gap: 4px var(--space-xl);
-      margin-top: var(--space-2xl);
     }
 
     .city-run__city {
@@ -1343,18 +1417,28 @@
     }
   }
 
+  /* Beside the globe: two short columns, read down. */
+  @media (min-width: 1024px) {
+    .city-run {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      grid-template-rows: repeat(5, auto);
+      grid-auto-flow: column;
+      gap: 0 var(--space-2xl);
+    }
+  }
+
   /* ---- Up next -----------------------------------------------------------
 
-     The four announced dates. Pills, not cards: they drive the globe, and the
-     ticket link is made once, in the panel beside the marker.               */
+     The announced dates as one card, a row per show. The rows drive the
+     globe; the ticket link is made once, in the panel beside the marker.    */
 
   .up-next {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-md);
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-xl);
+    padding: var(--space-md) var(--space-md) var(--space-xs);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.015);
   }
 
   .up-next__label {
@@ -1366,40 +1450,40 @@
   }
 
   .up-next__row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 10px;
+    margin-top: var(--space-xs);
+  }
+
+  .up-next__row > li + li {
+    border-top: 1px solid var(--border);
   }
 
   .up-next__pill {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 8px 18px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    gap: var(--space-md);
+    width: 100%;
+    min-height: 48px;
+    padding: 10px var(--space-xs);
     text-align: left;
     transition:
-      border-color 300ms var(--ease-out),
       background 300ms var(--ease-out),
-      transform 300ms var(--ease-out);
+      box-shadow 300ms var(--ease-out);
   }
 
   .up-next__pill:hover,
   .up-next__pill[data-active="true"] {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
     background: color-mix(in srgb, var(--accent) 7%, transparent);
-    transform: translateY(-2px);
   }
 
+  /* Pinned: an accent rule down its left edge marks the row that stays. */
   .up-next__pill[data-pinned="true"] {
-    border-color: var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   .up-next__date {
+    flex: none;
+    min-width: 4.6em;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -1413,6 +1497,9 @@
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.14em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
     color: rgba(255, 255, 255, 0.65);
   }
@@ -1422,17 +1509,10 @@
     opacity: 0.4;
   }
 
-  /* The room is the least of the three, and the first thing to go when the
-     row runs out of width. */
+  /* The room is the least of the three: on a narrow row it is the part
+     that trails off. */
   .up-next__venue {
     color: rgba(255, 255, 255, 0.65);
-  }
-
-  @media (max-width: 479px) {
-    .up-next__venue,
-    .up-next__sep {
-      display: none;
-    }
   }
 
   .up-next__pill:hover .up-next__where,
@@ -1467,11 +1547,6 @@
     animation: none;
   }
 
-  .up-next__pill:hover,
-  .up-next__pill[data-active="true"] {
-    transform: none;
-  }
-
   .city-run__city[data-active="true"] .city-run__dot {
     transform: none;
   }
@@ -1501,7 +1576,7 @@
   .artwork-glow {
     background: radial-gradient(
       120% 90% at 50% 100%,
-      rgba(255, 213, 0, 0.16) 0%,
+      rgba(16, 178, 108, 0.16) 0%,
       transparent 62%
     );
   }
@@ -1625,12 +1700,12 @@
   .release-card:hover,
   .release-card:focus-within {
     transform: translateY(-6px);
-    border-color: rgba(255, 213, 0, 0.28);
+    border-color: rgba(16, 178, 108, 0.28);
     box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
   .release-card[data-current] {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(16, 178, 108, 0.4);
   }
 
   /* The artwork is the control: one button, the whole frame. */
@@ -1809,7 +1884,8 @@
     opacity: 0.4;
     filter: grayscale(0.4) brightness(0.55);
     transform: translate(-50%, -50%)
-      translateX(calc(var(--offset) * var(--sleeve) * var(--spread))) scale(0.6);
+      translateX(calc(var(--offset) * var(--sleeve) * var(--spread) + var(--drag, 0px)))
+      scale(0.6);
     transition:
       transform 650ms var(--ease-in-out),
       opacity 650ms var(--ease-in-out),
@@ -1824,7 +1900,17 @@
     z-index: 3;
     opacity: 1;
     filter: none;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) translateX(var(--drag, 0px)) scale(1);
+  }
+
+  /* Swipe: horizontal drags belong to the rack, vertical ones to the page;
+     while a finger is down the sleeves track it with no easing lag. */
+  .vinyl__stage {
+    touch-action: pan-y;
+  }
+
+  .vinyl__stage[data-dragging] .vinyl__item {
+    transition-duration: 0ms, 650ms, 650ms;
   }
 
   /* Anything two or more away is off the rack: hidden while it wraps round. */
@@ -1879,7 +1965,7 @@
 
   .vinyl__item[data-active] .vinyl__sleeve:hover,
   .vinyl__item[data-active] .vinyl__sleeve:focus-visible {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(16, 178, 108, 0.4);
   }
 
   .vinyl__item[data-active] .vinyl__sleeve:hover .vinyl__art,
@@ -1964,7 +2050,7 @@
     inset: 33.5%;
     overflow: hidden;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(255, 213, 0, 0.45);
+    box-shadow: 0 0 0 1px rgba(16, 178, 108, 0.45);
   }
 
   .vinyl__label-art {
@@ -2153,6 +2239,193 @@
     margin-top: 0;
   }
 
+  /* ---- Nonstop Sets ------------------------------------------------------- */
+
+  .nonstop__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .nonstop__title {
+    margin-top: var(--rhythm-eyebrow);
+  }
+
+  .nonstop__lede {
+    max-width: 52ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .nonstop__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-md);
+    margin: var(--rhythm-block) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width >= 640px) {
+    .nonstop__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 1024px) {
+    .nonstop__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .nonstop-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.018);
+    transition:
+      border-color 400ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+
+  /* Only a card with a video reacts: a placeholder is not a link. */
+  a.nonstop-card:hover,
+  a.nonstop-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .nonstop-card__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #050505;
+  }
+
+  .nonstop-card__art {
+    object-fit: cover;
+    filter: brightness(0.66);
+    transition: filter 420ms var(--ease-out);
+  }
+
+  a.nonstop-card:hover .nonstop-card__art,
+  a.nonstop-card:focus-visible .nonstop-card__art {
+    filter: brightness(0.86);
+  }
+
+  .nonstop-card__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    background-color: rgba(5, 5, 5, 0.42);
+    color: #ffffff;
+  }
+
+  .nonstop-card__play svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  a.nonstop-card:hover .nonstop-card__play {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .nonstop-card__length {
+    position: absolute;
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    padding: 3px 8px;
+    border-radius: 2px;
+    background-color: rgba(5, 5, 5, 0.72);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .nonstop-card__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+  }
+
+  .nonstop-card__info .release-card__tag {
+    margin: 0;
+  }
+
+  .nonstop-card__name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .nonstop__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-xl);
+    margin-top: var(--rhythm-body);
+  }
+
+  /* ---- Venue photos on the Club Nights card ------------------------------ */
+
+  .exp-card__venues {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xs);
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .exp-card__venue {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .exp-card__venue-frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: var(--surface);
+  }
+
+  .exp-card__venue-img {
+    object-fit: cover;
+    filter: brightness(0.8);
+  }
+
+  .exp-card__venue-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted-foreground);
+  }
+
   /* ---- Playlist (on /music) ---------------------------------------------- */
 
   .playlist {
@@ -2201,7 +2474,7 @@
   }
 
   .playlist__row[data-current] {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(16, 178, 108, 0.4);
   }
 
   .playlist__thumb {
@@ -2488,7 +2761,9 @@
        the reset's figure margins. */
     margin-block: 0;
     margin-inline: calc(-1 * var(--edge));
-    aspect-ratio: 4 / 5;
+    /* The photo's own 5:4 on phones, so its dark ceiling and floor never
+       read as empty bands above and below the subject. */
+    aspect-ratio: 5 / 4;
     overflow: hidden;
     background-color: var(--surface);
   }
@@ -2537,13 +2812,24 @@
 
   /* Three lines, big enough to carry the left half on their own. Sized on
      the same ×0.8 Consul scale as `.section-title`. */
+  /* The heading sizes against its own column, not the screen. */
+  .story-copy {
+    container-type: inline-size;
+  }
+
   .story-title {
     font-family: var(--font-consul), var(--font-display);
     font-weight: 400;
-    font-size: clamp(35px, 7.2vw, 84px);
+    /* Capped by the column, so "Wedding &" (about 6.65em wide) always holds
+       one line — between 1024 and 1366px the column is narrower than the
+       screen-based size would need. */
+    font-size: min(clamp(35px, 7.2vw, 84px), 14cqi);
     line-height: 0.88;
     letter-spacing: -0.045em;
     text-transform: uppercase;
+    /* The face's "&" stands taller than its capitals; room for it to clear
+       the eyebrow above. */
+    padding-top: 0.14em;
   }
 
   /* The strands, as a rule with the three names hung off it. */
@@ -2620,16 +2906,16 @@
   /* The career figures as a ruled band rather than four cards. Two abreast on
      a phone, where four columns would crush "Years behind the decks" into a
      stack of single words. */
+  /* One figure per row on a phone; side by side from tablets, one column per
+     figure however many the CMS holds (three now that the years-behind-the-
+     decks figure is gone), so a missing one never leaves a gap. */
+  /* One column per figure on every screen, so a phone shows them side by
+     side instead of stacked with the right side empty. */
   .story-facts {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     margin: 0;
-  }
-
-  @media (width >= 768px) {
-    .story-facts {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
   }
 
   /* Reversed, because the label comes first in the markup: a screen reader
@@ -2638,31 +2924,25 @@
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
-    padding: var(--space-lg) var(--space-md) var(--space-lg) 0;
+    padding: var(--space-lg) var(--space-sm) var(--space-lg) 0;
     border-top: 1px solid var(--border);
   }
 
-  /* Hairlines between, not around: the band reads as one ruled row. Every
-     card rules off its neighbour on a phone except the ones opening a row. */
+  @media (width >= 768px) {
+    .story-fact {
+      padding-right: var(--space-md);
+    }
+  }
+
+  /* Hairlines between, not around: the band reads as one ruled row. */
   .story-fact + .story-fact {
-    padding-left: var(--space-md);
+    padding-left: var(--space-sm);
     border-left: 1px solid var(--border);
   }
 
-  .story-fact:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
   @media (width >= 768px) {
-    .story-fact:nth-child(odd) {
+    .story-fact + .story-fact {
       padding-left: var(--space-md);
-      border-left: 1px solid var(--border);
-    }
-
-    .story-fact:first-child {
-      padding-left: 0;
-      border-left: 0;
     }
   }
 
@@ -2671,7 +2951,7 @@
     align-items: baseline;
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(30px, 4.6vw, 52px);
+    font-size: clamp(24px, 4.6vw, 52px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -2682,7 +2962,7 @@
 
   .story-fact__suffix {
     font-size: 0.62em;
-    color: rgba(255, 213, 0, 0.55);
+    color: rgba(16, 178, 108, 0.55);
   }
 
   .story-fact__label {
@@ -2695,9 +2975,19 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
-  @media (width >= 768px) {
+  /* On a phone each figure gets about a third of the screen; slightly smaller,
+     tighter-tracked labels keep "Countries" inside its column. */
+  @media (width < 768px) {
     .story-fact__label {
-      font-size: 12px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+
+  /* The narrowest phones (320–380px) need a touch less tracking again. */
+  @media (width < 380px) {
+    .story-fact__label {
+      letter-spacing: 0.05em;
     }
   }
 
@@ -2708,7 +2998,7 @@
     pointer-events: none;
     background: radial-gradient(
       46% 46% at 74% 42%,
-      rgba(255, 213, 0, 0.05) 0%,
+      rgba(16, 178, 108, 0.05) 0%,
       transparent 70%
     );
   }
@@ -2870,7 +3160,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 42% at 72% 12%,
-      rgba(255, 213, 0, 0.045) 0%,
+      rgba(16, 178, 108, 0.045) 0%,
       transparent 68%
     );
   }
@@ -3079,7 +3369,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 44% at 50% 38%,
-      rgba(255, 213, 0, 0.045) 0%,
+      rgba(16, 178, 108, 0.045) 0%,
       transparent 72%
     );
   }
@@ -3118,7 +3408,10 @@
     content: attr(data-text);
     content: attr(data-text) / "";
     position: absolute;
-    inset: 0;
+    /* Runs past the right edge: tight letter-spacing lets the last glyph's
+       ink overhang its box, and the mask would otherwise clip it, leaving a
+       white sliver of the letter beneath showing. */
+    inset: 0 -0.2em 0 0;
     color: var(--accent);
     -webkit-mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
     mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
@@ -3477,9 +3770,10 @@
     }
   }
 
+  /* The photographs' own 5:4, so nothing important is cropped. */
   .gallery__item {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 5 / 4;
     overflow: hidden;
     background-color: #060606;
   }
@@ -3730,7 +4024,7 @@
     pointer-events: none;
     background: radial-gradient(
       54% 48% at 50% 58%,
-      rgba(255, 213, 0, 0.04) 0%,
+      rgba(16, 178, 108, 0.04) 0%,
       transparent 72%
     );
   }
@@ -3841,8 +4135,8 @@
      travelling sideways, and a card that rises as it passes reads as the run
      jolting rather than as the card answering the pointer. */
   .reaction-card:hover {
-    border-color: rgba(255, 213, 0, 0.4);
-    background-color: rgba(255, 213, 0, 0.03);
+    border-color: rgba(16, 178, 108, 0.4);
+    background-color: rgba(16, 178, 108, 0.03);
   }
 
   .reaction-card__head {
@@ -3873,7 +4167,7 @@
   }
 
   .reaction-card:hover .reaction-card__mark {
-    color: rgba(255, 213, 0, 0.32);
+    color: rgba(16, 178, 108, 0.32);
   }
 
   .reaction-card__quote {
@@ -3973,7 +4267,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 46% at 74% 62%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(16, 178, 108, 0.06) 0%,
       transparent 70%
     );
   }
@@ -4039,15 +4333,21 @@
     }
   }
 
-  .booking-scope li + li::before {
-    content: "·";
-    margin-right: var(--space-md);
-    color: rgba(255, 255, 255, 0.4);
+  /* Phones: two tidy columns, no separators, so no dot ever starts a line.
+     From tablets the list runs on one line with dots between. */
+  @media (width < 768px) {
+    .booking-scope {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm) var(--space-md);
+    }
   }
 
   @media (width >= 768px) {
     .booking-scope li + li::before {
+      content: "·";
       margin-right: var(--space-md);
+      color: rgba(255, 255, 255, 0.4);
     }
   }
 
@@ -4173,7 +4473,8 @@
   .footer-columns {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2xl) var(--space-lg);
+    /* 40px between the groups: enough to separate them, not a blank band. */
+    gap: 40px var(--space-lg);
   }
 
   /* Four columns only from `lg`. At `md` a quarter of the width is 144px,
@@ -4183,6 +4484,14 @@
     .footer-columns {
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--space-xl);
+    }
+  }
+
+  /* The column with the booking address spans both phone columns, so the
+     address stays on one line. */
+  @media (width < 1024px) {
+    .footer-column--wide {
+      grid-column: 1 / -1;
     }
   }
 
@@ -4202,7 +4511,7 @@
   }
 
   .footer-column__list {
-    margin: var(--space-lg) 0 0;
+    margin: var(--space-sm) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -4213,10 +4522,13 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
-    min-height: 40px;
+    min-height: 36px;
+    max-width: 100%;
     font-size: 14px;
     font-weight: 300;
     line-height: 1.5;
+    /* Last resort for a long CMS label on a narrow screen: wrap, never clip. */
+    overflow-wrap: break-word;
     color: rgba(255, 255, 255, 0.68);
     transition: color 240ms var(--ease-out);
   }
@@ -4230,7 +4542,7 @@
   /* Comfortable to hit with a thumb. */
   @media (pointer: coarse) {
     .footer-column__link {
-      min-height: 44px;
+      min-height: 40px;
     }
   }
 
@@ -4275,6 +4587,109 @@
     font-weight: 300;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.65);
+  }
+
+  .footer-bar__sep {
+    margin-inline: var(--space-xs);
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .footer-bar__privacy,
+  .enquiry-consent__link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    transition:
+      color 200ms var(--ease-out),
+      text-decoration-color 200ms var(--ease-out);
+  }
+
+  .footer-bar__privacy:hover,
+  .footer-bar__privacy:focus-visible,
+  .enquiry-consent__link:hover,
+  .enquiry-consent__link:focus-visible {
+    color: var(--accent);
+    text-decoration-color: currentColor;
+  }
+
+  /* The line above the booking form's button. */
+  .enquiry-consent {
+    margin: var(--space-xs) 0 0;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Privacy policy (/privacy) ----------------------------------------- */
+
+  .policy {
+    padding-block: clamp(112px, 14vh, 160px) clamp(36px, 4vw, 56px);
+    background-color: var(--background);
+  }
+
+  .policy__label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .policy__title {
+    margin-top: var(--rhythm-eyebrow);
+  }
+
+  .policy__intro {
+    max-width: 60ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  .policy__sections {
+    display: grid;
+    gap: 0;
+    max-width: 760px;
+    margin-top: var(--rhythm-block);
+    border-top: 1px solid var(--border);
+  }
+
+  .policy__section {
+    display: grid;
+    gap: var(--space-xs);
+    padding-block: var(--space-md);
+    border-bottom: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .policy__intro {
+      font-size: 17px;
+    }
+
+    .policy__section {
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: var(--space-xl);
+    }
+  }
+
+  .policy__heading {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .policy__body {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
   }
 
 }
@@ -4414,11 +4829,13 @@
   .stage-row__item {
     display: flex;
     align-items: center;
-    gap: clamp(16px, 2.2vw, 40px);
-    padding-right: clamp(16px, 2.2vw, 40px);
+    gap: clamp(12px, 1.6vw, 24px);
+    padding-right: clamp(12px, 1.6vw, 24px);
     white-space: nowrap;
     font-family: var(--font-display);
-    font-size: clamp(30px, 5.4vw, 76px);
+    /* About half its old size: a moving strip under "The Rooms", not a
+       second heading competing with it. */
+    font-size: clamp(20px, 2.7vw, 38px);
     font-weight: 700;
     line-height: 1.08;
     letter-spacing: -0.02em;
@@ -4633,17 +5050,18 @@
 
   /* ---- Opening frame ------------------------------------------------------ */
 
+  /* A photo strip under the fixed navigation (64px, 80px from tablets);
+     the page's words start with The Story below it. */
   .about-hero {
-    /* Clears the fixed navigation, then holds the name well down the frame. */
-    padding-top: clamp(120px, 18vh, 200px);
-    padding-bottom: clamp(28px, 4vh, 48px);
+    margin-top: 64px;
+    height: clamp(180px, 30vh, 280px);
     background-color: var(--background);
   }
 
-  @media (width >= 1024px) {
+  @media (width >= 768px) {
     .about-hero {
-      padding-top: clamp(180px, 22vh, 260px);
-      padding-bottom: clamp(40px, 5vh, 64px);
+      margin-top: 80px;
+      height: clamp(240px, 36vh, 420px);
     }
   }
 
@@ -4654,84 +5072,23 @@
     overflow: hidden;
   }
 
+  /* Light enough for the crowd and the phone lights to come through; the
+     fade below darkens only where the type sits. */
   .about-hero__image {
-    filter: contrast(1.05) brightness(0.62);
+    filter: brightness(0.85);
   }
 
   /* Holds the picture down far enough for the type to read on it, without
      flattening it to black. */
+  /* Dark behind the type, clear elsewhere: the title and lines sit on the
+     left, so the shade runs off to the right, and the foot of the frame
+     blends into the page. On a phone the type spans the width, so the shade
+     is even across it instead. */
+  /* No type sits on the strip now: just a soft blend into the page below. */
   .about-hero__fade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(5, 5, 5, 0.82) 0%,
-      rgba(5, 5, 5, 0.58) 38%,
-      rgba(5, 5, 5, 0.86) 78%,
-      var(--background) 100%
-    );
-  }
-
-  .about-hero__name {
-    margin: var(--rhythm-eyebrow) 0 0;
-    font-family: var(--font-laura), var(--font-display);
-    font-weight: 400;
-    font-size: clamp(46px, 12vw, 150px);
-    line-height: 0.86;
-    letter-spacing: -0.045em;
-    text-transform: uppercase;
-  }
-
-  .about-hero__statement {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 18ch;
-    font-family: var(--font-display);
-    font-size: clamp(22px, 3.4vw, 44px);
-    font-weight: 700;
-    line-height: 1.14;
-    letter-spacing: -0.03em;
-    color: rgba(255, 255, 255, 0.94);
-    text-wrap: balance;
-  }
-
-  .about-hero__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-sm) var(--space-xl);
-    margin-top: var(--space-xl);
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-  }
-
-  @media (width >= 768px) {
-    .about-hero__meta {
-      font-size: 12px;
-    }
-  }
-
-  .about-hero__strands {
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  .about-hero__since {
-    color: rgba(255, 255, 255, 0.65);
-  }
-
-  .about-hero__lede {
-    margin: var(--space-lg) 0 0;
-    max-width: 46ch;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--muted-foreground);
-  }
-
-  @media (width >= 768px) {
-    .about-hero__lede {
-      font-size: 17px;
-    }
+    background: linear-gradient(to bottom, transparent 55%, var(--background) 100%);
   }
 
   /* ---- The story ---------------------------------------------------------- */
@@ -4753,10 +5110,17 @@
     max-width: 54ch;
   }
 
+  /* The homepage bio's size and colour: 15px, 17px from tablets. */
   .about-story__paragraph {
-    font-size: clamp(17px, 1.9vw, 22px);
-    line-height: 1.62;
-    color: rgba(255, 255, 255, 0.66);
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .about-story__paragraph {
+      font-size: 17px;
+    }
   }
 
   .about-story__paragraph + .about-story__paragraph {
@@ -4770,10 +5134,14 @@
   /* The closing line is the one that carries the present tense. */
 
   /* The career in figures, ruled across the foot of the spread. */
+  /* Three across on every screen, compact on phones, so the band never
+     leaves the right side empty. */
   .about-figures {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-lg) var(--space-md);
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--space-lg) var(--space-sm);
     margin: var(--space-3xl) 0 0;
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border);
@@ -4781,7 +5149,9 @@
 
   @media (width >= 768px) {
     .about-figures {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
       gap: var(--space-xl);
       margin-top: var(--space-4xl);
     }
@@ -4789,7 +5159,7 @@
 
   .about-figure__value {
     font-family: var(--font-display);
-    font-size: clamp(30px, 4vw, 52px);
+    font-size: clamp(26px, 4vw, 52px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.04em;
@@ -4809,6 +5179,14 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
+  /* As .story-fact__label: a third of a phone screen each. */
+  @media (width < 768px) {
+    .about-figure__label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+
   /* ---- Two frames and the sound ------------------------------------------- */
 
   .about-visual__spread {
@@ -4817,8 +5195,11 @@
   }
 
   @media (width >= 1024px) {
+    /* The photos take about a third of the row (they used to take over
+       half), so the portrait sits at a size its detail holds up at and the
+       words get the room. */
     .about-visual__spread {
-      grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+      grid-template-columns: minmax(0, 36fr) minmax(0, 64fr);
       gap: var(--space-3xl);
       align-items: center;
     }
@@ -4883,16 +5264,6 @@
     margin-inline: var(--space-sm);
     color: rgba(255, 255, 255, 0.4);
   }
-
-  .about-visual__line {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 34ch;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--muted-foreground);
-  }
-
-
 
   /* ---- Hand-off to booking ------------------------------------------------ */
 
@@ -4973,7 +5344,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 52% at 22% 34%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(16, 178, 108, 0.06) 0%,
       transparent 70%
     );
   }
@@ -5132,7 +5503,9 @@
   /* Carries the foot of the page: the transport docks over this section, so
      the padding below is what keeps the link clear of it. */
   .music-continue {
-    padding-block: clamp(28px, 2.8vw, 48px) clamp(150px, 16vh, 220px);
+    /* Closes like the other pages' last sections; the room the docked
+       transport needs is held by the footer instead (see .music-dock). */
+    padding-block: clamp(28px, 2.8vw, 48px) clamp(36px, 4vw, 56px);
     background-color: var(--background);
   }
 
@@ -5169,6 +5542,12 @@
     opacity: 1;
     transform: none;
     pointer-events: auto;
+  }
+
+  /* While the transport is docked, the page's foot makes room for it, so it
+     never sits over the footer's last line. */
+  body:has(.music-dock[data-open="true"]) .footer {
+    padding-bottom: clamp(150px, 16vh, 220px);
   }
 
   .music-dock__panel {
@@ -5270,7 +5649,7 @@
   .btn-sweep,
   .btn-primary,
   .btn-secondary {
-    --sweep-bg: var(--accent);
+    --sweep-bg: var(--accent-hover);
     --sweep-ink: #050505;
     --sweep-drift: 4px;
 
@@ -5404,7 +5783,7 @@
   .btn-primary:focus-visible,
   .btn-secondary:hover,
   .btn-secondary:focus-visible {
-    box-shadow: 0 14px 40px rgba(255, 213, 0, 0.22);
+    box-shadow: 0 14px 40px rgba(16, 178, 108, 0.22);
   }
 
   /* A glyph on its own small disc — the play mark, a platform badge. It
@@ -5602,8 +5981,9 @@
     margin-top: var(--rhythm-body);
   }
 
+  /* The consent line sits between the message field and the button. */
   .enquiry-submit {
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-md);
   }
 
   .enquiry-done__again {
@@ -5779,7 +6159,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 48% at 22% 34%,
-      rgba(255, 213, 0, 0.07) 0%,
+      rgba(16, 178, 108, 0.07) 0%,
       transparent 70%
     );
   }
@@ -5859,7 +6239,7 @@
     pointer-events: none;
     background: radial-gradient(
       48% 44% at 78% 18%,
-      rgba(255, 213, 0, 0.05) 0%,
+      rgba(16, 178, 108, 0.05) 0%,
       transparent 70%
     );
   }
@@ -5978,11 +6358,15 @@
     border-color: rgba(255, 138, 128, 0.75);
   }
 
+  /* Starts at three lines and grows with the message (sized in script) up
+     to about twelve, then scrolls inside so the page never jumps. */
   .enquiry-input--area {
-    min-height: 148px;
+    min-height: calc(3 * 1.7em + var(--space-sm));
+    max-height: calc(12 * 1.7em + var(--space-sm));
     padding-top: var(--space-sm);
     line-height: 1.7;
-    resize: vertical;
+    resize: none;
+    overflow-y: auto;
   }
 
   /* The date control's own icon is a browser part; this keeps it legible on a
@@ -6044,9 +6428,9 @@
   /* ---- Sent -------------------------------------------------------------- */
 
   .enquiry-done {
-    border: 1px solid rgba(255, 213, 0, 0.3);
+    border: 1px solid rgba(16, 178, 108, 0.3);
     padding: clamp(28px, 5vw, 56px);
-    background-color: rgba(255, 213, 0, 0.04);
+    background-color: rgba(16, 178, 108, 0.04);
   }
 
   .enquiry-done:focus-visible {
@@ -6225,7 +6609,7 @@
     pointer-events: none;
     background: radial-gradient(
       50% 46% at 68% 60%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(16, 178, 108, 0.06) 0%,
       transparent 70%
     );
   }
@@ -6262,5 +6646,269 @@
 
   .contact-social__link:hover .contact-social__arrow {
     transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  404 — Out of the Mix (app/global-not-found.tsx)                           */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .ootm {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* ---- The stage --------------------------------------------------------- */
+
+  .ootm__stage {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Haze: two soft accent clouds drifting slowly against each other. */
+  .ootm__haze {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(40% 32% at 30% 70%, rgba(16, 178, 108, 0.12), transparent 70%),
+      radial-gradient(36% 28% at 72% 60%, rgba(255, 255, 255, 0.05), transparent 70%);
+    filter: blur(20px);
+    animation: ootm-haze 26s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes ootm-haze {
+    to {
+      transform: translate3d(4%, -3%, 0) scale(1.08);
+    }
+  }
+
+  /* A spotlight cone from above, sweeping slowly across the back wall. */
+  .ootm__spot {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    width: 70vmax;
+    height: 140vmax;
+    margin-left: -35vmax;
+    background: conic-gradient(
+      from 168deg at 50% 0%,
+      transparent 0deg,
+      rgba(255, 255, 255, 0.07) 10deg,
+      rgba(16, 178, 108, 0.09) 12deg,
+      rgba(255, 255, 255, 0.07) 14deg,
+      transparent 24deg
+    );
+    filter: blur(14px);
+    transform-origin: 50% 0%;
+    animation: ootm-spot 16s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes ootm-spot {
+    from {
+      transform: rotate(-26deg);
+    }
+    to {
+      transform: rotate(26deg);
+    }
+  }
+
+  /* The occasional pulse: a low glow behind the 404 that breathes in time
+     with nothing in particular, like light from a beat off-stage. */
+  .ootm__pulse {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: min(90vw, 900px);
+    aspect-ratio: 2 / 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(16, 178, 108, 0.22), transparent);
+    opacity: 0;
+    animation: ootm-pulse 6s ease-out infinite;
+  }
+
+  @keyframes ootm-pulse {
+    0%,
+    70% {
+      opacity: 0;
+    }
+    76% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* ---- Bar --------------------------------------------------------------- */
+
+  .ootm__bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding-inline: var(--container-padding);
+  }
+
+  @media (width >= 768px) {
+    .ootm__bar {
+      height: 80px;
+    }
+  }
+
+  .ootm__logo {
+    display: inline-flex;
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .ootm__logo:hover {
+    opacity: 0.8;
+  }
+
+  /* ---- Body -------------------------------------------------------------- */
+
+  .ootm__body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md) var(--container-padding) var(--space-xl);
+    text-align: center;
+    transition: opacity 320ms var(--ease-out);
+  }
+
+  /* Held back until the site's faces have loaded (see global-not-found.tsx),
+     so a refresh never shows the words in a stand-in font first. */
+  .ootm-fonts-wait .ootm__body {
+    opacity: 0;
+  }
+
+  /* The oversized 404, in the banner's face. A copy in the accent rides over
+     it, revealed by a mask that sweeps slowly across: a light passing over
+     the letters, not a colour change. Mask, not a clipped gradient, so a
+     phone's forced dark mode cannot darken it. */
+  .ootm__code {
+    position: relative;
+    margin: 0;
+    font-family: var(--font-consul), var(--font-display);
+    font-weight: 400;
+    /* As large as the screen allows: by width on phones (wider than the
+       column, almost edge to edge), by height on short laptops, so the
+       button and links never fall below the fold. */
+    font-size: clamp(120px, min(46vw, 38svh), 380px);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: var(--foreground);
+    animation: ootm-drift 9s var(--ease-in-out) infinite alternate;
+  }
+
+  .ootm__code::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    position: absolute;
+    inset: 0 -0.2em 0 0;
+    color: var(--accent);
+    -webkit-mask-image: linear-gradient(100deg, transparent 35%, #000 50%, transparent 65%);
+    mask-image: linear-gradient(100deg, transparent 35%, #000 50%, transparent 65%);
+    -webkit-mask-size: 300% 100%;
+    mask-size: 300% 100%;
+    animation: ootm-sweep 7s var(--ease-in-out) infinite;
+  }
+
+  @keyframes ootm-sweep {
+    from {
+      -webkit-mask-position: 100% 0;
+      mask-position: 100% 0;
+    }
+    to {
+      -webkit-mask-position: 0% 0;
+      mask-position: 0% 0;
+    }
+  }
+
+  /* Barely-there movement, like a signal wavering. */
+  @keyframes ootm-drift {
+    from {
+      transform: translateY(0) skewX(0deg);
+    }
+    to {
+      transform: translateY(-6px) skewX(-1.5deg);
+    }
+  }
+
+  .ootm__wave {
+    display: block;
+    width: min(100%, 980px);
+    height: clamp(56px, 10vw, 110px);
+    margin-top: calc(-1 * clamp(16px, 3vw, 40px));
+  }
+
+  .ootm__title {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-consul), var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 6vw, 64px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .ootm__line {
+    max-width: 44ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .ootm__line {
+      font-size: 17px;
+    }
+  }
+
+  .ootm__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--rhythm-body);
+  }
+
+  .ootm__links {
+    display: flex;
+    gap: var(--space-xl);
+  }
+
+  @media (width >= 640px) {
+    .ootm__actions {
+      flex-direction: row;
+      gap: var(--space-xl);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ootm__haze,
+  .ootm__spot,
+  .ootm__pulse,
+  .ootm__code,
+  .ootm__code::after {
+    animation: none;
+  }
+
+  .ootm__code::after {
+    -webkit-mask-position: 50% 0;
+    mask-position: 50% 0;
   }
 }
