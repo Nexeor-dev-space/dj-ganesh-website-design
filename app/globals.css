@@ -1157,7 +1157,47 @@
     }
 
     .shows__globe {
-      height: clamp(460px, 54vw, 660px);
+      height: clamp(460px, 54vw, 600px);
+    }
+  }
+
+  /* Wide screens: the globe holds the left half, the cities and the next
+     dates sit beside it as its key. */
+  .shows__side {
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .shows__layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: center;
+      margin-top: var(--space-xl);
+    }
+
+    .shows__stage {
+      margin-top: 0;
+    }
+
+    /* About 520px on a 1440px screen. */
+    .shows__globe {
+      height: clamp(400px, 36vw, 540px);
+    }
+  }
+
+  .shows__side-label {
+    margin-top: var(--space-xl);
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--accent);
+  }
+
+  @media (min-width: 1024px) {
+    .shows__side-label {
+      margin-top: 0;
     }
   }
 
@@ -1308,7 +1348,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 2px var(--space-md);
-    margin-top: var(--space-xl);
+    margin-top: var(--space-xs);
   }
 
   .city-run__city {
@@ -1370,7 +1410,6 @@
   @media (min-width: 768px) {
     .city-run {
       gap: 4px var(--space-xl);
-      margin-top: var(--space-2xl);
     }
 
     .city-run__city {
@@ -1378,18 +1417,28 @@
     }
   }
 
+  /* Beside the globe: two short columns, read down. */
+  @media (min-width: 1024px) {
+    .city-run {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      grid-template-rows: repeat(5, auto);
+      grid-auto-flow: column;
+      gap: 0 var(--space-2xl);
+    }
+  }
+
   /* ---- Up next -----------------------------------------------------------
 
-     The four announced dates. Pills, not cards: they drive the globe, and the
-     ticket link is made once, in the panel beside the marker.               */
+     The announced dates as one card, a row per show. The rows drive the
+     globe; the ticket link is made once, in the panel beside the marker.    */
 
   .up-next {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-md);
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-xl);
+    padding: var(--space-md) var(--space-md) var(--space-xs);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.015);
   }
 
   .up-next__label {
@@ -1401,40 +1450,40 @@
   }
 
   .up-next__row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 10px;
+    margin-top: var(--space-xs);
+  }
+
+  .up-next__row > li + li {
+    border-top: 1px solid var(--border);
   }
 
   .up-next__pill {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 8px 18px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    gap: var(--space-md);
+    width: 100%;
+    min-height: 48px;
+    padding: 10px var(--space-xs);
     text-align: left;
     transition:
-      border-color 300ms var(--ease-out),
       background 300ms var(--ease-out),
-      transform 300ms var(--ease-out);
+      box-shadow 300ms var(--ease-out);
   }
 
   .up-next__pill:hover,
   .up-next__pill[data-active="true"] {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
     background: color-mix(in srgb, var(--accent) 7%, transparent);
-    transform: translateY(-2px);
   }
 
+  /* Pinned: an accent rule down its left edge marks the row that stays. */
   .up-next__pill[data-pinned="true"] {
-    border-color: var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   .up-next__date {
+    flex: none;
+    min-width: 4.6em;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -1448,6 +1497,9 @@
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.14em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
     color: rgba(255, 255, 255, 0.65);
   }
@@ -1457,17 +1509,10 @@
     opacity: 0.4;
   }
 
-  /* The room is the least of the three, and the first thing to go when the
-     row runs out of width. */
+  /* The room is the least of the three: on a narrow row it is the part
+     that trails off. */
   .up-next__venue {
     color: rgba(255, 255, 255, 0.65);
-  }
-
-  @media (max-width: 479px) {
-    .up-next__venue,
-    .up-next__sep {
-      display: none;
-    }
   }
 
   .up-next__pill:hover .up-next__where,
@@ -1500,11 +1545,6 @@
 @media (prefers-reduced-motion: reduce) {
   .show-info {
     animation: none;
-  }
-
-  .up-next__pill:hover,
-  .up-next__pill[data-active="true"] {
-    transform: none;
   }
 
   .city-run__city[data-active="true"] .city-run__dot {
