@@ -52,7 +52,16 @@ export function FooterNavigation() {
   return (
     <nav aria-label="Footer navigation" className="footer-columns">
       {columns.map((column) => (
-        <div key={column.label} className="footer-column">
+        <div
+          key={column.label}
+          className={
+            /* An email address can't break, so its column takes the full
+               width on a phone rather than a half. */
+            column.links.some((l) => l.href.startsWith("mailto:"))
+              ? "footer-column footer-column--wide"
+              : "footer-column"
+          }
+        >
           <h3 className="footer-column__label">{column.label}</h3>
 
           <ul className="footer-column__list">

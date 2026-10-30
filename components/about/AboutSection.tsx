@@ -16,6 +16,9 @@ import type { CareerStat } from "@/types/about";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
+/** Ties an "&" to the word before it, so it can never wrap onto a line alone. */
+const keepAmpersand = (line = "") => line.replace(/ &/g, " &");
+
 type SoundStrand = { name: string; description?: string };
 
 const defaultStrands: readonly SoundStrand[] = defaultStrandNames.map((name) => ({
@@ -109,17 +112,17 @@ export function AboutSection({
             <AboutImage aboutPortrait={aboutPortrait} />
           </div>
 
-          <div className="order-2 lg:order-1">
+          <div className="story-copy order-2 lg:order-1">
             <h2
               id="about-title"
               className="story-title reveal-scroll"
               style={delay(120)}
             >
-              {aboutHeading[0]}
+              {keepAmpersand(aboutHeading[0])}
               <br />
-              <span className="text-accent">{aboutHeading[1]}</span>
+              <span className="text-accent">{keepAmpersand(aboutHeading[1])}</span>
               <br />
-              {aboutHeading[2]}
+              {keepAmpersand(aboutHeading[2])}
             </h2>
 
             <div

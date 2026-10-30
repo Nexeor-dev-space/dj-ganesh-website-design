@@ -2771,13 +2771,24 @@
 
   /* Three lines, big enough to carry the left half on their own. Sized on
      the same ×0.8 Consul scale as `.section-title`. */
+  /* The heading sizes against its own column, not the screen. */
+  .story-copy {
+    container-type: inline-size;
+  }
+
   .story-title {
     font-family: var(--font-consul), var(--font-display);
     font-weight: 400;
-    font-size: clamp(35px, 7.2vw, 84px);
+    /* Capped by the column, so "Wedding &" (about 6.65em wide) always holds
+       one line — between 1024 and 1366px the column is narrower than the
+       screen-based size would need. */
+    font-size: min(clamp(35px, 7.2vw, 84px), 14cqi);
     line-height: 0.88;
     letter-spacing: -0.045em;
     text-transform: uppercase;
+    /* The face's "&" stands taller than its capitals; room for it to clear
+       the eyebrow above. */
+    padding-top: 0.14em;
   }
 
   /* The strands, as a rule with the three names hung off it. */
@@ -2923,9 +2934,19 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
-  @media (width >= 768px) {
+  /* On a phone each figure gets about a third of the screen; slightly smaller,
+     tighter-tracked labels keep "Countries" inside its column. */
+  @media (width < 768px) {
     .story-fact__label {
-      font-size: 12px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+
+  /* The narrowest phones (320–380px) need a touch less tracking again. */
+  @media (width < 380px) {
+    .story-fact__label {
+      letter-spacing: 0.05em;
     }
   }
 
@@ -4411,7 +4432,8 @@
   .footer-columns {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2xl) var(--space-lg);
+    /* 40px between the groups: enough to separate them, not a blank band. */
+    gap: 40px var(--space-lg);
   }
 
   /* Four columns only from `lg`. At `md` a quarter of the width is 144px,
@@ -4421,6 +4443,14 @@
     .footer-columns {
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--space-xl);
+    }
+  }
+
+  /* The column with the booking address spans both phone columns, so the
+     address stays on one line. */
+  @media (width < 1024px) {
+    .footer-column--wide {
+      grid-column: 1 / -1;
     }
   }
 
@@ -4440,7 +4470,7 @@
   }
 
   .footer-column__list {
-    margin: var(--space-lg) 0 0;
+    margin: var(--space-sm) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -4451,10 +4481,13 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
-    min-height: 40px;
+    min-height: 36px;
+    max-width: 100%;
     font-size: 14px;
     font-weight: 300;
     line-height: 1.5;
+    /* Last resort for a long CMS label on a narrow screen: wrap, never clip. */
+    overflow-wrap: break-word;
     color: rgba(255, 255, 255, 0.68);
     transition: color 240ms var(--ease-out);
   }
@@ -4468,7 +4501,7 @@
   /* Comfortable to hit with a thumb. */
   @media (pointer: coarse) {
     .footer-column__link {
-      min-height: 44px;
+      min-height: 40px;
     }
   }
 
@@ -4551,7 +4584,7 @@
   /* ---- Privacy policy (/privacy) ----------------------------------------- */
 
   .policy {
-    padding-block: clamp(112px, 14vh, 160px) var(--space-3xl);
+    padding-block: clamp(112px, 14vh, 160px) clamp(36px, 4vw, 56px);
     background-color: var(--background);
   }
 
@@ -5105,6 +5138,14 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
+  /* As .story-fact__label: a third of a phone screen each. */
+  @media (width < 768px) {
+    .about-figure__label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+
   /* ---- Two frames and the sound ------------------------------------------- */
 
   .about-visual__spread {
@@ -5421,7 +5462,9 @@
   /* Carries the foot of the page: the transport docks over this section, so
      the padding below is what keeps the link clear of it. */
   .music-continue {
-    padding-block: clamp(28px, 2.8vw, 48px) clamp(150px, 16vh, 220px);
+    /* Closes like the other pages' last sections; the room the docked
+       transport needs is held by the footer instead (see .music-dock). */
+    padding-block: clamp(28px, 2.8vw, 48px) clamp(36px, 4vw, 56px);
     background-color: var(--background);
   }
 
@@ -5458,6 +5501,12 @@
     opacity: 1;
     transform: none;
     pointer-events: auto;
+  }
+
+  /* While the transport is docked, the page's foot makes room for it, so it
+     never sits over the footer's last line. */
+  body:has(.music-dock[data-open="true"]) .footer {
+    padding-bottom: clamp(150px, 16vh, 220px);
   }
 
   .music-dock__panel {
@@ -6694,6 +6743,13 @@
     justify-content: center;
     padding: var(--space-md) var(--container-padding) var(--space-xl);
     text-align: center;
+    transition: opacity 320ms var(--ease-out);
+  }
+
+  /* Held back until the site's faces have loaded (see global-not-found.tsx),
+     so a refresh never shows the words in a stand-in font first. */
+  .ootm-fonts-wait .ootm__body {
+    opacity: 0;
   }
 
   /* The oversized 404, in the banner's face. A copy in the accent rides over

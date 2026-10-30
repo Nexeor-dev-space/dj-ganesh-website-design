@@ -19,6 +19,14 @@ export const viewport: Viewport = {
 };
 
 /**
+ * Hides the 404's words until Consul and Inter have loaded, then lets them
+ * fade in, so a refresh never shows them in the fallback face first. Gives up
+ * after 1.5s rather than leave the page blank; with scripts off nothing is
+ * hidden at all.
+ */
+const holdForFonts = `(function(){var d=document.documentElement;if(!document.fonts)return;d.classList.add('ootm-fonts-wait');var cs=getComputedStyle(d);var loads=['--font-consul','--font-inter'].map(function(v){var f=cs.getPropertyValue(v).split(',')[0].trim();return f?document.fonts.load('400 1em '+f).catch(function(){}):null});Promise.race([Promise.all(loads),new Promise(function(r){setTimeout(r,1500)})]).then(function(){d.classList.remove('ootm-fonts-wait')})})();`;
+
+/**
  * 404 — "Out of the Mix".
  *
  * Served for every URL that matches no route, across both root layouts
@@ -30,8 +38,10 @@ export const viewport: Viewport = {
  */
 export default function GlobalNotFound() {
   return (
-    <html lang={siteConfig.locale} className={fontVariables}>
+    // The hold script adds a class before React takes over the page.
+    <html lang={siteConfig.locale} className={fontVariables} suppressHydrationWarning>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: holdForFonts }} />
         <main className="ootm">
           {/* The stage: haze, a moving spotlight, and the occasional pulse. */}
           <div className="ootm__stage" aria-hidden>
