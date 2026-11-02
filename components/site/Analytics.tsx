@@ -51,6 +51,13 @@ export function Analytics() {
     return () => window.clearTimeout(timer);
   }, [consent, pathname]);
 
+  // Keeps GA in step with the answer, whichever tab gave it: this tab's
+  // banner and another tab's (the storage event) both arrive as `consent`.
+  useEffect(() => {
+    if (consent === "server") return;
+    syncGaConsent(consent === "granted" ? "granted" : "denied");
+  }, [consent]);
+
   useEffect(() => {
     const onSettings = () => setAskAgain(true);
     window.addEventListener(COOKIE_SETTINGS_EVENT, onSettings);
@@ -60,11 +67,6 @@ export function Analytics() {
   const answer = (next: Consent) => {
     saveConsent(next);
     setAskAgain(false);
-    if (!window.gtag) return;
-    // GA is already loaded from earlier in this visit: switch it with the
-    // answer, and clear its cookies on a decline.
-    window.gtag("consent", "update", { analytics_storage: next });
-    if (next === "denied") clearGaCookies();
   };
 
   if (!gaId || consent === "server") return null;
@@ -88,6 +90,28 @@ export function Analytics() {
 }
 
 let gaStarted = false;
+/** The consent GA was last given in this tab, so no update is sent twice. */
+let gaConsent: Consent | null = null;
+
+/** GA's own off switch: while it is true, gtag.js sends nothing at all. */
+function setGaDisabled(disabled: boolean) {
+  (window as unknown as Record<string, boolean>)[`ga-disable-${gaId}`] = disabled;
+}
+
+/**
+ * Tells an already-running GA the visitor's current answer. A decline stops
+ * it completely — the off switch first, so nothing more is sent, then the
+ * consent update and the cookies cleared. Granted is only ever passed after
+ * an Accept, so a decline is never reversed on its own. A tab where GA never
+ * started has nothing to tell.
+ */
+function syncGaConsent(next: Consent) {
+  if (!gaStarted || !window.gtag || gaConsent === next) return;
+  gaConsent = next;
+  setGaDisabled(next === "denied");
+  window.gtag("consent", "update", { analytics_storage: next });
+  if (next === "denied") clearGaCookies();
+}
 
 /**
  * The standard GA4 set-up, once per visit: the gtag queue, consent for
@@ -99,6 +123,8 @@ function initGa() {
   const gtag = ensureGtag();
   if (!gaStarted) {
     gaStarted = true;
+    gaConsent = "granted";
+    setGaDisabled(false);
     gtag("consent", "default", {
       analytics_storage: "granted",
       ad_storage: "denied",
