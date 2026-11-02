@@ -28,13 +28,13 @@ export const offerings: readonly Offering[] = [
   },
   {
     id: "02",
-    title: "Club Residencies",
+    title: "Club Nights",
     summary:
-      "Resident at Bastian (Mumbai, Bengaluru, Goa), Surf Club Dubai and Willingdon Sports Club. Every weekend is a sold-out headline set.",
+      "Club nights at Club 77 London, Surf Club Dubai, Kenya and Bastian (Mumbai, Bengaluru, Goa): peak-hour BollyAfro for the room.",
     points: [
-      "Bastian Mumbai · Bengaluru · Goa",
-      "Surf Club Dubai & Willingdon Club",
-      "Peak-hour BollyAfro every weekend",
+      "Club 77 London · Surf Club Dubai",
+      "Kenya · Bastian Mumbai, Bengaluru, Goa",
+      "Peak-hour BollyAfro sets",
     ],
     cta: "Reserve VIP",
   },

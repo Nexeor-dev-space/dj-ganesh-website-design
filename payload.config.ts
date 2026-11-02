@@ -24,6 +24,7 @@ import HomePage from './src/globals/HomePage.ts'
 import ContactBooking from './src/globals/ContactBooking.ts'
 import About from './src/globals/About.ts'
 import MusicPage from './src/globals/MusicPage.ts'
+import PrivacyPolicy from './src/globals/PrivacyPolicy.ts'
 
 export default buildConfig({
   // Required by Payload to encrypt tokens and sessions.
@@ -77,6 +78,7 @@ export default buildConfig({
     ContactBooking,
     About,
     MusicPage,
+    PrivacyPolicy,
   ],
 
   // TypeScript types output file.

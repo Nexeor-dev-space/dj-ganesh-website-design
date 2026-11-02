@@ -13,7 +13,7 @@ import type { TourCity, TourShow } from "@/types/tour";
 export const tourName = "Global World Tour 2026";
 
 /** Verified project statistic. */
-export const countriesToured = { value: "45+", label: "Countries Toured" };
+export const countriesToured = { value: "50+", label: "Countries Toured" };
 
 export const tourCities: readonly TourCity[] = [
   { name: "Mumbai", lat: 19.076, lng: 72.8777, hub: true, labelDx: -16, labelDy: -12 },

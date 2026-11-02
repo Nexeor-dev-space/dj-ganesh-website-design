@@ -11,6 +11,7 @@ import { MusicProvider } from "@/components/music/MusicProvider";
 import { Navbar } from "@/components/navigation/Navbar";
 import { getMusicPage, getMusicReleases } from "@/lib/cms/queries";
 import { toTrack } from "@/lib/cms/mappers";
+import { pageMetadata } from "@/lib/seo";
 
 const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
 
@@ -19,11 +20,12 @@ const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
  * actually holds. No genre list, no release claims, nothing the archive itself
  * does not state.
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "DJ Ganesh — Music",
   description:
-    "The full listening archive: mixes and mashups by DJ Ganesh — Bollywood, Afrobeats and house, mixed into one. Play every track in full.",
-};
+    "The full listening archive: mixes and mashups by DJ Ganesh, wedding DJ and BollyAfro pioneer. Play every track in full.",
+  path: "/music",
+});
 
 /**
  * `/music` — the complete listening archive.
@@ -48,7 +50,6 @@ export default async function MusicPage() {
           <MusicHero
             intro={str(page?.labels?.intro)}
             title={str(page?.pageTitle)}
-            statement={str(page?.statement)}
           />
           <MusicArchive spotifyUrl={str(page?.homeSection?.spotifyUrl)} />
           <ContinueListening

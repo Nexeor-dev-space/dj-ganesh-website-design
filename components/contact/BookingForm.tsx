@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import { FormField } from "@/components/contact/FormField";
 import { enquiryMeta, eventTypes } from "@/data/contact";
@@ -11,6 +12,8 @@ import {
   type EnquiryErrors,
   type EnquiryValues,
 } from "@/lib/enquiry";
+import { itemKey } from "@/lib/keys";
+import { trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "sending" | "sent" | "failed";
 
@@ -39,6 +42,9 @@ export function BookingForm({
   const [status, setStatus] = useState<Status>("idle");
   const formRef = useRef<HTMLFormElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Set for the length of one request, so a double press can't send (or
+  // count) the same enquiry twice.
+  const sendingRef = useRef(false);
 
   const set = (field: keyof EnquiryValues) => (value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -68,8 +74,14 @@ export function BookingForm({
       return;
     }
 
+    if (sendingRef.current) return;
+    sendingRef.current = true;
     setStatus("sending");
     const outcome = await submitEnquiry(values);
+    sendingRef.current = false;
+    // The conversion counts only once the server has accepted the enquiry:
+    // never on the press itself, a failed check or an error response.
+    if (outcome === "handed-off") trackEvent("booking_submitted");
     setStatus(outcome === "handed-off" ? "sent" : "failed");
     // The panel replaces the form, so focus has to follow it.
     window.requestAnimationFrame(() => panelRef.current?.focus());
@@ -177,8 +189,8 @@ export function BookingForm({
               className="enquiry-input"
             >
               <option value="">Select an event type</option>
-              {eventTypes.map((type) => (
-                <option key={type} value={type}>
+              {eventTypes.map((type, index) => (
+                <option key={itemKey(type, index)} value={type}>
                   {type}
                 </option>
               ))}
@@ -246,10 +258,16 @@ export function BookingForm({
           <textarea
             id="message"
             name="message"
-            rows={6}
+            rows={3}
             placeholder="Tell us about your event, venue, timings and anything else we should know."
             value={values.message}
-            onChange={(event) => set("message")(event.target.value)}
+            onChange={(event) => {
+              set("message")(event.target.value);
+              // Grow with the text; the CSS max-height caps it at ~12 lines.
+              const box = event.target;
+              box.style.height = "auto";
+              box.style.height = `${box.scrollHeight}px`;
+            }}
             aria-invalid={!!errors.message}
             aria-describedby={errors.message ? "message-error" : undefined}
             className="enquiry-input enquiry-input--area"
@@ -263,6 +281,14 @@ export function BookingForm({
           address below.
         </p>
       ) : null}
+
+      <p className="enquiry-consent">
+        By sending this request you agree to our{" "}
+        <Link href="/privacy" className="enquiry-consent__link">
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
       <button type="submit" data-cursor="book" className="btn-primary btn--block enquiry-submit">
         <span>{status === "sending" ? "Sending…" : submitLabel}</span>

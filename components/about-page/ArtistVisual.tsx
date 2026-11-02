@@ -4,8 +4,9 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
-import { aboutFrames, aboutPageLabels, aboutStatement } from "@/data/about-page";
+import { aboutFrames, aboutPageLabels } from "@/data/about-page";
 import { soundStrands } from "@/lib/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -24,7 +25,6 @@ type Frame = { src: string; alt: string };
 
 type ArtistVisualProps = {
   label?: string;
-  statement?: string;
   strands?: readonly string[];
   portrait?: Frame;
   decks?: Frame;
@@ -32,7 +32,6 @@ type ArtistVisualProps = {
 
 export function ArtistVisual({
   label = aboutPageLabels.identity,
-  statement = aboutStatement,
   strands = soundStrands,
   portrait = aboutFrames.portrait,
   decks = aboutFrames.decks,
@@ -59,9 +58,9 @@ export function ArtistVisual({
                 alt={portrait.alt}
                 fill
                 className="about-visual__image object-cover object-[50%_28%]"
-                sizes="(min-width: 1024px) 44vw, 100vw"
+                sizes="(min-width: 1024px) 32vw, 100vw"
+                quality={90}
               />
-              <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
             </div>
 
             <div
@@ -74,9 +73,9 @@ export function ArtistVisual({
                 alt={decks.alt}
                 fill
                 className="about-visual__image object-cover object-[52%_42%]"
-                sizes="(min-width: 1024px) 26vw, 60vw"
+                sizes="(min-width: 1024px) 17vw, 60vw"
+                quality={90}
               />
-              <div className="overlay-grain pointer-events-none absolute inset-0" aria-hidden />
             </div>
           </div>
 
@@ -91,7 +90,7 @@ export function ArtistVisual({
               style={delay(160)}
             >
               {strands.map((strand, index) => (
-                <span key={strand} className="about-visual__strand">
+                <span key={itemKey(strand, index)} className="about-visual__strand">
                   {strand}
                   {index < strands.length - 1 ? (
                     <span aria-hidden className="about-visual__slash">
@@ -101,10 +100,6 @@ export function ArtistVisual({
                 </span>
               ))}
             </h2>
-
-            <p className="reveal-scroll about-visual__line" style={delay(260)}>
-              {statement}
-            </p>
           </div>
         </div>
       </Container>

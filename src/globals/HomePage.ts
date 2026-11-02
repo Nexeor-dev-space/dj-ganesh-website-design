@@ -15,10 +15,12 @@ const HomePage: GlobalConfig = {
       label: 'Hero Section',
       fields: [
         { name: 'heroHeading', label: 'Heading', type: 'text' },
-        { name: 'heroSubheading', label: 'Sub-Heading', type: 'text' },
+        { name: 'heroSubheading', label: 'Line Above the Name', type: 'text', admin: { placeholder: 'e.g. Wedding DJ & BollyAfro Pioneer' } },
         { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media' },
         { name: 'heroCtaText', label: 'CTA Button Text', type: 'text' },
         { name: 'heroCtaUrl', label: 'CTA Button URL', type: 'text' },
+        { name: 'heroSecondaryCtaText', label: 'Second Button Text', type: 'text', admin: { placeholder: 'e.g. Listen to Music' } },
+        { name: 'heroSecondaryCtaUrl', label: 'Second Button URL', type: 'text', admin: { placeholder: 'e.g. #music' } },
         {
           name: 'heroVideo',
           label: 'Background Video',
@@ -186,10 +188,55 @@ const HomePage: GlobalConfig = {
     },
     {
       type: 'group',
+      name: 'nonstop',
+      label: 'Nonstop Sets',
+      admin: { description: 'The long-form sets band after Music. Empty fields fall back to the built-in copy.' },
+      fields: [
+        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Nonstop Sets' } },
+        {
+          name: 'heading',
+          label: 'Heading Lines',
+          type: 'array',
+          fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
+        },
+        { name: 'lede', label: 'Intro', type: 'textarea' },
+        {
+          name: 'sets',
+          label: 'Sets',
+          type: 'array',
+          fields: [
+            { name: 'title', label: 'Title', type: 'text', required: true },
+            { name: 'tag', label: 'Tag', type: 'text', admin: { placeholder: 'e.g. BollyAfro' } },
+            { name: 'length', label: 'Length', type: 'text', admin: { placeholder: 'e.g. 60 min' } },
+            { name: 'image', label: 'Thumbnail', type: 'upload', relationTo: 'media' },
+            { name: 'url', label: 'YouTube URL', type: 'text' },
+          ],
+        },
+        { name: 'spotifyUrl', label: 'Spotify URL', type: 'text' },
+        { name: 'podcastUrl', label: 'Apple Podcasts URL', type: 'text' },
+      ],
+    },
+    {
+      type: 'group',
       name: 'galleryStrip',
       label: 'Gallery Strip',
       fields: [
         { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Gallery' } },
+        {
+          name: 'reelVideo',
+          label: 'Reel Video',
+          type: 'upload',
+          relationTo: 'media',
+          admin: { description: 'The video above the photos. Falls back to /videos/recent-big-shows.mp4.' },
+        },
+        { name: 'reelPoster', label: 'Reel Poster', type: 'upload', relationTo: 'media' },
+        { name: 'reelLabel', label: 'Reel Title', type: 'text', admin: { placeholder: 'e.g. Recent Big Shows' } },
+        {
+          name: 'bigShows',
+          label: 'Shows Listed Beside the Reel',
+          type: 'array',
+          fields: [{ name: 'show', label: 'Show', type: 'text', required: true }],
+        },
         {
           name: 'items',
           label: 'Items',

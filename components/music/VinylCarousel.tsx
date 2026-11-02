@@ -7,6 +7,7 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type PointerEvent,
 } from "react";
 import { useMusicPlayer } from "@/components/music/MusicProvider";
 import { SocialIcon } from "@/components/navigation/SocialIcon";
@@ -173,6 +174,43 @@ export function VinylCarousel({
     later(RETURN_MS, slideThenPull);
   };
 
+  /*
+   * Swipe on touch and pen: the rack follows the finger, and a swipe past a
+   * threshold moves one record, exactly as the arrows do. Vertical movement
+   * is left to the page (`touch-action: pan-y`), so scrolling still works.
+   * A drag that moved suppresses the click it ends in, so swiping across a
+   * sleeve never pulls its record out.
+   */
+  const swipe = useRef<{ x: number; id: number } | null>(null);
+  const moved = useRef(false);
+  const [dragX, setDragX] = useState(0);
+  const SWIPE_PX = 50;
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse") return;
+    swipe.current = { x: event.clientX, id: event.pointerId };
+    moved.current = false;
+  };
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const start = swipe.current;
+    if (!start || start.id !== event.pointerId) return;
+    const dx = event.clientX - start.x;
+    if (Math.abs(dx) > 8) moved.current = true;
+    setDragX(dx);
+  };
+  const endSwipe = (event: PointerEvent<HTMLDivElement>) => {
+    const start = swipe.current;
+    if (!start || start.id !== event.pointerId) return;
+    const dx = event.clientX - start.x;
+    swipe.current = null;
+    setDragX(0);
+    if (Math.abs(dx) >= SWIPE_PX) go(dx < 0 ? 1 : -1);
+  };
+  const cancelSwipe = () => {
+    swipe.current = null;
+    setDragX(0);
+  };
+
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowLeft") go(-1);
     else if (event.key === "ArrowRight") go(1);
@@ -192,7 +230,23 @@ export function VinylCarousel({
       aria-label="Latest releases"
       onKeyDown={onKeyDown}
     >
-      <div className="vinyl__stage" data-out={out || undefined}>
+      <div
+        className="vinyl__stage"
+        data-out={out || undefined}
+        data-dragging={dragX !== 0 || undefined}
+        style={{ "--drag": `${dragX}px` } as CSSProperties}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endSwipe}
+        onPointerCancel={cancelSwipe}
+        onClickCapture={(event) => {
+          if (moved.current) {
+            event.preventDefault();
+            event.stopPropagation();
+            moved.current = false;
+          }
+        }}
+      >
         {tracks.map((item, index) => {
           const offset = wrapOffset(index, active, count);
           const isActive = offset === 0;

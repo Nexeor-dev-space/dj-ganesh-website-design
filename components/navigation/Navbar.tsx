@@ -15,6 +15,7 @@ import {
   useSiteData,
 } from "@/components/site/SiteDataProvider";
 import type { SocialLink } from "@/types/site";
+import { itemKey } from "@/lib/keys";
 
 /**
  * Fixed navigation bar: the logo on the left, social rail, a single
@@ -94,7 +95,7 @@ export function Navbar() {
             href="/"
             aria-label={`${siteConfig.name} — home`}
             onClick={(event) => toTopIfCurrent(event, "/")}
-            className="group inline-flex items-center px-4 py-2 transition-opacity duration-200 hover:opacity-80 md:px-6 md:py-2.5"
+            className="group inline-flex shrink-0 items-center px-0 py-2 transition-opacity min-[480px]:px-4 duration-200 hover:opacity-80 md:px-6 md:py-2.5"
           >
             {/* The client's mark: white on transparent, cropped tight, so its
                 height alone sets the size. */}
@@ -103,15 +104,28 @@ export function Navbar() {
               alt=""
               width={1004}
               height={148}
-              priority
-              className="h-6 w-auto md:h-8"
+              /* The largest thing on screen as the page opens, so it is
+                 fetched first (`preload` replaces Next 16's deprecated
+                 `priority`). Served as the original PNG, not re-encoded:
+                 the optimiser's compression smeared the thin white strokes
+                 at this size, and the full file is only 21 KB, so every
+                 screen density scales down a crisp source. */
+              preload
+              fetchPriority="high"
+              unoptimized
+              /* Larger on phones (26px; 22px under 360px wide) so the owl
+                 mark and letters read; the PNG is 148px tall, so even a 3x
+                 screen draws it from more pixels than it shows. */
+              className="h-[22px] w-auto shrink-0 min-[360px]:h-[26px] min-[480px]:h-[30px] md:h-8"
             />
           </Link>
 
-          <div className="flex items-center gap-sm">
+          {/* Tighter on the narrowest phones so the full-size logo, BOOK and
+              the menu all fit on one line. */}
+          <div className="flex items-center gap-xs min-[480px]:gap-sm">
             <ul className="hidden items-center gap-xs sm:flex">
-              {socials.map((social) => (
-                <li key={social.label}>
+              {socials.map((social, index) => (
+                <li key={itemKey(social, index)}>
                   <a
                     href={social.href}
                     target="_blank"
@@ -125,11 +139,11 @@ export function Navbar() {
               ))}
             </ul>
 
-            <Link href={bookHref} className="btn-primary btn--sm">
+            <Link href={bookHref} className="btn-primary btn--sm max-[479px]:px-sm">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden
-                className="h-4 w-4"
+                className="hidden h-4 w-4 min-[480px]:block"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.8}
@@ -146,7 +160,7 @@ export function Navbar() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="primary-menu"
-              className="ml-xs flex h-10 w-10 flex-col items-center justify-center gap-[7px]"
+              className="flex h-10 w-10 flex-col min-[480px]:ml-xs items-center justify-center gap-[7px]"
             >
               <span
                 className={`block h-[2px] w-7 bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -178,7 +192,7 @@ export function Navbar() {
                   : pathname.startsWith(link.href);
 
               return (
-                <li key={link.href}>
+                <li key={itemKey(link, index)}>
                   <Link
                     href={link.href}
                     onClick={(event) => {
@@ -198,8 +212,8 @@ export function Navbar() {
 
           {/* The accounts as bare marks, right under the pages. */}
           <ul className="reveal menu__socials" style={{ "--reveal-delay": "260ms" } as React.CSSProperties}>
-            {socials.map((social) => (
-              <li key={social.label}>
+            {socials.map((social, i) => (
+              <li key={itemKey(social, i)}>
                 <a
                   href={social.href}
                   target="_blank"

@@ -2,6 +2,7 @@
 
 import { tourShows as defaultShows } from "@/lib/tour";
 import type { TourShow } from "@/types/tour";
+import { itemKey } from "@/lib/keys";
 
 type UpNextProps = {
   shows?: readonly TourShow[];
@@ -34,8 +35,8 @@ export function UpNext({
       <h3 className="up-next__label">Up Next</h3>
 
       <ul className="up-next__row">
-        {tourShows.map((show) => (
-          <li key={`${show.city}-${show.day}`}>
+        {tourShows.map((show, index) => (
+          <li key={itemKey(show, index)}>
             <button
               type="button"
               className="up-next__pill"

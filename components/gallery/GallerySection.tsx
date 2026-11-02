@@ -8,6 +8,7 @@ import {
   galleryItems as defaultItems,
   gallerySectionLabel as defaultLabel,
 } from "@/data/gallery";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -32,9 +33,12 @@ const STEP = 70;
 export function GallerySection({
   gallerySectionLabel = defaultLabel,
   galleryItems = defaultItems,
+  feature = galleryFeature,
 }: {
   gallerySectionLabel?: string;
-  galleryItems?: readonly { src: string; alt: string; href: string }[];
+  galleryItems?: readonly { src: string; alt: string; href?: string }[];
+  /** The reel and the shows beside it; CMS Home Page → Gallery Strip. */
+  feature?: { videoSrc: string; poster?: string; label: string; shows: readonly string[] };
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -102,8 +106,8 @@ export function GallerySection({
             <video
               ref={videoRef}
               className="gallery__video"
-              src={galleryFeature.videoSrc}
-              poster={galleryFeature.poster}
+              src={feature.videoSrc}
+              poster={feature.poster}
               preload="none"
               muted
               loop
@@ -112,10 +116,10 @@ export function GallerySection({
             />
           </div>
           <figcaption className="gallery__shows">
-            <h3 className="gallery__shows-title">{galleryFeature.label}</h3>
+            <h3 className="gallery__shows-title">{feature.label}</h3>
             <ul className="gallery__shows-list">
-              {galleryFeature.shows.map((show) => (
-                <li key={show}>{show}</li>
+              {feature.shows.map((show, index) => (
+                <li key={itemKey(show, index)}>{show}</li>
               ))}
             </ul>
           </figcaption>
@@ -124,24 +128,36 @@ export function GallerySection({
         <ul className="gallery__grid">
           {galleryItems.map((item, index) => (
             <li
-              key={item.src}
+              key={itemKey(item, index)}
               className="gallery__item reveal-scroll"
               style={delay(120 + index * STEP)}
             >
-              <a
-                href={item.href}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="gallery__link"
-              >
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="gallery__link"
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, 50vw"
+                    quality={90}
+                    className="gallery__img"
+                  />
+                </a>
+              ) : (
                 <Image
                   src={item.src}
                   alt={item.alt}
                   fill
                   sizes="(min-width: 1024px) 33vw, 50vw"
+                  quality={90}
                   className="gallery__img"
                 />
-              </a>
+              )}
             </li>
           ))}
         </ul>

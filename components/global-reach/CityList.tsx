@@ -2,6 +2,7 @@
 
 import { tourCities as defaultCities, tourShows as defaultShows } from "@/lib/tour";
 import type { TourCity, TourShow } from "@/types/tour";
+import { itemKey } from "@/lib/keys";
 
 type CityListProps = {
   cities?: readonly TourCity[];
@@ -41,11 +42,11 @@ export function CityList({
   };
   return (
     <ul className="city-run">
-      {tourCities.map((city) => {
+      {tourCities.map((city, index) => {
         const show = findShow(city.name);
 
         return (
-          <li key={city.name}>
+          <li key={itemKey(city, index)}>
             <button
               type="button"
               className="city-run__city"

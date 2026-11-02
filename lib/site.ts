@@ -8,9 +8,21 @@ export const siteConfig: SiteConfig = {
   name: "DJ Ganesh",
   title: "DJ Ganesh | Official Website",
   description:
-    "Official website of DJ Ganesh — DJ, performer and BollyAfro artist.",
+    "Wedding DJ for celebrations around the world and pioneer of the BollyAfro sound. Based in Mumbai, playing 50+ countries.",
   locale: "en",
 };
+
+/**
+ * The live site's address, with no trailing slash. Canonical URLs, the
+ * sitemap, link previews and the structured data are all built from it.
+ *
+ * Set `NEXT_PUBLIC_SITE_URL` once the domain is final; until then the
+ * domain the booking email already uses stands in.
+ */
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://djganeshbombay.com").replace(
+  /\/+$/,
+  "",
+);
 
 /**
  * The menu, and every entry is a page that exists.

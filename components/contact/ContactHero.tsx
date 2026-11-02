@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { contactMeta } from "@/data/contact";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -28,7 +29,7 @@ export function ContactHero({
 
         <h1 id="contact-title" className="contact-hero__title">
           {meta.heading.map((line, index) => (
-            <span key={line} className="reveal contact-hero__line" style={delay(300 + index * 120)}>
+            <span key={itemKey(line, index)} className="reveal contact-hero__line" style={delay(300 + index * 120)}>
               <span className="title-ink">{line}</span>
             </span>
           ))}

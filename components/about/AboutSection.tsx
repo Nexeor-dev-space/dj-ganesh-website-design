@@ -13,8 +13,12 @@ import {
   strandDescriptions,
 } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
+
+/** Ties an "&" to the word before it, so it can never wrap onto a line alone. */
+const keepAmpersand = (line = "") => line.replace(/ &/g, " &");
 
 type SoundStrand = { name: string; description?: string };
 
@@ -109,17 +113,17 @@ export function AboutSection({
             <AboutImage aboutPortrait={aboutPortrait} />
           </div>
 
-          <div className="order-2 lg:order-1">
+          <div className="story-copy order-2 lg:order-1">
             <h2
               id="about-title"
               className="story-title reveal-scroll"
               style={delay(120)}
             >
-              {aboutHeading[0]}
+              {keepAmpersand(aboutHeading[0])}
               <br />
-              <span className="text-accent">{aboutHeading[1]}</span>
+              <span className="text-accent">{keepAmpersand(aboutHeading[1])}</span>
               <br />
-              {aboutHeading[2]}
+              {keepAmpersand(aboutHeading[2])}
             </h2>
 
             <div
@@ -128,7 +132,7 @@ export function AboutSection({
               data-picked={strand != null || undefined}
             >
               {soundStrands.map(({ name }, index) => (
-                <span key={name} className="story-strand">
+                <span key={index} className="story-strand">
                   {index > 0 ? (
                     <span aria-hidden className="mr-sm text-white/20">
                       /
@@ -178,7 +182,7 @@ export function AboutSection({
                 {strandCopy.map((copy, index) =>
                   copy ? (
                     <p
-                      key={soundStrands[index].name}
+                      key={itemKey(copy, index)}
                       data-shown={strand === index || undefined}
                       aria-hidden={strand !== index || undefined}
                     >

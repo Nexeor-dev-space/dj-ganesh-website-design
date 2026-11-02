@@ -14,7 +14,8 @@ const MusicPage: GlobalConfig = {
   access: { read: () => true },
   fields: [
     { name: 'pageTitle', label: 'Page Title', type: 'text' },
-    { name: 'statement', label: 'Statement', type: 'textarea' },
+    // No longer shown: the Music page opens on its title and the player.
+    { name: 'statement', label: 'Statement', type: 'textarea', admin: { hidden: true } },
     {
       type: 'group',
       name: 'labels',

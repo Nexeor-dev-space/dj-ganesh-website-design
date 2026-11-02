@@ -21,7 +21,9 @@ const { siteConfig, navLinks, socialLinks } = await ld('../lib/site.ts')
 const { statement, statementLabel } = await ld('../data/statement.ts')
 const { stageRows, stagesSectionLabel, stagesHeading, stagesLede, stagesCtaHref, stagesCtaLabel } = await ld('../lib/stages.ts')
 const { trustedNames, trustedLabel } = await ld('../data/trusted.ts')
-const { galleryItems, gallerySectionLabel } = await ld('../data/gallery.ts')
+const { galleryItems, gallerySectionLabel, galleryFeature } = await ld('../data/gallery.ts')
+const { privacyPolicy } = await ld('../data/privacy.ts')
+const { nonstopLabel, nonstopHeading, nonstopLede, nonstopSets, nonstopSpotifyUrl, nonstopPodcastUrl } = await ld('../data/nonstop.ts')
 const { followHeading, followLinks } = await ld('../data/follow.ts')
 const { experienceSectionLabel, experienceHeading, experienceCtaHref, offerings } = await ld('../data/experience.ts')
 const { tourCities, tourShows } = await ld('../lib/tour.ts')
@@ -233,10 +235,17 @@ for (const [i, t] of testimonials.entries()) {
   )
 }
 
+// A card is found by its current title or any it used to have, so renaming one
+// in code updates the CMS card instead of adding a second beside it.
+const formerTitles: Record<string, string[]> = { 'Club Nights': ['Club Residencies'] }
+const offeringWhere = (title: string): Where => ({
+  or: [title, ...(formerTitles[title] ?? [])].map((t) => ({ title: { equals: t } })),
+})
+
 for (const [i, o] of offerings.entries()) {
   await upsert(
     'experiences-services',
-    { title: { equals: o.title } },
+    offeringWhere(o.title),
     {
       title: o.title,
       shortDescription: o.summary,
@@ -305,7 +314,7 @@ for (const [i, t] of testimonials.entries()) {
 }
 const offeringImg = [wall('wedding'), artworkIds[2], aboutDecks]
 for (const [i, o] of offerings.entries()) {
-  await upsert('experiences-services', { title: { equals: o.title } }, { image: offeringImg[i] })
+  await upsert('experiences-services', offeringWhere(o.title), { image: offeringImg[i] })
 }
 }
 
@@ -337,7 +346,28 @@ await g('navigation', {
 })
 
 await g('home-page', {
-  hero: { heroVideo },
+  hero: {
+    heroVideo,
+    heroHeading: 'DJ Ganesh',
+    heroSubheading: 'Wedding DJ & BollyAfro Pioneer',
+    heroCtaText: 'Book DJ Ganesh',
+    heroCtaUrl: '/contact#booking',
+    heroSecondaryCtaText: 'Listen to Music',
+    heroSecondaryCtaUrl: '#music',
+  },
+  nonstop: {
+    label: nonstopLabel,
+    heading: lines(nonstopHeading),
+    lede: nonstopLede,
+    sets: nonstopSets.map((x: { title: string; tag: string; length: string; href: string }) => ({
+      title: x.title,
+      tag: x.tag,
+      length: x.length,
+      url: x.href,
+    })),
+    spotifyUrl: nonstopSpotifyUrl,
+    podcastUrl: nonstopPodcastUrl,
+  },
   globalReach: {
     locations: tourCities.map((c) => ({
       city: c.name,
@@ -369,7 +399,9 @@ await g('home-page', {
   trustedBy: { label: trustedLabel, names: trustedNames.map((name) => ({ name })) },
   galleryStrip: {
     label: gallerySectionLabel,
-    items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt, href: it.href })),
+    reelLabel: galleryFeature.label,
+    bigShows: galleryFeature.shows.map((show: string) => ({ show })),
+    items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt })),
   },
   follow: {
     heading: followHeading,
@@ -431,7 +463,9 @@ await g('music-page', {
 await g('contact-booking', {
   bookingEmail,
   enquiryEmail: bookingEmail,
-  agency: { agencyName: 'BMT Agency', agencyWebsite: 'https://www.bmtagency.in' },
+  // No agency of record: bookings go through Black Hat Talent or VStar (named in
+  // the call band) or to Ganesh directly.
+  agency: { agencyName: null, agencyWebsite: null },
   socialLinks: footerSocialLinks.filter((s) => s.icon !== 'email').map((s) => ({ platform: s.icon, url: s.href })),
   bookingCtaText: bookingCta.label,
   // The site-wide Book CTA (used by the Navbar) historically points at /contact
@@ -451,6 +485,13 @@ await g('contact-booking', {
   },
 })
 
+await g('privacy-policy', {
+  title: privacyPolicy.title,
+  updated: privacyPolicy.updated,
+  intro: privacyPolicy.intro,
+  sections: privacyPolicy.sections.map((x: { heading: string; body: string }) => ({ heading: x.heading, body: x.body })),
+})
+
 for (const c of [
   'media',
   'music-releases',
@@ -461,7 +502,7 @@ for (const c of [
   'performance-history',
   'gallery',
 ] as CollectionSlug[]) {
-  counts[c] = (await payload.count({ collection: c, draft: true })).totalDocs
+  counts[c] = (await payload.count({ collection: c })).totalDocs
 }
 console.log('counts:', JSON.stringify(counts))
 }

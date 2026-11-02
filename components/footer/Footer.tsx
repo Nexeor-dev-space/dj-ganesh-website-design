@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { FitText } from "@/components/hero/FitText";
@@ -7,6 +9,7 @@ import { FooterNavigation } from "@/components/footer/FooterNavigation";
 import { footerCopyright } from "@/data/footer";
 import { siteConfig } from "@/lib/site";
 import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
+import { gaId, openCookieSettings } from "@/lib/analytics";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -80,7 +83,26 @@ export function Footer() {
         </div>
 
         <div className="reveal-scroll footer-bar" style={delay(380)}>
-          <p className="footer-bar__credit">{copyright}</p>
+          <p className="footer-bar__credit">
+            {copyright}
+            <span aria-hidden className="footer-bar__sep">
+              ·
+            </span>
+            <Link href="/privacy" className="footer-bar__privacy">
+              Privacy Policy
+            </Link>
+            {/* Only when analytics is set up: reopens the cookie question. */}
+            {gaId ? (
+              <>
+                <span aria-hidden className="footer-bar__sep">
+                  ·
+                </span>
+                <button type="button" onClick={openCookieSettings} className="footer-bar__privacy">
+                  Cookie settings
+                </button>
+              </>
+            ) : null}
+          </p>
 
           <button type="button" onClick={backToTop} className="btn-tertiary footer-link">
             Back to top

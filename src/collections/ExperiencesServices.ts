@@ -17,6 +17,16 @@ const ExperiencesServices: CollectionConfig = {
     { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea' },
     { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     {
+      name: 'venuePhotos',
+      label: 'Venue Photos',
+      type: 'array',
+      admin: { description: 'Optional small photos shown on the card, each with the venue name under it.' },
+      fields: [
+        { name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', required: true },
+        { name: 'name', label: 'Venue Name', type: 'text', required: true },
+      ],
+    },
+    {
       name: 'features',
       label: 'Features / Highlights',
       type: 'array',

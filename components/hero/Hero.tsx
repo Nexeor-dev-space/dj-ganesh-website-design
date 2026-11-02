@@ -21,9 +21,18 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 export function Hero({
   videoSrc,
   poster,
+  kicker = "Wedding DJ & BollyAfro Pioneer",
+  name = "DJ Ganesh",
+  primaryCta = { label: "Book DJ Ganesh", href: bookingHref },
+  secondaryCta = { label: "Listen to Music", href: "#music" },
 }: {
   videoSrc?: string;
   poster?: string;
+  /** The line above the name; CMS Home Page → Hero → Line Above the Name. */
+  kicker?: string;
+  name?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
 } = {}) {
   return (
     <section
@@ -35,29 +44,25 @@ export function Hero({
 
       <Container className="hero__inner relative z-10">
         <p className="hero__kicker reveal" style={delay(300)}>
-          BollyAfro Pioneer
+          {kicker}
         </p>
 
         <h1 id="hero-title" className="hero__title reveal" style={delay(400)}>
-          DJ Ganesh
+          {name}
         </h1>
-
-        <p className="hero__sub reveal" style={delay(500)}>
-          Est. 1998 · Mumbai, India
-        </p>
 
         <div className="hero__ctas reveal" style={delay(600)}>
           {/* Both carry the site's sweep: the label is wrapped so it drifts
               with the panel rather than sitting still under it. */}
-          <a href={bookingHref} data-cursor="book" className="btn-primary">
-            <span>Book DJ Ganesh</span>
+          <a href={primaryCta.href} data-cursor="book" className="btn-primary">
+            <span>{primaryCta.label}</span>
           </a>
 
-          <a href="#music" className="btn-secondary">
+          <a href={secondaryCta.href} className="btn-secondary">
             <span aria-hidden className="btn__mark">
               &#9654;
             </span>
-            <span>Listen to Music</span>
+            <span>{secondaryCta.label}</span>
           </a>
         </div>
 

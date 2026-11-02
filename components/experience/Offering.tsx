@@ -1,6 +1,8 @@
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import { experienceCtaHref as defaultCtaHref } from "@/data/experience";
 import type { Offering as OfferingData } from "@/types/experience";
+import { itemKey } from "@/lib/keys";
 
 type OfferingProps = {
   offering: OfferingData;
@@ -55,14 +57,33 @@ export function Offering({
 
         <p className="exp-card__summary">{offering.summary}</p>
 
+        {offering.venues?.length ? (
+          <ul className="exp-card__venues" aria-label="Venues">
+            {offering.venues.map((venue, index) => (
+              <li key={itemKey(venue, index)} className="exp-card__venue">
+                <span className="exp-card__venue-frame">
+                  <Image
+                    src={venue.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 768px) 120px, 30vw"
+                    className="exp-card__venue-img"
+                  />
+                </span>
+                <span className="exp-card__venue-name">{venue.name}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
         {/* The list is wrapped rather than collapsed directly: a grid with
             three items would only size its first row from the template, and
             the other two would open at full height whatever the card's
             state. One child, one row, one thing to animate. */}
         <div className="exp-card__points">
           <ul className="exp-card__points-list">
-            {offering.points.map((point) => (
-              <li key={point} className="exp-card__point">
+            {offering.points.map((point, index) => (
+              <li key={itemKey(point, index)} className="exp-card__point">
                 {point}
               </li>
             ))}

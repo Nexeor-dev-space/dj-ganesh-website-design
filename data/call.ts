@@ -22,7 +22,7 @@
 export const call = {
   /** Two lines, so the question lands on its own. */
   heading: ["Ready to", "Book?"] as const,
-  lede: "For bookings and inquiries, reach out through BMT Agency, Black Hat Talent, or VStar Entertainment",
+  lede: "For bookings and inquiries, reach out through Black Hat Talent or VStar Entertainment, or contact Ganesh directly by email or WhatsApp.",
   ctaLabel: "Book DJ Ganesh",
-  agencies: ["BMT Agency", "Black Hat Talent", "VStar Entertainment"] as const,
+  agencies: ["Black Hat Talent", "VStar Entertainment"] as const,
 };
