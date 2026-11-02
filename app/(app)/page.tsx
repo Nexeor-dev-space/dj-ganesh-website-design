@@ -36,6 +36,16 @@ import type { Stage } from "@/types/stages";
 import type { TourCity, TourShow } from "@/types/tour";
 import type { CareerStat } from "@/types/about";
 import type { MusicRelease, UpcomingShow } from "@/payload-types";
+import type { Metadata } from "next";
+import { HomeStructuredData } from "@/components/seo/HomeStructuredData";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata({
+  title: siteConfig.title,
+  description: siteConfig.description,
+  path: "/",
+});
 
 /* ── Tiny helpers: every one returns `undefined` when the CMS value is empty,
       so the component's own default (the code constant) renders. ─────────── */
@@ -252,6 +262,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <HomeStructuredData />
       <Navbar />
       <main>
         <Hero videoSrc={heroVideo} poster={heroPoster} {...stripUndefined(heroProps)} />

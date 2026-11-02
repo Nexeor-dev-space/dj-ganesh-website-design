@@ -9,6 +9,7 @@ import { FooterNavigation } from "@/components/footer/FooterNavigation";
 import { footerCopyright } from "@/data/footer";
 import { siteConfig } from "@/lib/site";
 import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
+import { gaId, openCookieSettings } from "@/lib/analytics";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -90,6 +91,17 @@ export function Footer() {
             <Link href="/privacy" className="footer-bar__privacy">
               Privacy Policy
             </Link>
+            {/* Only when analytics is set up: reopens the cookie question. */}
+            {gaId ? (
+              <>
+                <span aria-hidden className="footer-bar__sep">
+                  ·
+                </span>
+                <button type="button" onClick={openCookieSettings} className="footer-bar__privacy">
+                  Cookie settings
+                </button>
+              </>
+            ) : null}
           </p>
 
           <button type="button" onClick={backToTop} className="btn-tertiary footer-link">

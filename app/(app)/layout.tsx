@@ -2,14 +2,40 @@ import type { Metadata, Viewport } from "next";
 import { fontVariables } from "../fonts";
 import { CustomCursor } from "@/components/interactions/CustomCursor";
 import { HashGuard } from "@/components/site/HashGuard";
-import { siteConfig } from "@/lib/site";
+import { Analytics } from "@/components/site/Analytics";
+import { siteConfig, siteUrl } from "@/lib/site";
+import { shareImage } from "@/lib/seo";
 import { SiteDataProvider, type SiteData } from "@/components/site/SiteDataProvider";
 import { getContactBooking, getHomePage, getNavigation, getSiteSettings } from "@/lib/cms/queries";
 import "../globals.css";
 
+/**
+ * Site-wide defaults. `metadataBase` turns every relative URL below (and in
+ * each page's own metadata) into a full address on the live domain. Each
+ * public page sets its own canonical address and cards via `pageMetadata`.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: siteConfig.title,
   description: siteConfig.description,
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    locale: "en_IN",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [shareImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [{ url: shareImage.url, alt: shareImage.alt }],
+  },
+  // Google Search Console ownership: the code from "HTML tag" verification.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {
@@ -93,6 +119,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
         {/* An unknown "#…" on any page goes to the 404, like a wrong path. */}
         <HashGuard />
+
+        {/* Google Analytics behind a cookie banner; off until its ID is set. */}
+        <Analytics />
       </body>
     </html>
   );

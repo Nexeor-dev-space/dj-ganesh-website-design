@@ -1,7 +1,8 @@
 /**
  * The privacy policy: short by design, covering only what this site actually
  * does. The booking form is the only thing that collects personal data, and
- * the site runs no analytics, advertising or tracking cookies.
+ * the only cookies are Google Analytics', set only after a visitor accepts
+ * them in the cookie banner. It runs no advertising cookies.
  *
  * These are the defaults; the CMS "Privacy Policy" global overrides any of
  * them, and seeds from them.
@@ -14,7 +15,7 @@ export const privacyPolicy = {
   sections: [
     {
       heading: "What we collect",
-      body: "Only what you send through the booking form: your name, email, and any phone number, organisation, event details, budget and message you choose to add. We don't use advertising or tracking cookies.",
+      body: "Only what you send through the booking form: your name, email, and any phone number, organisation, event details, budget and message you choose to add. We don't use advertising cookies. With your permission, we use Google Analytics cookies to count visits and see which pages are used. You can decline in the cookie banner, or change your choice any time under Cookie settings in the footer.",
     },
     {
       heading: "Why",

@@ -13,6 +13,7 @@ import {
   type EnquiryValues,
 } from "@/lib/enquiry";
 import { itemKey } from "@/lib/keys";
+import { trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "sending" | "sent" | "failed";
 
@@ -41,6 +42,9 @@ export function BookingForm({
   const [status, setStatus] = useState<Status>("idle");
   const formRef = useRef<HTMLFormElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Set for the length of one request, so a double press can't send (or
+  // count) the same enquiry twice.
+  const sendingRef = useRef(false);
 
   const set = (field: keyof EnquiryValues) => (value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -70,8 +74,14 @@ export function BookingForm({
       return;
     }
 
+    if (sendingRef.current) return;
+    sendingRef.current = true;
     setStatus("sending");
     const outcome = await submitEnquiry(values);
+    sendingRef.current = false;
+    // The conversion counts only once the server has accepted the enquiry:
+    // never on the press itself, a failed check or an error response.
+    if (outcome === "handed-off") trackEvent("booking_submitted");
     setStatus(outcome === "handed-off" ? "sent" : "failed");
     // The panel replaces the form, so focus has to follow it.
     window.requestAnimationFrame(() => panelRef.current?.focus());

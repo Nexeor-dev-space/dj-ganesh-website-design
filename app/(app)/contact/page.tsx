@@ -19,6 +19,7 @@ import {
   enquiryMeta,
 } from "@/data/contact";
 import { getContactBooking } from "@/lib/cms/queries";
+import { pageMetadata } from "@/lib/seo";
 
 const str = (v: string | null | undefined, fb: string) => (v && v.trim() ? v : fb);
 const lines = (
@@ -35,11 +36,12 @@ const platformLabel: Record<string, string> = {
   twitter: "X",
 };
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact / Booking | DJ Ganesh",
   description:
     "Book DJ Ganesh for events, festivals, venues, private functions and collaborations — send a booking enquiry or get in touch directly.",
-};
+  path: "/contact",
+});
 
 export default async function ContactPage() {
   const cms = await getContactBooking();

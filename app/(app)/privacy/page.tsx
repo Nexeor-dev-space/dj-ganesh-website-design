@@ -8,11 +8,13 @@ import { Navbar } from "@/components/navigation/Navbar";
 import { privacyPolicy } from "@/data/privacy";
 import { getPrivacyPolicy } from "@/lib/cms/queries";
 import { itemKey } from "@/lib/keys";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "DJ Ganesh — Privacy Policy",
   description: "What we collect through the booking form, why, and your rights over it.",
-};
+  path: "/privacy",
+});
 
 const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
 

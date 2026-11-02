@@ -11,6 +11,35 @@ npm run dev
 
 Then open http://localhost:3000.
 
+## Environment variables
+
+Set these in `.env` locally and as build variables on the host. `NEXT_PUBLIC_*`
+values are baked in at build time, so a change needs a rebuild.
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | yes | Payload CMS Postgres connection |
+| `PAYLOAD_SECRET` | yes | Payload CMS secret |
+| `NEXT_PUBLIC_SITE_URL` | recommended | Live address, e.g. `https://djganeshbombay.com` (no trailing slash). Used for canonical URLs, the sitemap, robots.txt, link previews and structured data. Defaults to `https://djganeshbombay.com`. |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | for analytics | Google Analytics 4 Measurement ID, `G-XXXXXXXXXX` (GA → Admin → Data streams → your web stream). Analytics and the cookie banner stay off while this is empty. |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | for Search Console | The `content` value from Search Console's "HTML tag" verification method. Adds `<meta name="google-site-verification">` to every page. |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | no | WhatsApp booking number (digits, with country code) |
+
+### Analytics and cookies
+
+Google Analytics loads only after a visitor presses **Accept** in the cookie
+banner; until then nothing is requested from Google. The choice is stored in
+the visitor's browser and can be changed from **Cookie settings** in the
+footer. Advertising features are off (Consent Mode: ad storage denied).
+
+Tracked: page views on every public page, and one custom event,
+`booking_submitted`, sent only after an enquiry is accepted by the server.
+The site sends one page view per page itself, including moves between pages
+inside the site. **In GA, turn off** Admin → Data streams → your stream →
+Enhanced measurement → ⚙ → "Page changes based on browser history events",
+or those moves are counted twice. Mark `booking_submitted` as a Key event
+(Admin → Events) to count it as a conversion.
+
 ## Scripts
 
 | Command | Description |

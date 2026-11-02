@@ -4608,9 +4608,88 @@
   .footer-bar__privacy:hover,
   .footer-bar__privacy:focus-visible,
   .enquiry-consent__link:hover,
-  .enquiry-consent__link:focus-visible {
+  .enquiry-consent__link:focus-visible,
+  .cookie-banner__link:hover,
+  .cookie-banner__link:focus-visible {
     color: var(--accent);
     text-decoration-color: currentColor;
+  }
+
+  /* "Cookie settings" is a button, set exactly like the Privacy link. */
+  button.footer-bar__privacy {
+    font: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+  }
+
+  /* ---- The cookie question ------------------------------------------------
+
+     A small bar at the foot of the screen: the full width of a phone, a
+     card in the bottom-left corner from tablets up, clear of the WhatsApp
+     button on the right. Above the page and the dock (z 30), below the
+     navigation's full-screen menu (z 40).                                  */
+  .cookie-banner {
+    position: fixed;
+    inset-inline: var(--space-sm);
+    bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+    z-index: 35;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: rgba(8, 8, 8, 0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    animation: cookie-banner-in 420ms var(--ease-out) both;
+  }
+
+  @media (width >= 768px) {
+    .cookie-banner {
+      right: auto;
+      left: max(var(--space-md), env(safe-area-inset-left));
+      bottom: max(var(--space-md), env(safe-area-inset-bottom));
+      width: min(440px, calc(100vw - 2 * var(--space-md)));
+    }
+  }
+
+  @keyframes cookie-banner-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  .cookie-banner__text {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .cookie-banner__link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    transition:
+      color 200ms var(--ease-out),
+      text-decoration-color 200ms var(--ease-out);
+  }
+
+  .cookie-banner__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-banner {
+      animation: none;
+    }
   }
 
   /* The line above the booking form's button. */
