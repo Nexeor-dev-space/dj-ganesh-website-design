@@ -1,4 +1,4 @@
-import { eventTypes } from "@/data/contact";
+import { eventTypes } from "../data/contact.ts";
 
 /** Everything the booking form collects. Empty strings, never `undefined`. */
 export type EnquiryValues = {
@@ -12,6 +12,7 @@ export type EnquiryValues = {
   audience: string;
   budget: string;
   message: string;
+  honeypot?: string;
 };
 
 export type EnquiryErrors = Partial<Record<keyof EnquiryValues, string>>;
@@ -27,6 +28,7 @@ export const emptyEnquiry: EnquiryValues = {
   audience: "",
   budget: "",
   message: "",
+  honeypot: "",
 };
 
 /** Today in the input's own `YYYY-MM-DD` shape, in the visitor's timezone. */
@@ -106,27 +108,18 @@ export function composeEnquiry(values: EnquiryValues) {
 export type EnquiryOutcome = "handed-off" | "failed";
 
 /**
- * The one place a backend plugs in.
+ * Submits the enquiry to Payload CMS (/api/contact-submissions).
  *
- * There is no endpoint on this project — no API route, no action, no form
- * service — so nothing here claims to have delivered anything. What it does
- * instead is real: it hands the composed enquiry to the visitor's own mail
- * client, addressed and filled in, which is the same path every other booking
- * control on this site uses.
+ * Sends dedicated structured fields for eventDate, location, audience,
+ * budget, and organisation, while preserving message for additional details.
+ * Includes honeypot spam protection and triggers email notification to the
+ * booking inbox.
  *
- * To connect a service later, replace the body of this function with the
- * request and return "handed-off" on success. The form's states, validation
- * and copy are already written against this contract, and the success panel
- * says the enquiry is ready to send rather than that it was received — keep
- * that honest if the mailto stays.
+ * Returns "handed-off" only when the API responds with a successful OK status (2xx).
  */
 export async function submitEnquiry(
   values: EnquiryValues,
 ): Promise<EnquiryOutcome> {
-  // The collection stores name/email/phone/eventType/message only, so the
-  // other fields (date, location, ...) are folded into the message.
-  const { body } = composeEnquiry(values);
-
   try {
     const res = await fetch("/api/contact-submissions", {
       method: "POST",
@@ -135,8 +128,14 @@ export async function submitEnquiry(
         name: values.name.trim(),
         email: values.email.trim(),
         phone: values.phone.trim(),
+        organisation: values.organisation.trim(),
         eventType: values.eventType,
-        message: body,
+        eventDate: values.eventDate || null,
+        location: values.location.trim(),
+        audience: values.audience.trim(),
+        budget: values.budget.trim(),
+        message: values.message.trim(),
+        honeypot: values.honeypot || "",
       }),
     });
     return res.ok ? "handed-off" : "failed";

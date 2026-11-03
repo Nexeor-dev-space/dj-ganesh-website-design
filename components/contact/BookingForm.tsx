@@ -27,10 +27,9 @@ type Status = "idle" | "sending" | "sent" | "failed";
  * first field that needs attention, which is the only way a keyboard or
  * screen reader user learns what stopped it.
  *
- * Nothing here claims an enquiry was delivered. `submitEnquiry` hands the
- * composed message to the visitor's own mail client — the same route every
- * other booking control on this site takes — and the panel below says exactly
- * that. See `lib/enquiry.ts` for the single seam a real endpoint plugs into.
+ * Submissions are securely delivered via POST /api/contact-submissions to
+ * Payload CMS, protected by a honeypot trap and rate limiter, and notified
+ * immediately to the booking team.
  */
 export function BookingForm({
   submitLabel = enquiryMeta.submitLabel,
@@ -129,6 +128,33 @@ export function BookingForm({
 
   return (
     <form ref={formRef} onSubmit={onSubmit} noValidate className="enquiry-form">
+      {/* Honeypot field for bot spam protection: hidden from genuine visitors */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "-9999px",
+          opacity: 0,
+          height: 0,
+          width: 0,
+          zIndex: -1,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
+        <label htmlFor="hp_website">Leave this field blank</label>
+        <input
+          id="hp_website"
+          name="honeypot"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={values.honeypot || ""}
+          onChange={(event) => set("honeypot")(event.target.value)}
+        />
+      </div>
+
       <div className="enquiry-grid">
         <FormField id="name" label="Name" error={errors.name}>
           <input

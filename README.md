@@ -24,6 +24,17 @@ values are baked in at build time, so a change needs a rebuild.
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | for analytics | Google Analytics 4 Measurement ID, `G-XXXXXXXXXX` (GA → Admin → Data streams → your web stream). Analytics and the cookie banner stay off while this is empty. |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | for Search Console | The `content` value from Search Console's "HTML tag" verification method. Adds `<meta name="google-site-verification">` to every page. |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | no | WhatsApp booking number (digits, with country code) |
+| `BOOKING_NOTIFICATION_EMAIL` | for email alerts | Inbox recipient for enquiry notification emails (e.g. `info@djganeshbombay.com`) |
+| `RESEND_API_KEY` | no | Resend API key for instant email delivery |
+| `EMAIL_FROM` | no | Sender email address (defaults to `bookings@djganeshbombay.com`) |
+| `EMAIL_FROM_NAME` | no | Sender display name (defaults to `DJ Ganesh Bookings`) |
+| `SMTP_HOST` | no | SMTP host (if using SMTP instead of Resend) |
+| `SMTP_PORT` | no | SMTP port (e.g. 587 or 465) |
+| `SMTP_USER` | no | SMTP username |
+| `SMTP_PASS` | no | SMTP password |
+| `SMTP_SECURE` | no | Set `true` for SSL/TLS port 465 |
+| `RATE_LIMIT_WINDOW_MS` | no | Rate limiting time window in ms (default: 600000 = 10 min) |
+| `RATE_LIMIT_MAX_SUBMISSIONS` | no | Max submissions per IP per time window (default: 5) |
 
 ### Analytics and cookies
 
