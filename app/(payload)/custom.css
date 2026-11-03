@@ -769,3 +769,41 @@ h3,
 .tooltip-content {
   font-size: var(--admin-text-xs) !important;
 }
+
+/* ==========================================================================
+   SIDEBAR HIERARCHY: SECTION HEADINGS OVER SMALLER LINKS
+   ========================================================================== */
+
+/* Section headings (COLLECTIONS, SETTINGS…): the larger, bold line. */
+.nav .nav-group__toggle,
+.nav .nav-group__label {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em;
+  color: #ffffff !important;
+}
+
+/* Space between sections, so the menu reads as groups. */
+.nav .nav-group + .nav-group {
+  margin-top: 20px;
+}
+
+/* The links under each heading: smaller, lighter, slightly indented, with
+   a little air between them. Selected stays green (rules above). */
+.nav .nav__link {
+  font-size: 13px !important;
+  font-weight: 500;
+  color: #a3a3a3 !important;
+  margin: 2px 0 2px 8px;
+  padding: 6px 10px;
+}
+
+.nav .nav__link:hover {
+  color: #ffffff !important;
+}
+
+.nav div.nav__link,
+.nav .nav__link[aria-current='page'],
+.nav a.nav__link.active {
+  color: #10b26c !important;
+}
