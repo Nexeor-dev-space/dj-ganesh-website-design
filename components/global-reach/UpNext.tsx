@@ -11,6 +11,7 @@ type UpNextProps = {
   pinnedCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
+  label?: string;
 };
 
 /**
@@ -29,10 +30,11 @@ export function UpNext({
   pinnedCity,
   onHover,
   onSelect,
+  label = "Up Next",
 }: UpNextProps) {
   return (
     <div className="up-next">
-      <h3 className="up-next__label">Up Next</h3>
+      <h3 className="up-next__label">{label}</h3>
 
       <ul className="up-next__row">
         {tourShows.map((show, index) => (

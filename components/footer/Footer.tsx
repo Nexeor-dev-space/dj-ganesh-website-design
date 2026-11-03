@@ -27,7 +27,8 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
-  const { footer } = useSiteData();
+  const { footer, brand } = useSiteData();
+  const brandName = hasText(brand?.name) ? brand.name : siteConfig.name;
   const copyright = hasText(footer?.copyright) ? footer.copyright : footerCopyright;
 
   useEffect(() => {
@@ -66,12 +67,12 @@ export function Footer() {
         <h2
           className="footer-name reveal-scroll text-accent"
           style={delay(140)}
-          aria-label={siteConfig.name}
+          aria-label={brandName}
         >
           {/* Fitted to the container exactly as the banner lockup is, so the
               two read as the same mark rather than two sizes of one. */}
           <span aria-hidden className="block">
-            <FitText className="grain-text">DJ Ganesh</FitText>
+            <FitText className="grain-text">{brandName}</FitText>
           </span>
         </h2>
 

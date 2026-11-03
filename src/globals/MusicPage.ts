@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { seoGroup } from '../fields/seo.ts'
 
 /**
  * The /music page — copy only.
@@ -22,8 +23,29 @@ const MusicPage: GlobalConfig = {
       label: 'Section Labels',
       fields: [
         { name: 'intro', label: 'Intro Label', type: 'text', admin: { placeholder: 'e.g. The Archive' } },
-        { name: 'archive', label: 'Archive Label', type: 'text', admin: { placeholder: 'e.g. All Music' } },
+        { name: 'archive', label: 'Archive Label', type: 'text', admin: { hidden: true, placeholder: 'e.g. All Music' } },
         { name: 'continue', label: 'Continue Label', type: 'text', admin: { placeholder: 'e.g. Continue Listening' } },
+        {
+          name: 'continueHeading',
+          label: 'Closing Heading Lines',
+          type: 'array',
+          admin: { description: 'The heading at the foot of the Music page, e.g. "The rest of the" / "sound is on the channel."' },
+          fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
+        },
+        { name: 'youtubeButton', label: 'Closing YouTube Button', type: 'text', admin: { placeholder: 'e.g. All releases on YouTube' } },
+        { name: 'spotifyButton', label: 'Closing Spotify Button', type: 'text', admin: { placeholder: 'e.g. Listen on Spotify' } },
+      ],
+    },
+    {
+      type: 'group',
+      name: 'player',
+      label: 'Music Player Buttons',
+      admin: { description: 'Words on the record player, on the homepage and the Music page. Empty keeps the built-in words.' },
+      fields: [
+        { name: 'youtubeLabel', label: 'YouTube Button', type: 'text', admin: { placeholder: 'e.g. Watch on YouTube' } },
+        { name: 'spotifyLabel', label: 'Spotify Button', type: 'text', admin: { placeholder: 'e.g. Listen on Spotify' } },
+        { name: 'playlistHeading', label: 'Playlist Heading (Music page)', type: 'text', admin: { placeholder: 'e.g. Playlist' } },
+        { name: 'archiveLinkLabel', label: 'Full Archive Link (homepage)', type: 'text', admin: { placeholder: 'e.g. View the full archive' } },
       ],
     },
     {
@@ -42,6 +64,7 @@ const MusicPage: GlobalConfig = {
         },
       ],
     },
+    seoGroup('the Music page'),
   ],
 }
 

@@ -20,10 +20,10 @@ async function count(slug: string, where = ''): Promise<number | null> {
 }
 
 const card: React.CSSProperties = {
-  border: '1px solid rgba(255,107,0,0.35)',
+  border: '1px solid rgba(16,178,108,0.35)',
   borderRadius: 10,
   padding: '14px 16px',
-  background: 'rgba(255,107,0,0.06)',
+  background: 'rgba(16,178,108,0.06)',
   textDecoration: 'none',
   color: 'inherit',
   display: 'block',
@@ -31,7 +31,7 @@ const card: React.CSSProperties = {
 const btn: React.CSSProperties = {
   padding: '9px 16px',
   borderRadius: 8,
-  background: '#ff6b00',
+  background: '#10b26c',
   color: '#000',
   fontWeight: 700,
   textDecoration: 'none',
@@ -64,8 +64,8 @@ export default function Dashboard() {
 
   const stat = (label: string, key: string, href: string) => (
     <Link href={href} style={card} key={key}>
-      <div style={{ fontSize: 28, fontWeight: 800, color: '#ff6b00' }}>{counts[key] ?? '–'}</div>
-      <div style={{ fontSize: 13, opacity: 0.85 }}>{label}</div>
+      <div style={{ fontSize: 28, fontWeight: 800, color: '#10b26c' }}>{counts[key] ?? '–'}</div>
+      <div style={{ fontSize: 14, opacity: 0.85 }}>{label}</div>
     </Link>
   )
 
@@ -85,7 +85,7 @@ export default function Dashboard() {
         {stat('Testimonials', 'testimonials', '/admin/collections/testimonials')}
         {stat('Unread submissions', 'unread', '/admin/collections/contact-submissions')}
       </div>
-      <h3 style={{ margin: '24px 0 8px' }}>Recent contact submissions</h3>
+      <h3 style={{ margin: '24px 0 8px', fontSize: 18 }}>Recent contact submissions</h3>
       {subs.length === 0 ? (
         <p style={{ opacity: 0.7 }}>No submissions yet.</p>
       ) : (

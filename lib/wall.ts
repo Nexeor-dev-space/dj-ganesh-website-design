@@ -41,9 +41,13 @@ export const WALL_ROW_LENGTH = 28;
  * the same picture in the same column and the wall reads as a crowd rather
  * than as six images repeated three times.
  */
-export function wallRow(rowIndex: number) {
+export function wallRow(
+  rowIndex: number,
+  images: readonly { src: string; alt: string }[] = wallImages,
+) {
+  const photos = images.length ? images : wallImages;
   return Array.from({ length: WALL_ROW_LENGTH }, (_, i) => {
-    const image = wallImages[(rowIndex * 4 + i) % wallImages.length];
+    const image = photos[(rowIndex * 4 + i) % photos.length];
     return { ...image, key: `${rowIndex}-${i}` };
   });
 }

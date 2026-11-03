@@ -62,8 +62,23 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         .map((st) => ({ id: st.id, name: st.name, ...(st.featured ? { featured: true } : {}) })),
       trusted: (home?.trustedBy?.names ?? []).map((n) => n.name).filter((n): n is string => Boolean(n)),
     },
+    brand: settings
+      ? {
+          name: settings.siteName ?? null,
+          logo:
+            settings.logo && typeof settings.logo === "object" && settings.logo.url
+              ? {
+                  url: settings.logo.url,
+                  alt: settings.logo.alt ?? null,
+                  width: settings.logo.width ?? null,
+                  height: settings.logo.height ?? null,
+                }
+              : null,
+        }
+      : null,
     nav: navigation
       ? {
+          menuMarqueeLabel: navigation.menuMarqueeLabel ?? null,
           items: (navigation.items ?? []).map((i) => ({
             id: i.id,
             label: i.label,
@@ -97,6 +112,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       : null,
     contact: contact
       ? {
+          bookingCtaText: contact.bookingCtaText ?? null,
           bookingCtaUrl: contact.bookingCtaUrl ?? null,
           whatsappNumber: contact.whatsapp?.whatsappNumber ?? null,
           whatsappLabel: contact.whatsapp?.whatsappLabel ?? null,

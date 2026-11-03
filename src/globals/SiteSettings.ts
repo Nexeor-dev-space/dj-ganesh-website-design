@@ -9,13 +9,16 @@ const SiteSettings: GlobalConfig = {
   },
   access: { read: () => true },
   fields: [
-    { name: 'siteName', label: 'Site / Brand Name', type: 'text', required: true },
-    { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
-    { name: 'favicon', label: 'Favicon', type: 'upload', relationTo: 'media' },
+    { name: 'siteName', label: 'Brand Name', type: 'text', required: true, admin: { description: 'The big name at the foot of every page.' } },
+    { name: 'logo', label: 'Header Logo', type: 'upload', relationTo: 'media', admin: { description: 'The logo in the header on every page. A wide, transparent PNG works best. Empty: the built-in logo.' } },
+    { name: 'favicon', label: 'Favicon', type: 'upload', relationTo: 'media', admin: { hidden: true } },
     {
       type: 'group',
       name: 'seo',
       label: 'Default SEO',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'defaultSeoTitle', label: 'Default SEO Title', type: 'text' },
         { name: 'defaultSeoDescription', label: 'Default SEO Description', type: 'textarea' },
@@ -67,8 +70,8 @@ const SiteSettings: GlobalConfig = {
         { name: 'phone', label: 'Phone Number', type: 'text' },
       ],
     },
-    { name: 'bookingInfo', label: 'Booking Information', type: 'textarea' },
-    { name: 'footerContent', label: 'Footer Content', type: 'textarea' },
+    { name: 'bookingInfo', label: 'Booking Information', type: 'textarea', admin: { hidden: true } },
+    { name: 'footerContent', label: 'Footer Content', type: 'textarea', admin: { hidden: true } },
     {
       type: 'group',
       name: 'footer',
@@ -92,9 +95,10 @@ const SiteSettings: GlobalConfig = {
             },
           ],
         },
-        { name: 'statement', label: 'Footer Statement', type: 'text', admin: { placeholder: 'e.g. Follow the sound' } },
+        // Not shown on the website; hidden, stored value kept.
+        { name: 'statement', label: 'Footer Statement', type: 'text', admin: { hidden: true, placeholder: 'e.g. Follow the sound' } },
         { name: 'copyright', label: 'Copyright', type: 'text' },
-        { name: 'contactEmail', label: 'Footer Contact Email', type: 'email' },
+        { name: 'contactEmail', label: 'Footer Contact Email', type: 'email', admin: { hidden: true } },
       ],
     },
   ],

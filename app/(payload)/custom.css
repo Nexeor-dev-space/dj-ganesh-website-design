@@ -1,13 +1,15 @@
 /* ==========================================================================
    DJ GANESH CMS — PURE BLACK & EMERALD ADMIN THEME
-   Strictly Visual & Styling Overrides — Zero Logic/Schema Changes
+   Colour, type and finish only. Payload's own layout (padding, widths,
+   grids, positions) is left alone: overriding it is what pushed the search
+   icon onto the text, clipped wide tables and misaligned the edit views.
    - Background: Pure Pitch Black & Neutral Carbon (#000000, #0a0a0a, #121212)
    - All Text: Crisp Pure White (#ffffff, #f5f5f5)
    - Hover & Highlights: Emerald (#10b26c, #14c97a)
    - ZERO Blue / Slate tones anywhere in the UI.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 /* ==========================================================================
    ROOT DESIGN TOKENS: PURE BLACK CANVAS + WHITE TEXT + EMERALD HIGHLIGHTS
@@ -18,8 +20,16 @@ html,
 html[data-theme='dark'],
 html[data-theme='light'] {
   /* Typography */
-  --font-body: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  /* One face everywhere, including the places Payload sets in mono. */
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-body);
+
+  /* The type scale: four sizes, in px so they never drift with Payload's
+     13px root. */
+  --admin-text-xs: 12px; /* small caps labels: table headings, nav groups, pills */
+  --admin-text: 14px; /* everything you read or type */
+  --admin-text-lg: 18px; /* card and section titles */
+  --admin-text-xl: 28px; /* page titles */
   --style-radius-s: 6px;
   --style-radius-m: 10px;
   --style-radius-l: 14px;
@@ -130,61 +140,148 @@ html[data-theme='light'] {
 }
 
 /* ==========================================================================
-   GLOBAL BODY & TYPOGRAPHY: PURE BLACK BG & PURE WHITE TEXT
-   ========================================================================= */
+   TYPE: ONE FACE, FOUR SIZES
+   ========================================================================== */
 
-html, body {
+html,
+body {
   background-color: #000000 !important;
   color: #ffffff !important;
   color-scheme: dark !important;
   font-family: var(--font-body) !important;
-  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6, p, span, div, label {
-  color: #ffffff;
+body {
+  font-size: var(--admin-text) !important;
+  line-height: 1.5;
 }
 
-h1, h2, h3, h4, h5, h6 {
+/* Payload sets a few controls in its own face; bring them into line. */
+button,
+input,
+select,
+textarea,
+code,
+pre,
+.cell-id,
+[class*='rs__'] {
+  font-family: var(--font-body) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-body);
-  letter-spacing: -0.025em;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: #ffffff !important;
 }
 
-/* All links: White default, Emerald on Hover */
+/* Page titles: list views, edit views, globals, the dashboard. */
+.collection-list__header h1,
+.list-header h1,
+.doc-header__title,
+.dashboard h1 {
+  font-size: var(--admin-text-xl) !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.03em !important;
+}
+
+h2,
+.card__title,
+.dashboard__label,
+.array-field__header h3,
+.field-type h3 {
+  font-size: var(--admin-text-lg) !important;
+}
+
+/* Body copy and controls: one reading size. */
+p,
+td,
+.nav__link,
+.step-nav,
+.btn,
+.popup-button-list__button,
+.field-label,
+label.field-label:not(.unstyled),
+.row-label,
+.custom-view-description,
+.view-description,
+.where-builder,
+.no-results,
+.pagination,
+.per-page,
+.thumbnail-card__label,
+input:not([type='checkbox']):not([type='radio']),
+textarea,
+select,
+[class*='rs__control'],
+[class*='rs__option'],
+[class*='rs__single-value'],
+[class*='rs__placeholder'] {
+  font-size: var(--admin-text) !important;
+}
+
+/* Small caps labels and secondary text: one small size. */
+th,
+.nav-group__toggle,
+.nav-group__label,
+.pill,
+.pill__label,
+.field-description,
+.status,
+.cell-id,
+.doc-controls__label,
+.doc-controls__value,
+.step-nav__separator {
+  font-size: var(--admin-text-xs) !important;
+}
+
+/* ==========================================================================
+   COLOUR: WHITE TEXT, EMERALD HIGHLIGHTS
+   ========================================================================== */
+
 a {
-  color: #ffffff !important;
-  text-decoration-color: rgba(16, 178, 108, 0.5) !important;
+  color: #ffffff;
+  text-decoration-color: rgba(16, 178, 108, 0.5);
   transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
 a:hover,
-a:focus {
-  color: #10b26c !important;
-  text-decoration-color: #10b26c !important;
+a:focus-visible {
+  color: #10b26c;
+  text-decoration-color: #10b26c;
 }
 
 ::selection {
-  background: rgba(16, 178, 108, 0.45) !important;
-  color: #ffffff !important;
-}
-
-::-moz-selection {
-  background: rgba(16, 178, 108, 0.45) !important;
-  color: #ffffff !important;
+  background: rgba(16, 178, 108, 0.45);
+  color: #ffffff;
 }
 
 :focus-visible {
   outline-color: #10b26c !important;
 }
 
-/* Scrollbars: Pure black track with emerald thumb on hover */
+/* Text Payload hides for screen readers must stay hidden: a blanket colour
+   on every span is what printed "Toggle block" over each array row. */
+.collapsible__toggle span {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+}
+
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -201,129 +298,77 @@ a:focus {
 }
 
 /* ==========================================================================
-   SIDEBAR / NAVIGATION (.nav): PITCH BLACK + EMERALD HIGHLIGHTS
+   SIDEBAR
    ========================================================================== */
 
-.template-default .nav,
-.nav {
-  background: #000000 !important;
-  border-right: 1px solid var(--sidebar-border) !important;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.8);
-}
-
+.nav,
 .nav__wrap {
-  padding: 20px 14px !important;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   background: #000000 !important;
 }
 
-/* Nav Group Headings */
+.nav {
+  border-right: 1px solid var(--sidebar-border) !important;
+}
+
 .nav-group__toggle {
-  padding: 8px 12px !important;
-  text-transform: uppercase !important;
-  font-size: 0.72rem !important;
+  text-transform: uppercase;
   font-weight: 700 !important;
-  letter-spacing: 0.09em !important;
+  letter-spacing: 0.08em;
   color: #a3a3a3 !important;
-  border-radius: var(--style-radius-s);
-  display: flex;
-  align-items: center;
 }
 
 .nav-group__toggle:hover {
   color: #ffffff !important;
 }
 
-.nav-group__content {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-top: 4px;
-}
-
-/* Nav Item Links */
-.nav__link,
-a.nav__link {
-  border-radius: var(--style-radius-s) !important;
-  padding: 10px 14px !important;
-  font-size: 0.88rem !important;
-  font-weight: 500 !important;
+.nav__link {
+  border-radius: var(--style-radius-s);
+  font-weight: 500;
   color: #ffffff !important;
-  display: flex !important;
-  align-items: center !important;
-  position: relative !important;
   text-decoration: none !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.nav__link:hover,
-a.nav__link:hover {
+/* No sideways nudge on hover: it made the list jitter. */
+.nav__link:hover {
   background: rgba(16, 178, 108, 0.12) !important;
   color: #10b26c !important;
-  transform: translateX(4px);
 }
 
-/* Active Nav Item — Glowing Emerald */
 div.nav__link,
 .nav__link[aria-current='page'],
 a.nav__link.active {
-  background: rgba(16, 178, 108, 0.18) !important;
+  background: rgba(16, 178, 108, 0.16) !important;
   color: #10b26c !important;
-  font-weight: 600 !important;
-  border: 1px solid rgba(16, 178, 108, 0.35) !important;
+  font-weight: 600;
 }
 
 .nav__link-indicator {
-  position: absolute;
-  left: 0;
-  top: 7px;
-  bottom: 7px;
-  width: 3.5px;
-  border-radius: 0 4px 4px 0;
   background: #10b26c !important;
-  box-shadow: 0 0 14px #10b26c, 0 0 4px #10b26c;
+  box-shadow: 0 0 12px rgba(16, 178, 108, 0.8);
 }
 
-/* Sidebar Footer / Controls */
 .nav__controls {
-  border-top: 1px solid var(--sidebar-border) !important;
-  padding-top: 16px !important;
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  border-top: 1px solid var(--sidebar-border);
 }
 
 /* ==========================================================================
-   APP HEADER & BREADCRUMBS (.app-header, .step-nav)
+   HEADER & BREADCRUMBS
    ========================================================================== */
 
-.app-header {
+.app-header__bg {
   background: rgba(0, 0, 0, 0.92) !important;
-  backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
-  border-bottom: 1px solid var(--theme-border-color) !important;
-  padding: 0 28px !important;
-  height: 60px !important;
-  display: flex !important;
-  align-items: center !important;
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 20 !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-.step-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.88rem;
+.app-header {
+  border-bottom: 1px solid var(--theme-border-color);
 }
 
 .step-nav__link {
   color: #e5e5e5 !important;
   text-decoration: none !important;
-  font-weight: 500;
 }
 
 .step-nav__link:hover {
@@ -331,7 +376,7 @@ a.nav__link.active {
 }
 
 .step-nav__label {
-  font-weight: 600 !important;
+  font-weight: 600;
   color: #ffffff !important;
 }
 
@@ -340,234 +385,144 @@ a.nav__link.active {
 }
 
 /* ==========================================================================
-   BUTTONS & ACTIONS (.btn) — HIGHLIGHTED IN RADIANT EMERALD
+   BUTTONS
    ========================================================================== */
 
 .btn {
-  border-radius: var(--style-radius-s) !important;
-  font-family: var(--font-body) !important;
   font-weight: 600 !important;
-  font-size: 0.86rem !important;
-  padding: 9px 18px !important;
-  letter-spacing: -0.01em !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  cursor: pointer !important;
-  border: 1px solid transparent !important;
-  line-height: 1.25 !important;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: var(--style-radius-s) !important;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease !important;
 }
 
-/* Primary Button: Gradient Emerald with Glow */
 .btn--style-primary {
-  background: linear-gradient(135deg, #10b26c 0%, #0e9a5d 100%) !important;
+  background: #10b26c !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 2px 12px rgba(16, 178, 108, 0.4) !important;
+  border-color: #10b26c !important;
+  box-shadow: 0 2px 12px rgba(16, 178, 108, 0.35) !important;
 }
 
 .btn--style-primary:hover:not(.btn--disabled) {
-  background: linear-gradient(135deg, #10b26c 0%, #14c97a 100%) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(16, 178, 108, 0.6) !important;
-  color: #ffffff !important;
+  background: #14c97a !important;
+  border-color: #14c97a !important;
+  box-shadow: 0 4px 18px rgba(16, 178, 108, 0.5) !important;
 }
 
-.btn--style-primary:active:not(.btn--disabled) {
-  transform: translateY(0);
-}
-
-/* Secondary Button: Carbon black surface with Emerald hover */
 .btn--style-secondary {
   background: #141414 !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
 }
 
 .btn--style-secondary:hover:not(.btn--disabled) {
-  background: #222222 !important;
+  background: #1c1c1c !important;
   border-color: #10b26c !important;
   color: #10b26c !important;
-  transform: translateY(-1px);
 }
 
-/* Subtle / Pill Buttons */
 .btn--style-subtle,
 .btn--style-pill {
   background: #171717 !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 .btn--style-subtle:hover:not(.btn--disabled),
 .btn--style-pill:hover:not(.btn--disabled) {
   background: rgba(16, 178, 108, 0.18) !important;
   color: #10b26c !important;
-  border-color: #10b26c !important;
 }
 
 /* ==========================================================================
-   DASHBOARD PAGE (/admin)
+   CARDS (DASHBOARD)
    ========================================================================== */
 
-.dashboard {
-  padding: 32px 36px !important;
-  max-width: 1440px !important;
-  margin: 0 auto;
-  background: #000000 !important;
-}
-
-/* Dashboard Metric & Overview Cards */
-.dashboard .card,
 .card {
   background: #0c0c0c !important;
   border: 1px solid var(--card-border) !important;
   border-radius: var(--style-radius-m) !important;
   box-shadow: var(--card-shadow) !important;
-  padding: 24px 26px !important;
-  position: relative;
-  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dashboard .card:hover,
 .card:hover {
-  box-shadow: var(--card-shadow-hover) !important;
   border-color: #10b26c !important;
-  transform: translateY(-3px);
-}
-
-/* Top emerald glow line on cards */
-.dashboard .card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #10b26c, transparent);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.dashboard .card:hover::before {
-  opacity: 1;
+  box-shadow: var(--card-shadow-hover) !important;
 }
 
 .card__title {
-  font-size: 1.15rem !important;
   font-weight: 700 !important;
   color: #ffffff !important;
-  margin-bottom: 8px !important;
-}
-
-.card__actions {
-  margin-top: 16px;
-  display: flex;
-  gap: 8px;
 }
 
 /* ==========================================================================
-   COLLECTION LIST VIEWS (All Sidebar Collections)
+   LIST VIEWS: SEARCH, TABLE, PAGINATION
    ========================================================================== */
 
-.collection-list {
-  padding: 28px 36px !important;
-  max-width: 1560px !important;
-  margin: 0 auto;
-  background: #000000 !important;
+/* The search icon sits over the start of the box; the text starts after it. */
+.search-bar .search-filter__input,
+.search-filter input.search-filter__input {
+  padding-left: 44px !important;
 }
 
-.collection-list__header {
-  margin-bottom: 24px !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.collection-list__header h1 {
-  font-size: 1.8rem !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.03em !important;
-  color: #ffffff !important;
-}
-
-/* List Search & Filter Controls */
-.list-controls {
-  background: #0c0c0c !important;
-  border: 1px solid var(--card-border) !important;
-  border-radius: var(--style-radius-m) !important;
-  padding: 14px 18px !important;
-  margin-bottom: 20px !important;
-  box-shadow: var(--card-shadow) !important;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.search-filter {
-  flex-grow: 1;
-  position: relative;
-}
-
-.search-filter input,
-.list-controls input[type='text'],
-.block-search__input {
+.search-bar {
   background: #141414 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: var(--style-radius-s) !important;
-  padding: 10px 14px 10px 38px !important;
-  font-size: 0.88rem !important;
-  color: #ffffff !important;
-  width: 100% !important;
+}
+
+.search-bar:focus-within {
+  border-color: #10b26c !important;
+  box-shadow: var(--input-focus-shadow) !important;
+}
+
+.search-bar .search-filter__input,
+.search-bar .search-filter__input:focus {
+  background: transparent !important;
+  border: 0 !important;
   box-shadow: none !important;
 }
 
-.search-filter input:focus,
-.list-controls input[type='text']:focus,
-.block-search__input:focus {
-  border-color: #10b26c !important;
-  box-shadow: var(--input-focus-shadow) !important;
-  outline: none !important;
-}
-
-/* ==========================================================================
-   TABLE DESIGN (.table) — CARBON BLACK + WHITE TEXT + EMERALD HOVERS
-   ========================================================================== */
-
+/* The table wrapper scrolls sideways when the columns need more room than
+   the page has (the sidebar open, many columns), instead of cutting the
+   last headings off. */
 .table {
-  width: 100% !important;
+  overflow-x: auto !important;
   background: #0c0c0c !important;
   border: 1px solid var(--card-border) !important;
   border-radius: var(--style-radius-m) !important;
-  overflow: hidden !important;
-  box-shadow: var(--card-shadow) !important;
+}
+
+.table table {
   border-collapse: separate !important;
   border-spacing: 0 !important;
 }
 
-.table thead {
+.table thead,
+.table th {
   background: #141414 !important;
 }
 
 .table th {
-  padding: 13px 18px !important;
-  font-size: 0.76rem !important;
   font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.07em !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: #ffffff !important;
+  white-space: nowrap;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  text-align: left;
+}
+
+.table td {
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 .table tbody tr {
   background: #0c0c0c;
-  transition: background 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 .table tbody tr:nth-child(even) {
@@ -578,357 +533,192 @@ a.nav__link.active {
   background: rgba(16, 178, 108, 0.08) !important;
 }
 
-/* Highlight Selected Row in Table */
-.table tbody tr:has(input[type="checkbox"]:checked) {
+.table tbody tr:has(input[type='checkbox']:checked) {
   background-color: rgba(16, 178, 108, 0.14) !important;
-  border-left: 3px solid #10b26c !important;
-}
-
-.table td {
-  padding: 15px 18px !important;
-  font-size: 0.88rem !important;
-  color: #ffffff !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  vertical-align: middle;
 }
 
 .table tbody tr:last-child td {
   border-bottom: none !important;
 }
 
-/* ID & Title Cells */
-.cell-id,
-.table td.cell-id {
-  font-family: var(--font-mono) !important;
-  font-size: 0.78rem !important;
+.cell-id {
   color: #a3a3a3 !important;
 }
 
-/* Pagination & Per-page */
-.pagination {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.pagination__button {
-  border-radius: var(--style-radius-s) !important;
-  padding: 6px 14px !important;
-  font-size: 0.84rem !important;
-  background: #141414 !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.pagination__button:hover {
-  background: rgba(16, 178, 108, 0.2) !important;
-  color: #10b26c !important;
-  border-color: #10b26c !important;
-}
-
-/* Empty State */
 .no-results {
   background: #0c0c0c !important;
   border: 1px dashed rgba(16, 178, 108, 0.35) !important;
   border-radius: var(--style-radius-m) !important;
-  padding: 56px 24px !important;
-  text-align: center !important;
   color: #ffffff !important;
-  font-size: 0.95rem;
 }
 
 /* ==========================================================================
-   DOCUMENT EDIT & CREATE VIEWS (.collection-edit, Globals)
+   EDIT VIEWS: TABS, FIELDS, ARRAYS
    ========================================================================== */
 
-.collection-edit {
-  padding: 24px 36px 80px 36px !important;
-  max-width: 1560px !important;
-  margin: 0 auto;
-  background: #000000 !important;
-}
-
-/* Sticky Action Toolbar / Header Controls */
-.doc-controls,
-.sticky-toolbar {
+.doc-controls {
   background: rgba(0, 0, 0, 0.92) !important;
-  backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
-  border-bottom: 1px solid var(--theme-border-color) !important;
-  padding: 12px 28px !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  z-index: 15;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-.doc-header {
-  margin-bottom: 24px !important;
+.doc-controls__divider {
+  background: var(--theme-border-color) !important;
 }
 
-.doc-header__title {
-  font-size: 1.7rem !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.03em !important;
-  color: #ffffff !important;
-}
-
-/* Document Tabs */
-.tabs-field {
-  margin-bottom: 24px;
-}
-
-.tabs-field__tabs {
-  display: flex;
-  gap: 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 8px;
+.doc-tab--active,
+.tabs-field__tab-button--active {
+  color: #10b26c !important;
 }
 
 .tabs-field__tab-button {
-  padding: 8px 16px !important;
-  font-size: 0.86rem !important;
   font-weight: 600 !important;
-  border-radius: var(--style-radius-s) !important;
-  color: #e5e5e5 !important;
-  background: #141414 !important;
 }
 
-.tabs-field__tab-button--active {
-  background: rgba(16, 178, 108, 0.2) !important;
-  color: #10b26c !important;
-  border: 1px solid #10b26c !important;
-}
-
-/* ==========================================================================
-   FORM CONTROLS & FIELD TYPES (.field-type)
-   ========================================================================== */
-
-.field-type {
-  margin-bottom: 22px !important;
-}
-
-label.field-label:not(.unstyled),
-.field-label {
-  font-size: 0.82rem !important;
+.field-label,
+label.field-label:not(.unstyled) {
   font-weight: 600 !important;
   color: #ffffff !important;
-  margin-bottom: 7px !important;
-  letter-spacing: -0.01em;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 label.field-label .required {
   color: #10b26c !important;
-  font-weight: 700;
 }
 
-/* Text Inputs, Textarea, Select: Carbon Black + White Text */
+.field-description {
+  color: #a3a3a3 !important;
+}
+
 input[type='text']:not(.unstyled),
 input[type='email']:not(.unstyled),
 input[type='password']:not(.unstyled),
 input[type='number']:not(.unstyled),
 input[type='date']:not(.unstyled),
 textarea:not(.unstyled),
-select:not(.unstyled),
 .text-input__input {
   background: #0f0f0f !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
   border-radius: var(--style-radius-s) !important;
   color: #ffffff !important;
-  font-family: var(--font-body) !important;
-  font-size: 0.9rem !important;
-  padding: 10px 14px !important;
-  width: 100% !important;
   box-shadow: none !important;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-input:focus:not(.unstyled),
+input:focus:not(.unstyled):not(.search-filter__input),
 textarea:focus:not(.unstyled),
-select:focus:not(.unstyled),
 .text-input__input:focus {
   border-color: #10b26c !important;
   box-shadow: var(--input-focus-shadow) !important;
   outline: none !important;
 }
 
-/* Checkboxes & Radios — Vibrant Emerald */
-.checkbox-input__input,
-.checkbox-input:not(.checkbox-input--read-only):active .checkbox-input__input,
-.checkbox-input:not(.checkbox-input--read-only):focus-within .checkbox-input__input,
-.checkbox-input:not(.checkbox-input--read-only):focus .checkbox-input__input {
-  box-shadow: 0 0 0 2px rgba(16, 178, 108, 0.4) !important;
+[class*='rs__control'] {
+  background: #0f0f0f !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+[class*='rs__menu'] {
+  background: #0c0c0c !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[class*='option--is-selected'],
+[class*='option--is-focused'] {
+  background-color: rgba(16, 178, 108, 0.22) !important;
+  color: #10b26c !important;
 }
 
 .checkbox-input--checked .checkbox-input__input,
-input[type="checkbox"]:checked,
-input[type="radio"]:checked {
+input[type='checkbox']:checked,
+input[type='radio']:checked {
   background-color: #10b26c !important;
   border-color: #10b26c !important;
 }
 
 .checkbox-input--checked .checkbox-input__icon svg {
   stroke: #ffffff !important;
-  fill: #ffffff !important;
 }
 
-/* React Select / Dropdown options */
-.rs__option--is-selected,
-.rs__option--is-focused,
-[class*="option--is-selected"],
-[class*="option--is-focused"] {
-  background-color: rgba(16, 178, 108, 0.22) !important;
-  color: #10b26c !important;
-}
-
-.field-description {
-  font-size: 0.78rem !important;
-  color: #a3a3a3 !important;
-  margin-top: 6px !important;
-  line-height: 1.4;
-}
-
-/* Collapsible Arrays & Blocks */
 .collapsible {
   border: 1px solid var(--card-border) !important;
   border-radius: var(--style-radius-m) !important;
   background: #0c0c0c !important;
-  overflow: hidden;
-  margin-bottom: 14px;
 }
 
 .collapsible__toggle-wrap {
-  background: #171717 !important;
-  padding: 12px 16px !important;
-  border-bottom: 1px solid transparent;
+  background: #141414 !important;
 }
 
 .collapsible__toggle-wrap:hover {
-  background: rgba(16, 178, 108, 0.12) !important;
-  color: #10b26c !important;
-}
-
-.collapsible:not(.collapsible--collapsed) .collapsible__toggle-wrap {
-  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(16, 178, 108, 0.1) !important;
 }
 
 .collapsible__content {
-  padding: 20px !important;
   background: #0c0c0c !important;
 }
 
 /* ==========================================================================
-   MEDIA LIBRARY & UPLOAD UI (/admin/collections/media)
+   MEDIA
    ========================================================================== */
 
-/* Upload Dropzone with Emerald Accent */
 .dropzone {
   border: 2px dashed rgba(16, 178, 108, 0.45) !important;
   border-radius: var(--style-radius-l) !important;
   background: rgba(16, 178, 108, 0.04) !important;
-  padding: 42px 24px !important;
-  text-align: center !important;
-  transition: all 0.2s ease !important;
-  cursor: pointer;
 }
 
 .dropzone:hover,
 .dropzone--drag-over {
   border-color: #10b26c !important;
-  background: rgba(16, 178, 108, 0.12) !important;
-  box-shadow: 0 0 24px rgba(16, 178, 108, 0.3) !important;
+  background: rgba(16, 178, 108, 0.1) !important;
 }
 
-/* Media Thumbnail Cards */
 .thumbnail-card {
   background: #0c0c0c !important;
   border: 1px solid var(--card-border) !important;
   border-radius: var(--style-radius-m) !important;
-  box-shadow: var(--card-shadow) !important;
-  padding: 12px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  overflow: hidden;
 }
 
 .thumbnail-card:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: var(--card-shadow-hover) !important;
   border-color: #10b26c !important;
 }
 
-.thumbnail-card__thumbnail {
-  border-radius: var(--style-radius-s) !important;
-  overflow: hidden;
-  background: #141414;
-}
-
-.thumbnail-card__thumbnail img {
-  border-radius: var(--style-radius-s) !important;
-  transition: transform 0.3s ease;
-}
-
-.thumbnail-card:hover .thumbnail-card__thumbnail img {
-  transform: scale(1.05);
-}
-
-.thumbnail-card__label {
-  padding-top: 10px !important;
-  font-weight: 600 !important;
-  font-size: 0.85rem !important;
-  color: #ffffff !important;
+.collection-music-releases .table td img,
+.collection-upcoming-shows .table td img,
+.collection-gallery .table td img {
+  border-radius: var(--style-radius-s);
+  object-fit: cover;
 }
 
 /* ==========================================================================
-   PILLS, BADGES & STATUS INDICATORS (EMERALD HIGHLIGHTS)
+   PILLS & STATUS
    ========================================================================== */
 
 .pill {
-  border-radius: 9999px !important;
-  font-size: 0.74rem !important;
   font-weight: 600 !important;
-  padding: 3px 10px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  letter-spacing: 0.02em !important;
+}
+
+.pill--style-light,
+.pill--style-white {
+  background: #1c1c1c !important;
+  color: #ffffff !important;
 }
 
 .pill--style-success {
   background: rgba(16, 178, 108, 0.18) !important;
   color: #10b26c !important;
-  border: 1px solid rgba(16, 178, 108, 0.4) !important;
 }
 
 .pill--style-warning {
   background: rgba(245, 158, 11, 0.18) !important;
   color: #fbbf24 !important;
-  border: 1px solid rgba(245, 158, 11, 0.4) !important;
 }
 
 .pill--style-error {
   background: rgba(239, 68, 68, 0.18) !important;
   color: #f87171 !important;
-  border: 1px solid rgba(239, 68, 68, 0.4) !important;
 }
 
-.pill--style-white,
-.pill--style-light {
-  background: #1c1c1c !important;
-  color: #ffffff !important;
-}
-
-/* Status dots */
 .status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
   color: #10b26c !important;
 }
 
@@ -939,14 +729,9 @@ input[type="radio"]:checked {
 .drawer__content,
 .modal {
   background: #0c0c0c !important;
-  border-left: 1px solid var(--theme-border-color) !important;
-  box-shadow: -6px 0 40px rgba(0, 0, 0, 0.9) !important;
 }
 
-.drawer__blur-bg,
-.confirmation-modal:before {
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+.drawer__blur-bg {
   background: rgba(0, 0, 0, 0.85) !important;
 }
 
@@ -954,14 +739,9 @@ input[type="radio"]:checked {
   background: #0c0c0c !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-radius: var(--style-radius-m) !important;
-  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.9) !important;
-  padding: 8px !important;
 }
 
 .popup-button-list__button {
-  border-radius: var(--style-radius-s) !important;
-  font-size: 0.85rem !important;
-  padding: 8px 12px !important;
   color: #ffffff !important;
 }
 
@@ -971,33 +751,21 @@ input[type="radio"]:checked {
 }
 
 /* ==========================================================================
-   SPECIFIC SIDEBAR COLLECTION ACCENTS
+   STRAGGLERS: KEEP EVERYTHING ON THE FOUR-SIZE SCALE
    ========================================================================== */
 
-/* Music Releases Artwork thumbnail sizing in table */
-.collection-music-releases .table td img,
-.collection-upcoming-shows .table td img,
-.collection-gallery .table td img {
-  border-radius: var(--style-radius-s);
-  object-fit: cover;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Section headings Payload sets larger ("No Results.", custom headings). */
+h3,
+.no-results h3 {
+  font-size: var(--admin-text-lg) !important;
 }
 
-/* Testimonials quote emphasis */
-.collection-testimonials blockquote {
-  border-left: 3px solid var(--admin-accent);
-  padding-left: 14px;
-  font-style: italic;
-  color: #ffffff;
+/* Values inside table cells (true/false, dates, counts) read at body size. */
+.table td span:not(.pill):not(.pill__label) {
+  font-size: var(--admin-text) !important;
 }
 
-/* Globals page section headers */
-.global-edit .render-fields > .field-type {
-  background: #0c0c0c;
-  border: 1px solid var(--card-border);
-  border-radius: var(--style-radius-m);
-  padding: 24px 26px;
-  margin-bottom: 24px;
-  box-shadow: var(--card-shadow);
+/* Hover tooltips are secondary text: the small size. */
+.tooltip-content {
+  font-size: var(--admin-text-xs) !important;
 }

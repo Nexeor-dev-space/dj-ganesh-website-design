@@ -149,6 +149,17 @@
     /* `clip` prevents accidental horizontal scroll without breaking sticky. */
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
+    /* One colour scheme, in every mode: "only" forbids a browser's own dark
+       mode from re-tinting the page, so #10b26c stays #10b26c on phones too. */
+    color-scheme: only dark;
+  }
+
+  /* Samsung Internet leaves alone pages that answer the dark-mode query
+     themselves, so the answer is given here: the same colours as always. */
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: only dark;
+    }
   }
 
   body {
@@ -5920,6 +5931,52 @@
   .btn-primary:focus-visible .btn__mark {
     background-color: var(--accent);
     color: #050505;
+  }
+
+  /* Painted rather than only coloured. Samsung Internet's dark mode repaints
+     plain colours — the green darkened, the black labels turned white — and
+     websites can't switch it off. The same colours drawn as gradients, with
+     the labels' ink clipped to the letters, are left as they are, so the
+     buttons look the same in dark mode as in light. Nothing changes on
+     screen anywhere else. */
+  .btn-primary {
+    background-image: linear-gradient(var(--accent), var(--accent));
+  }
+
+  .btn-primary > span:not(.btn__mark) {
+    background-image: linear-gradient(currentColor, currentColor);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* The play disc: one layer for the glyph (clipped to it), one for the
+     disc, so each keeps its own colour. */
+  .btn__mark {
+    --mark-fill: var(--accent);
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(var(--mark-fill), var(--mark-fill));
+    -webkit-background-clip: text, border-box;
+    background-clip: text, border-box;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .btn-secondary:hover .btn__mark,
+  .btn-secondary:focus-visible .btn__mark,
+  .btn-primary .btn__mark {
+    --mark-fill: #050505;
+  }
+
+  .btn-primary:hover .btn__mark,
+  .btn-primary:focus-visible .btn__mark {
+    --mark-fill: var(--accent);
+  }
+
+  .btn__mark:has(> svg),
+  .btn-secondary:hover .btn__mark:has(> svg),
+  .btn-secondary:focus-visible .btn__mark:has(> svg) {
+    --mark-fill: transparent;
   }
 
   /* The ruled link: small tracked caps over a hairline, and on approach the

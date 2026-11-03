@@ -48,7 +48,8 @@ const MusicReleases: CollectionConfig = {
       name: 'releaseDate',
       label: 'Release Date',
       type: 'date',
-      admin: { date: { pickerAppearance: 'dayOnly' } },
+      // Not shown on the website; hidden, stored values kept.
+      admin: { hidden: true, date: { pickerAppearance: 'dayOnly' } },
     },
     { name: 'description', label: 'Description', type: 'textarea' },
     {

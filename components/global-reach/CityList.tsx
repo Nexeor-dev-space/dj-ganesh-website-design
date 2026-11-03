@@ -12,6 +12,7 @@ type CityListProps = {
   pinnedCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
+  hubLabel?: string;
 };
 
 /**
@@ -35,6 +36,7 @@ export function CityList({
   pinnedCity,
   onHover,
   onSelect,
+  hubLabel = "Home",
 }: CityListProps) {
   const findShow = (name: string) => {
     const key = name.trim().toLowerCase();
@@ -78,7 +80,7 @@ export function CityList({
             >
               <span className="city-run__dot" aria-hidden />
               {city.name}
-              {city.hub ? <span className="city-run__hub">Home</span> : null}
+              {city.hub ? <span className="city-run__hub">{hubLabel}</span> : null}
             </button>
           </li>
         );

@@ -33,6 +33,7 @@ export const tourShows: readonly TourShow[] = [
     city: "Mumbai",
     day: "17",
     month: "Jul",
+    year: "2026",
     venue: "Mercii",
     ticketsUrl: "https://instagram.com/djganesh_djg",
   },
@@ -40,6 +41,7 @@ export const tourShows: readonly TourShow[] = [
     city: "London",
     day: "19",
     month: "Jul",
+    year: "2026",
     venue: "SeventySeven",
     ticketsUrl: "https://instagram.com/djganesh_djg",
   },
@@ -47,6 +49,7 @@ export const tourShows: readonly TourShow[] = [
     city: "Goa",
     day: "24",
     month: "Jul",
+    year: "2026",
     venue: "Nines By The Evren · Vagator",
     ticketsUrl: "https://instagram.com/djganesh_djg",
   },
@@ -54,6 +57,7 @@ export const tourShows: readonly TourShow[] = [
     city: "Hyderabad",
     day: "25",
     month: "Jul",
+    year: "2026",
     venue: "Studio XO × StoneWaters",
     ticketsUrl: "https://instagram.com/djganesh_djg",
   },
@@ -68,6 +72,28 @@ export const tourRoute: readonly string[] = tourShows.map((show) => show.city);
 
 /** Where an unannounced city sends the visitor. */
 export const bookingEmail = "info@djganeshbombay.com";
+
+/**
+ * The Shows section's own words. Each can be replaced from the CMS (Home Page
+ * → Shows); these are the built-in defaults.
+ */
+export const showsCopy = {
+  heading: "Shows",
+  hint: "a city for the next show, date and tickets",
+  citiesLabel: "Cities",
+  hubLabel: "Home",
+  upNextLabel: "Up Next",
+  countriesLine: `${countriesToured.value} ${countriesToured.label}`,
+  enquiryLine: "Not on the list? Bring DJ Ganesh to your city",
+  nextShowLabel: "Next show",
+  ticketsLabel: "Get Tickets",
+  openDateLabel: "Open date",
+  noShowText: "No show announced",
+  noShowLede: "Bring DJ Ganesh to your city",
+  enquireLabel: "Enquire to Book",
+};
+
+export type ShowsCopy = typeof showsCopy;
 
 export function findCity(name: string | null): TourCity | null {
   if (!name) return null;

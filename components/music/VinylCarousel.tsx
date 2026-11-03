@@ -60,17 +60,33 @@ const reducedMotion = () =>
  * it sits on the section's one `MusicProvider` element, which is what makes
  * that a guarantee rather than a matter of timing.
  */
+/** The player's button words; each can come from Music Page → Music Player Buttons. */
+export type PlayerLabels = {
+  youtube: string;
+  spotify: string;
+  playlist: string;
+};
+
+const defaultPlayerLabels: PlayerLabels = {
+  youtube: "Watch on YouTube",
+  spotify: "Listen on Spotify",
+  playlist: "Playlist",
+};
+
 export function VinylCarousel({
   style,
   spotifyUrl,
   playlist = false,
+  labels: labelOverrides,
 }: {
   style?: CSSProperties;
+  labels?: Partial<PlayerLabels>;
   /** The artist page; every release links to it. */
   spotifyUrl: string;
   /** Lists every release under the player; a row plays through the rack. */
   playlist?: boolean;
 }) {
+  const labels: PlayerLabels = { ...defaultPlayerLabels, ...labelOverrides };
   const { tracks, currentIndex, isPlaying, toggle } = useMusicPlayer();
   const count = tracks.length;
 
@@ -387,7 +403,7 @@ export function VinylCarousel({
             aria-label={`Watch ${track.title} on YouTube — opens in a new tab`}
             className="btn-tertiary release-card__ytlink"
           >
-            Watch on YouTube
+            {labels.youtube}
             <SocialIcon name="youtube" className="btn__brand" />
           </a>
 
@@ -398,7 +414,7 @@ export function VinylCarousel({
             aria-label="Listen to DJ Ganesh on Spotify — opens in a new tab"
             className="btn-tertiary release-card__ytlink"
           >
-            Listen on Spotify
+            {labels.spotify}
             <SocialIcon name="spotify" className="btn__brand" />
           </a>
         </div>
@@ -406,7 +422,7 @@ export function VinylCarousel({
 
       {playlist ? (
         <div className="playlist">
-          <h3 className="playlist__title">Playlist</h3>
+          <h3 className="playlist__title">{labels.playlist}</h3>
 
           <ol className="playlist__list">
             {tracks.map((item, index) => {

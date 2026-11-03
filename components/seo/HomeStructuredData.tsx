@@ -11,11 +11,19 @@ import { siteConfig, siteUrl, socialLinks } from "@/lib/site";
  * email and the three accounts in the navigation. No street address, phone,
  * hours, prices or ratings are confirmed, so none are given.
  */
-export function HomeStructuredData() {
+export function HomeStructuredData({
+  email = footerContactEmail,
+  profiles,
+}: {
+  /** Contact / Booking Settings → Booking Email. */
+  email?: string;
+  /** Social profile URLs from Site Settings; the built-in three otherwise. */
+  profiles?: readonly string[];
+} = {}) {
   const person = `${siteUrl}/#person`;
   const business = `${siteUrl}/#business`;
   const image = `${siteUrl}${shareImage.url}`;
-  const sameAs = socialLinks.map((link) => link.href);
+  const sameAs = profiles?.length ? [...profiles] : socialLinks.map((link) => link.href);
   const mumbai = {
     "@type": "PostalAddress",
     addressLocality: "Mumbai",
@@ -45,13 +53,13 @@ export function HomeStructuredData() {
         url: siteUrl,
         image,
         logo: `${siteUrl}/images/logo-dj-ganesh.png`,
-        email: footerContactEmail,
+        email,
         address: mumbai,
         founder: { "@id": person },
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "bookings",
-          email: footerContactEmail,
+          email,
           url: `${siteUrl}/contact`,
         },
         sameAs,

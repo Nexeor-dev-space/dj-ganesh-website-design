@@ -33,6 +33,8 @@ export function NonstopSets({
   sets = nonstopSets,
   spotifyUrl = nonstopSpotifyUrl,
   podcastUrl = nonstopPodcastUrl,
+  spotifyLabel = "Listen on Spotify",
+  podcastLabel = "Apple Podcasts archive",
 }: {
   label?: string;
   heading?: readonly string[];
@@ -40,6 +42,8 @@ export function NonstopSets({
   sets?: readonly NonstopSet[];
   spotifyUrl?: string;
   podcastUrl?: string;
+  spotifyLabel?: string;
+  podcastLabel?: string;
 } = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
@@ -122,7 +126,7 @@ export function NonstopSets({
 
         <div className="reveal-scroll nonstop__links" style={delay(520)}>
           <a href={spotifyUrl} target="_blank" rel="noopener noreferrer" className="btn-tertiary">
-            Listen on Spotify
+            {spotifyLabel}
             <SocialIcon name="spotify" className="btn__brand" />
           </a>
 
@@ -131,7 +135,7 @@ export function NonstopSets({
             {...(podcastUrl === "#" ? {} : { target: "_blank", rel: "noopener noreferrer" })}
             className="btn-tertiary"
           >
-            Apple Podcasts archive
+            {podcastLabel}
             <span aria-hidden className="btn__arrow">
               ↗
             </span>

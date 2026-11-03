@@ -308,6 +308,9 @@ export interface PerformanceHistory {
 export interface Gallery {
   id: number;
   title: string;
+  /**
+   * Organises photos here in the admin only; not shown on the website.
+   */
   album: string;
   images?:
     | {
@@ -402,6 +405,9 @@ export interface ExperiencesService {
       }[]
     | null;
   ctaText?: string | null;
+  /**
+   * Where the card button goes. Empty: the booking form.
+   */
   ctaUrl?: string | null;
   order?: number | null;
   publishedStatus?: boolean | null;
@@ -811,7 +817,13 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: number;
+  /**
+   * The big name at the foot of every page.
+   */
   siteName: string;
+  /**
+   * The logo in the header on every page. A wide, transparent PNG works best. Empty: the built-in logo.
+   */
   logo?: (number | null) | Media;
   favicon?: (number | null) | Media;
   seo?: {
@@ -861,6 +873,10 @@ export interface SiteSetting {
  */
 export interface Navigation {
   id: number;
+  /**
+   * The small heading over the moving names in the full-screen menu.
+   */
+  menuMarqueeLabel?: string | null;
   items?:
     | {
         label: string;
@@ -904,6 +920,9 @@ export interface HomePage {
   };
   artistIntro?: {
     introTitle?: string | null;
+    /**
+     * The homepage "My Story" text. First paragraph: the story; second paragraph (after an empty line): the closing line in white. Empty: the built-in text. The heading and photo come from the About page (Story → Heading, Portrait).
+     */
     introBio?: string | null;
     introImage?: (number | null) | Media;
   };
@@ -917,8 +936,43 @@ export interface HomePage {
         }[]
       | null;
   };
+  /**
+   * The globe section. Every text field is optional: empty keeps the built-in words.
+   */
   globalReach?: {
+    /**
+     * The small green line above the heading.
+     */
+    label?: string | null;
     heading?: string | null;
+    /**
+     * Shown after "Hover" on computers and "Tap" on phones.
+     */
+    hint?: string | null;
+    citiesLabel?: string | null;
+    /**
+     * The word next to the home city in the list.
+     */
+    hubLabel?: string | null;
+    countriesLine?: string | null;
+    /**
+     * Opens an email to the Booking Email in Contact / Booking Settings.
+     */
+    enquiryLine?: string | null;
+    /**
+     * The small card that opens when a city is chosen.
+     */
+    showCard?: {
+      /**
+       * The show's year is added automatically.
+       */
+      nextShowLabel?: string | null;
+      ticketsLabel?: string | null;
+      openDateLabel?: string | null;
+      noShowText?: string | null;
+      noShowLede?: string | null;
+      enquireLabel?: string | null;
+    };
     /**
      * Cities shown as pins on the Global Reach globe. Add one row per city.
      */
@@ -1033,7 +1087,9 @@ export interface HomePage {
         }[]
       | null;
     spotifyUrl?: string | null;
+    spotifyLabel?: string | null;
     podcastUrl?: string | null;
+    podcastLabel?: string | null;
   };
   galleryStrip?: {
     label?: string | null;
@@ -1072,10 +1128,12 @@ export interface HomePage {
       | null;
   };
   /**
-   * The homepage booking band (data/booking.ts). The primary CTA remains in Booking CTA above.
+   * The homepage booking band. Empty fields keep the built-in copy.
    */
   bookingSection?: {
     label?: string | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
     heading?:
       | {
           line: string;
@@ -1109,14 +1167,29 @@ export interface HomePage {
         }[]
       | null;
   };
+  /**
+   * The heading and line above the wall of quotes. Empty fields keep the built-in text.
+   */
   testimonialsSection?: {
-    label?: string | null;
+    /**
+     * Usually one line, e.g. "Wall of Love".
+     */
     heading?:
       | {
           line: string;
           id?: string | null;
         }[]
       | null;
+    /**
+     * Up to 6 photos for the moving wall behind the quotes. Empty: the built-in photos.
+     */
+    wallPhotos?:
+      | {
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    label?: string | null;
   };
   /**
    * The offerings themselves are managed in the Experiences / Services collection.
@@ -1130,6 +1203,23 @@ export interface HomePage {
         }[]
       | null;
     ctaHref?: string | null;
+  };
+  /**
+   * How the homepage appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1158,6 +1248,9 @@ export interface ContactBooking {
         id?: string | null;
       }[]
     | null;
+  /**
+   * The green button in the header. Keep it to one short word, or it crowds the header on phones.
+   */
   bookingCtaText?: string | null;
   bookingCtaUrl?: string | null;
   whatsapp?: {
@@ -1182,6 +1275,33 @@ export interface ContactBooking {
     heading?: string | null;
     lede?: string | null;
     submitLabel?: string | null;
+    /**
+     * The choices in the form's "Event type" list, in this order. Empty keeps the built-in list.
+     */
+    eventTypes?:
+      | {
+          type: string;
+          id?: string | null;
+        }[]
+      | null;
+    successTitle?: string | null;
+    successText?: string | null;
+    againLabel?: string | null;
+    /**
+     * Shown if sending fails.
+     */
+    errorText?: string | null;
+  };
+  /**
+   * The block under the form on /contact. The email addresses are the Booking and General Enquiry emails above.
+   */
+  direct?: {
+    heading?: string | null;
+    bookingLabel?: string | null;
+    bookingNote?: string | null;
+    enquiryLabel?: string | null;
+    enquiryNote?: string | null;
+    socialHeading?: string | null;
   };
   bookingInfoBlock?: {
     heading?: string | null;
@@ -1217,6 +1337,23 @@ export interface ContactBooking {
         }[]
       | null;
   };
+  /**
+   * How the Contact page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1230,6 +1367,9 @@ export interface About {
   id: number;
   labels?: {
     intro?: string | null;
+    /**
+     * The big heading at the top of the About page. Two words show on two lines.
+     */
     story?: string | null;
     identity?: string | null;
     experience?: string | null;
@@ -1237,7 +1377,7 @@ export interface About {
   };
   story?: {
     /**
-     * e.g. "Wedding &" / "BollyAfro" / "Pioneer".
+     * The heading of the homepage "My Story" block: three lines, the middle one in green, e.g. "Wedding &" / "BollyAfro" / "Pioneer".
      */
     heading?:
       | {
@@ -1302,6 +1442,23 @@ export interface About {
     label?: string | null;
     href?: string | null;
   };
+  /**
+   * How the About page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1319,6 +1476,26 @@ export interface MusicPage {
     intro?: string | null;
     archive?: string | null;
     continue?: string | null;
+    /**
+     * The heading at the foot of the Music page, e.g. "The rest of the" / "sound is on the channel."
+     */
+    continueHeading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    youtubeButton?: string | null;
+    spotifyButton?: string | null;
+  };
+  /**
+   * Words on the record player, on the homepage and the Music page. Empty keeps the built-in words.
+   */
+  player?: {
+    youtubeLabel?: string | null;
+    spotifyLabel?: string | null;
+    playlistHeading?: string | null;
+    archiveLinkLabel?: string | null;
   };
   homeSection?: {
     sectionLabel?: string | null;
@@ -1328,6 +1505,23 @@ export interface MusicPage {
      * The "Listen on Spotify" link under the home page music player and at the foot of the Music page.
      */
     spotifyUrl?: string | null;
+  };
+  /**
+   * How the Music page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1350,6 +1544,23 @@ export interface PrivacyPolicy {
         id?: string | null;
       }[]
     | null;
+  /**
+   * How the Privacy Policy page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1412,6 +1623,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "navigation_select".
  */
 export interface NavigationSelect<T extends boolean = true> {
+  menuMarqueeLabel?: T;
   items?:
     | T
     | {
@@ -1466,7 +1678,23 @@ export interface HomePageSelect<T extends boolean = true> {
   globalReach?:
     | T
     | {
+        label?: T;
         heading?: T;
+        hint?: T;
+        citiesLabel?: T;
+        hubLabel?: T;
+        countriesLine?: T;
+        enquiryLine?: T;
+        showCard?:
+          | T
+          | {
+              nextShowLabel?: T;
+              ticketsLabel?: T;
+              openDateLabel?: T;
+              noShowText?: T;
+              noShowLede?: T;
+              enquireLabel?: T;
+            };
         locations?:
           | T
           | {
@@ -1568,7 +1796,9 @@ export interface HomePageSelect<T extends boolean = true> {
               id?: T;
             };
         spotifyUrl?: T;
+        spotifyLabel?: T;
         podcastUrl?: T;
+        podcastLabel?: T;
       };
   galleryStrip?:
     | T
@@ -1611,6 +1841,8 @@ export interface HomePageSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
         heading?:
           | T
           | {
@@ -1649,13 +1881,19 @@ export interface HomePageSelect<T extends boolean = true> {
   testimonialsSection?:
     | T
     | {
-        label?: T;
         heading?:
           | T
           | {
               line?: T;
               id?: T;
             };
+        wallPhotos?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+        label?: T;
       };
   experienceSection?:
     | T
@@ -1668,6 +1906,13 @@ export interface HomePageSelect<T extends boolean = true> {
               id?: T;
             };
         ctaHref?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1723,6 +1968,26 @@ export interface ContactBookingSelect<T extends boolean = true> {
         heading?: T;
         lede?: T;
         submitLabel?: T;
+        eventTypes?:
+          | T
+          | {
+              type?: T;
+              id?: T;
+            };
+        successTitle?: T;
+        successText?: T;
+        againLabel?: T;
+        errorText?: T;
+      };
+  direct?:
+    | T
+    | {
+        heading?: T;
+        bookingLabel?: T;
+        bookingNote?: T;
+        enquiryLabel?: T;
+        enquiryNote?: T;
+        socialHeading?: T;
       };
   bookingInfoBlock?:
     | T
@@ -1760,6 +2025,13 @@ export interface ContactBookingSelect<T extends boolean = true> {
               name?: T;
               id?: T;
             };
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1843,6 +2115,13 @@ export interface AboutSelect<T extends boolean = true> {
         label?: T;
         href?: T;
       };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1860,6 +2139,22 @@ export interface MusicPageSelect<T extends boolean = true> {
         intro?: T;
         archive?: T;
         continue?: T;
+        continueHeading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        youtubeButton?: T;
+        spotifyButton?: T;
+      };
+  player?:
+    | T
+    | {
+        youtubeLabel?: T;
+        spotifyLabel?: T;
+        playlistHeading?: T;
+        archiveLinkLabel?: T;
       };
   homeSection?:
     | T
@@ -1868,6 +2163,13 @@ export interface MusicPageSelect<T extends boolean = true> {
         heading?: T;
         allReleasesUrl?: T;
         spotifyUrl?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1887,6 +2189,13 @@ export interface PrivacyPolicySelect<T extends boolean = true> {
         heading?: T;
         body?: T;
         id?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;

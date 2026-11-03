@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { seoGroup } from '../fields/seo.ts'
 
 const HomePage: GlobalConfig = {
   slug: 'home-page',
@@ -16,7 +17,7 @@ const HomePage: GlobalConfig = {
       fields: [
         { name: 'heroHeading', label: 'Heading', type: 'text' },
         { name: 'heroSubheading', label: 'Line Above the Name', type: 'text', admin: { placeholder: 'e.g. Wedding DJ & BollyAfro Pioneer' } },
-        { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media' },
+        { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media', admin: { hidden: true } },
         { name: 'heroCtaText', label: 'CTA Button Text', type: 'text' },
         { name: 'heroCtaUrl', label: 'CTA Button URL', type: 'text' },
         { name: 'heroSecondaryCtaText', label: 'Second Button Text', type: 'text', admin: { placeholder: 'e.g. Listen to Music' } },
@@ -40,17 +41,30 @@ const HomePage: GlobalConfig = {
     {
       type: 'group',
       name: 'artistIntro',
-      label: 'Artist Introduction',
+      label: 'Artist Introduction (My Story)',
       fields: [
-        { name: 'introTitle', label: 'Title', type: 'text' },
-        { name: 'introBio', label: 'Bio / Description', type: 'textarea' },
-        { name: 'introImage', label: 'Artist Image', type: 'upload', relationTo: 'media' },
+        // The heading and photo of this block are edited on the About page
+        // (Story → Heading, Portrait); hidden here so one thing has one field.
+        { name: 'introTitle', label: 'Title', type: 'text', admin: { hidden: true } },
+        {
+          name: 'introBio',
+          label: 'Story Text',
+          type: 'textarea',
+          admin: {
+            description:
+              'The homepage "My Story" text. First paragraph: the story; second paragraph (after an empty line): the closing line in white. Empty: the built-in text. The heading and photo come from the About page (Story → Heading, Portrait).',
+          },
+        },
+        { name: 'introImage', label: 'Artist Image', type: 'upload', relationTo: 'media', admin: { hidden: true } },
       ],
     },
     {
       type: 'group',
       name: 'statistics',
       label: 'Statistics',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         {
           name: 'stats',
@@ -67,9 +81,35 @@ const HomePage: GlobalConfig = {
     {
       type: 'group',
       name: 'globalReach',
-      label: 'Global Reach',
+      label: 'Shows (Global Reach)',
+      admin: { description: 'The globe section. Every text field is optional: empty keeps the built-in words.' },
       fields: [
-        { name: 'heading', label: 'Section Heading', type: 'text' },
+        { name: 'label', label: 'Tour Label', type: 'text', admin: { placeholder: 'e.g. Global World Tour 2026', description: 'The small green line above the heading.' } },
+        { name: 'heading', label: 'Section Heading', type: 'text', admin: { placeholder: 'e.g. Shows' } },
+        {
+          name: 'hint',
+          label: 'Instruction Line',
+          type: 'text',
+          admin: { placeholder: 'e.g. a city for the next show, date and tickets', description: 'Shown after "Hover" on computers and "Tap" on phones.' },
+        },
+        { name: 'citiesLabel', label: 'City List Label', type: 'text', admin: { placeholder: 'e.g. Cities' } },
+        { name: 'hubLabel', label: 'Home City Badge', type: 'text', admin: { placeholder: 'e.g. Home', description: 'The word next to the home city in the list.' } },
+        { name: 'countriesLine', label: 'Countries Line', type: 'text', admin: { placeholder: 'e.g. 50+ Countries Toured' } },
+        { name: 'enquiryLine', label: 'Enquiry Link Text', type: 'text', admin: { placeholder: 'e.g. Not on the list? Bring DJ Ganesh to your city', description: 'Opens an email to the Booking Email in Contact / Booking Settings.' } },
+        {
+          type: 'group',
+          name: 'showCard',
+          label: 'City Pop-up',
+          admin: { description: 'The small card that opens when a city is chosen.' },
+          fields: [
+            { name: 'nextShowLabel', label: 'Label (show announced)', type: 'text', admin: { placeholder: 'e.g. Next show', description: 'The show\'s year is added automatically.' } },
+            { name: 'ticketsLabel', label: 'Tickets Button', type: 'text', admin: { placeholder: 'e.g. Get Tickets' } },
+            { name: 'openDateLabel', label: 'Label (no show yet)', type: 'text', admin: { placeholder: 'e.g. Open date' } },
+            { name: 'noShowText', label: 'No Show Text', type: 'text', admin: { placeholder: 'e.g. No show announced' } },
+            { name: 'noShowLede', label: 'No Show Line', type: 'text', admin: { placeholder: 'e.g. Bring DJ Ganesh to your city' } },
+            { name: 'enquireLabel', label: 'Enquire Button', type: 'text', admin: { placeholder: 'e.g. Enquire to Book' } },
+          ],
+        },
         {
           name: 'locations',
           label: 'Tour Locations',
@@ -92,7 +132,7 @@ const HomePage: GlobalConfig = {
       name: 'featuredShows',
       label: 'Featured Shows',
       fields: [
-        { name: 'heading', label: 'Section Heading', type: 'text' },
+        { name: 'heading', label: '"Up Next" Card Title', type: 'text', admin: { placeholder: 'e.g. Up Next' } },
         {
           name: 'shows',
           label: 'Featured Shows',
@@ -107,7 +147,8 @@ const HomePage: GlobalConfig = {
       name: 'featuredMusic',
       label: 'Featured Music',
       fields: [
-        { name: 'heading', label: 'Section Heading', type: 'text' },
+        // Not shown: the band's heading is edited in Music Page → Home Section.
+        { name: 'heading', label: 'Section Heading', type: 'text', admin: { hidden: true } },
         {
           name: 'tracks',
           label: 'Featured Tracks',
@@ -121,6 +162,9 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'bookingCta',
       label: 'Booking CTA',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'heading', label: 'Heading', type: 'text' },
         { name: 'subheading', label: 'Sub-Heading', type: 'text' },
@@ -132,6 +176,9 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'statementPlate',
       label: 'Statement Plate',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. The Statement' } },
         {
@@ -213,7 +260,9 @@ const HomePage: GlobalConfig = {
           ],
         },
         { name: 'spotifyUrl', label: 'Spotify URL', type: 'text' },
+        { name: 'spotifyLabel', label: 'Spotify Button Text', type: 'text', admin: { placeholder: 'e.g. Listen on Spotify' } },
         { name: 'podcastUrl', label: 'Apple Podcasts URL', type: 'text' },
+        { name: 'podcastLabel', label: 'Podcasts Button Text', type: 'text', admin: { placeholder: 'e.g. Apple Podcasts archive' } },
       ],
     },
     {
@@ -253,6 +302,9 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'follow',
       label: 'Follow Section',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'heading', label: 'Heading', type: 'text', admin: { placeholder: 'e.g. Follow' } },
         {
@@ -273,9 +325,11 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'bookingSection',
       label: 'Booking Section',
-      admin: { description: 'The homepage booking band (data/booking.ts). The primary CTA remains in Booking CTA above.' },
+      admin: { description: 'The homepage booking band. Empty fields keep the built-in copy.' },
       fields: [
         { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Booking' } },
+        { name: 'ctaLabel', label: 'Main Button Text', type: 'text', admin: { placeholder: 'e.g. Book DJ Ganesh' } },
+        { name: 'ctaHref', label: 'Main Button Link', type: 'text', admin: { placeholder: 'e.g. /contact#booking' } },
         {
           name: 'heading',
           label: 'Heading Lines',
@@ -320,15 +374,26 @@ const HomePage: GlobalConfig = {
     {
       type: 'group',
       name: 'testimonialsSection',
-      label: 'Testimonials Section Chrome',
+      label: 'Testimonials Section',
+      admin: { description: 'The heading and line above the wall of quotes. Empty fields keep the built-in text.' },
       fields: [
-        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Testimonials' } },
         {
           name: 'heading',
-          label: 'Heading Lines',
+          label: 'Heading',
           type: 'array',
+          admin: { description: 'Usually one line, e.g. "Wall of Love".' },
           fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
         },
+        {
+          name: 'wallPhotos',
+          label: 'Photo Wall',
+          type: 'array',
+          maxRows: 6,
+          admin: { description: 'Up to 6 photos for the moving wall behind the quotes. Empty: the built-in photos.' },
+          fields: [{ name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', required: true }],
+        },
+        // Stored as `label`; shown on the site as the line under the heading.
+        { name: 'label', label: 'Subtitle', type: 'text', admin: { placeholder: 'e.g. 5000+ events · half a million dancers · one dance floor at a time' } },
       ],
     },
     {
@@ -347,6 +412,7 @@ const HomePage: GlobalConfig = {
         { name: 'ctaHref', label: 'CTA Link', type: 'text' },
       ],
     },
+    seoGroup('the homepage'),
   ],
 }
 

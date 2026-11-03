@@ -4,6 +4,9 @@ const PerformanceHistory: CollectionConfig = {
   slug: 'performance-history',
   labels: { singular: 'Performance', plural: 'Performance History' },
   admin: {
+    // Not shown on the website (the homepage gallery is edited in Home Page →
+    // Gallery Strip); hidden from the menu, saved entries kept.
+    hidden: true,
     group: 'Collections',
     useAsTitle: 'venue',
     defaultColumns: ['venue', 'city', 'country', 'year', 'category', 'order'],

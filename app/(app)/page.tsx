@@ -19,6 +19,8 @@ import { TrustedBy } from "@/components/trusted/TrustedBy";
 import { Navbar } from "@/components/navigation/Navbar";
 import {
   getAbout,
+  getContactBooking,
+  getSiteSettings,
   getHomePage,
   getMusicPage,
   getMusicReleases,
@@ -28,8 +30,9 @@ import {
 import { resolveMedia } from "@/lib/cms/media";
 import { toTestimonial, toTrack } from "@/lib/cms/mappers";
 import { tracks as codeTracks } from "@/data/tracks";
+import { bookingCta as codeBookingCta } from "@/data/booking";
 import { galleryFeature as codeFeature, galleryItems as codeGallery } from "@/data/gallery";
-import { aboutPortrait as codePortrait } from "@/lib/about";
+import { aboutPortrait as codePortrait, aboutStory as codeStory } from "@/lib/about";
 import { tourShows as codeShows } from "@/lib/tour";
 import type { Track } from "@/types/music";
 import type { Stage } from "@/types/stages";
@@ -39,13 +42,18 @@ import type { MusicRelease, UpcomingShow } from "@/payload-types";
 import type { Metadata } from "next";
 import { HomeStructuredData } from "@/components/seo/HomeStructuredData";
 import { siteConfig } from "@/lib/site";
-import { pageMetadata } from "@/lib/seo";
+import { cmsPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
-  title: siteConfig.title,
-  description: siteConfig.description,
-  path: "/",
-});
+/** Page title, description and share image: the CMS "SEO & Link Previews"
+ *  fields first, these built-in values otherwise. */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getHomePage();
+  return cmsPageMetadata(page?.seo, {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    path: "/",
+  });
+}
 
 /* ── Tiny helpers: every one returns `undefined` when the CMS value is empty,
       so the component's own default (the code constant) renders. ─────────── */
@@ -65,6 +73,17 @@ function strands(
       description: row.description?.trim() || undefined,
     }));
   return out.length ? out : undefined;
+}
+
+/**
+ * The homepage My Story text: paragraphs split on an empty line. The first is
+ * the story, the rest the closing line; a lone paragraph keeps the built-in
+ * closing line. Undefined when empty, so the built-in text shows.
+ */
+function storyText(bio: string | null | undefined): string[] | undefined {
+  const parts = (bio ?? "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (!parts.length) return undefined;
+  return [parts[0], parts.slice(1).join(" ") || codeStory[1]];
 }
 
 /** Drops undefined keys so a component's own defaults apply to them. */
@@ -95,20 +114,27 @@ function toTourShow(show: UpcomingShow): TourShow | null {
     city: show.city,
     day: String(d.getUTCDate()),
     month: MONTHS[d.getUTCMonth()],
+    year: String(d.getUTCFullYear()),
     venue: show.venue ?? "",
     ticketsUrl: show.ticketUrl || codeMatch?.ticketsUrl || "#",
   };
 }
 
 export default async function HomePage() {
-  const [home, about, releases, upcoming, testimonialDocs, musicPage] = await Promise.all([
+  const [home, about, releases, upcoming, testimonialDocs, musicPage, contact] = await Promise.all([
     getHomePage(),
     getAbout(),
     getMusicReleases(),
     getUpcomingShows(),
     getTestimonials(),
     getMusicPage(),
+    getContactBooking(),
   ]);
+  // Already loaded by the layout; `cache` makes this a lookup, not a query.
+  const settings = await getSiteSettings();
+  const profiles = (settings?.socialLinks?.length ? settings.socialLinks : contact?.socialLinks ?? [])
+    .map((s) => s.url)
+    .filter((u): u is string => typeof u === "string" && /^https?:\/\//.test(u));
 
   /* Hero ------------------------------------------------------------------ */
   const heroVideo = resolveMedia(home?.hero?.heroVideo, "/videos/dj-ganesh.mp4").url;
@@ -245,6 +271,12 @@ export default async function HomePage() {
       href: str(x.url) ?? "#",
     }));
 
+  /* Testimonials photo wall: uploaded photos, or the built-in set. -------- */
+  const wallPhotos = (home?.testimonialsSection?.wallPhotos ?? [])
+    .map((row) => resolveMedia(row.image))
+    .filter((m): m is typeof m & { url: string } => Boolean(m.url))
+    .map((m) => ({ src: m.url, alt: m.alt ?? "" }));
+
   /* Booking section ------------------------------------------------------- */
   const bs = home?.bookingSection;
   const bookingLinks = (() => {
@@ -262,7 +294,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeStructuredData />
+      <HomeStructuredData email={str(contact?.bookingEmail)} profiles={profiles} />
       <Navbar />
       <main>
         <Hero videoSrc={heroVideo} poster={heroPoster} {...stripUndefined(heroProps)} />
@@ -272,6 +304,7 @@ export default async function HomePage() {
         <AboutSection
           aboutSectionLabel={str(about?.labels?.sectionLabel)}
           aboutHeading={strings(about?.story?.heading, "line", 3)}
+          aboutStory={storyText(home?.artistIntro?.introBio)}
           soundStrands={strands(about?.soundStrands)}
           aboutCta={
             aboutCtaLabel || aboutCtaHref
@@ -286,8 +319,25 @@ export default async function HomePage() {
         />
 
         <GlobalReach
+          tourName={str(home?.globalReach?.label)}
           tourCities={cities.length ? cities : undefined}
           tourShows={shows.length ? shows : undefined}
+          enquiryEmail={str(contact?.bookingEmail)}
+          copy={stripUndefined({
+            heading: str(home?.globalReach?.heading),
+            hint: str(home?.globalReach?.hint),
+            citiesLabel: str(home?.globalReach?.citiesLabel),
+            hubLabel: str(home?.globalReach?.hubLabel),
+            countriesLine: str(home?.globalReach?.countriesLine),
+            enquiryLine: str(home?.globalReach?.enquiryLine),
+            upNextLabel: str(home?.featuredShows?.heading),
+            nextShowLabel: str(home?.globalReach?.showCard?.nextShowLabel),
+            ticketsLabel: str(home?.globalReach?.showCard?.ticketsLabel),
+            openDateLabel: str(home?.globalReach?.showCard?.openDateLabel),
+            noShowText: str(home?.globalReach?.showCard?.noShowText),
+            noShowLede: str(home?.globalReach?.showCard?.noShowLede),
+            enquireLabel: str(home?.globalReach?.showCard?.enquireLabel),
+          })}
         />
         <StagesSection
           stagesSectionLabel={str(home?.stages?.label)}
@@ -302,6 +352,12 @@ export default async function HomePage() {
           musicHeading={str(musicPage?.homeSection?.heading)}
           spotifyUrl={str(musicPage?.homeSection?.spotifyUrl)}
           tracks={tracks}
+          playerLabels={stripUndefined({
+            youtube: str(musicPage?.player?.youtubeLabel),
+            spotify: str(musicPage?.player?.spotifyLabel),
+            playlist: str(musicPage?.player?.playlistHeading),
+          })}
+          archiveLabel={str(musicPage?.player?.archiveLinkLabel)}
         />
 
         {/* Long-form mixes, straight after the singles. */}
@@ -312,6 +368,8 @@ export default async function HomePage() {
           sets={nonstopSets.length ? nonstopSets : undefined}
           spotifyUrl={str(ns?.spotifyUrl)}
           podcastUrl={str(ns?.podcastUrl)}
+          spotifyLabel={str(ns?.spotifyLabel)}
+          podcastLabel={str(ns?.podcastLabel)}
         />
         <TrustedBy
           trustedLabel={str(home?.trustedBy?.label)}
@@ -325,7 +383,12 @@ export default async function HomePage() {
           feature={galleryFeature}
         />
 
-        <TestimonialsSection testimonials={testimonials} />
+        <TestimonialsSection
+          testimonials={testimonials}
+          heading={strings(home?.testimonialsSection?.heading, "line")?.join(" ")}
+          subtitle={str(home?.testimonialsSection?.label)}
+          wallPhotos={wallPhotos}
+        />
 
         {/* The question and the room that answers it, as one closing
             section: the ask on the left, the pass on the right. */}
@@ -335,6 +398,11 @@ export default async function HomePage() {
           bookingLede={str(bs?.lede)}
           bookingScope={strings(bs?.scope, "item")}
           bookingLinks={bookingLinks}
+          bookingCta={
+            str(bs?.ctaLabel) || str(bs?.ctaHref)
+              ? { label: str(bs?.ctaLabel) ?? codeBookingCta.label, href: str(bs?.ctaHref) ?? codeBookingCta.href }
+              : undefined
+          }
         />
       </main>
 

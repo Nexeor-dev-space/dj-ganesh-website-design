@@ -34,8 +34,19 @@ type Status = "idle" | "sending" | "sent" | "failed";
  */
 export function BookingForm({
   submitLabel = enquiryMeta.submitLabel,
+  eventTypes: types = eventTypes,
+  successTitle = "Thank you.",
+  successText = "Your enquiry has been received — we'll get back to you as soon as possible.",
+  againLabel = "Send another enquiry",
+  errorText = "Something went wrong. Please try again, or email us directly using the address below.",
 }: {
   submitLabel?: string;
+  /** The "Event type" choices, in order. */
+  eventTypes?: readonly string[];
+  successTitle?: string;
+  successText?: string;
+  againLabel?: string;
+  errorText?: string;
 } = {}) {
   const [values, setValues] = useState<EnquiryValues>(emptyEnquiry);
   const [errors, setErrors] = useState<EnquiryErrors>({});
@@ -53,7 +64,7 @@ export function BookingForm({
     // never starts complaining about something still being typed.
     setErrors((current) => {
       if (!current[field]) return current;
-      const next = validateEnquiry({ ...values, [field]: value });
+      const next = validateEnquiry({ ...values, [field]: value }, types);
       const merged = { ...current };
       if (next[field]) merged[field] = next[field];
       else delete merged[field];
@@ -64,7 +75,7 @@ export function BookingForm({
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const found = validateEnquiry(values);
+    const found = validateEnquiry(values, types);
     setErrors(found);
 
     const firstInvalid = Object.keys(found)[0];
@@ -95,11 +106,8 @@ export function BookingForm({
         role="status"
         className="enquiry-done reveal-fade"
       >
-        <p className="enquiry-done__title">Thank you.</p>
-        <p className="enquiry-done__lede">
-          Your enquiry has been received — we&apos;ll get back to you as soon
-          as possible.
-        </p>
+        <p className="enquiry-done__title">{successTitle}</p>
+        <p className="enquiry-done__lede">{successText}</p>
 
         <button
           type="button"
@@ -110,7 +118,7 @@ export function BookingForm({
           }}
           className="btn-tertiary enquiry-done__again"
         >
-          Send another enquiry
+          {againLabel}
           <span aria-hidden className="btn__arrow">
             →
           </span>
@@ -189,7 +197,7 @@ export function BookingForm({
               className="enquiry-input"
             >
               <option value="">Select an event type</option>
-              {eventTypes.map((type, index) => (
+              {types.map((type, index) => (
                 <option key={itemKey(type, index)} value={type}>
                   {type}
                 </option>
@@ -277,8 +285,7 @@ export function BookingForm({
 
       {status === "failed" ? (
         <p role="alert" className="enquiry-form__failed">
-          Something went wrong. Please try again, or email us directly using the
-          address below.
+          {errorText}
         </p>
       ) : null}
 

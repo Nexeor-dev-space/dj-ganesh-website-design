@@ -24,12 +24,18 @@ const grouped = new Intl.NumberFormat("en-US");
 type ArtistStoryProps = {
   paragraphs?: readonly string[];
   stats?: readonly CareerStat[];
+  /** The page heading, e.g. "The Story". */
+  heading?: string;
 };
 
 export function ArtistStory({
   paragraphs = aboutParagraphs,
   stats = careerStats,
+  heading = "The Story",
 }: ArtistStoryProps = {}) {
+  // Set on two lines: the first word, then the rest.
+  const [firstWord, ...restWords] = heading.trim().split(/\s+/);
+  const rest = restWords.join(" ");
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -49,9 +55,13 @@ export function ArtistStory({
               className="reveal-scroll section-title"
               style={delay(0)}
             >
-              The
-              <br />
-              Story
+              {firstWord}
+              {rest ? (
+                <>
+                  <br />
+                  {rest}
+                </>
+              ) : null}
             </h1>
           </div>
 

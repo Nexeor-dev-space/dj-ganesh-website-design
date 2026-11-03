@@ -36,8 +36,15 @@ const ROWS = [0, 1, 2];
  */
 export function TestimonialsSection({
   testimonials = defaultTestimonials,
+  heading = "Wall of Love",
+  wallPhotos,
+  subtitle = "5000+ events · half a million dancers · one dance floor at a time",
 }: {
   testimonials?: readonly Testimonial[];
+  heading?: string;
+  subtitle?: string;
+  /** The wall's photos; the built-in set when not given. */
+  wallPhotos?: readonly { src: string; alt: string }[];
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
@@ -85,10 +92,10 @@ export function TestimonialsSection({
     >
       <Container className="relative z-10">
         <h2 id="testimonials-title" className="section-title wall__title reveal-scroll" style={delay(0)}>
-          Wall of Love
+          {heading}
         </h2>
         <p className="wall__sub reveal-scroll" style={delay(80)}>
-          5000+ events · half a million dancers · one dance floor at a time
+          {subtitle}
         </p>
       </Container>
 
@@ -104,7 +111,7 @@ export function TestimonialsSection({
               {/* Twice, so the drift loops without a seam. */}
               {[0, 1].map((copy) => (
                 <div key={copy} className="wall__half">
-                  {wallRow(row).map((tile) => (
+                  {wallRow(row, wallPhotos).map((tile) => (
                     <span key={`${copy}-${tile.key}`} className="wall__tile">
                       <Image
                         src={tile.src}

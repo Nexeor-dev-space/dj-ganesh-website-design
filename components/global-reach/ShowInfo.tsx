@@ -1,4 +1,4 @@
-import { bookingEmail, tourShows as defaultShows } from "@/lib/tour";
+import { bookingEmail as defaultEmail, showsCopy, tourShows as defaultShows, type ShowsCopy } from "@/lib/tour";
 import type { TourShow } from "@/types/tour";
 import type { GlobeAnchor } from "@/components/global-reach/TourGlobe";
 
@@ -11,6 +11,8 @@ type ShowInfoProps = {
   /** Keeps the city hovered while the pointer is on the panel itself. */
   onHover: (city: string | null) => void;
   onClose: () => void;
+  copy?: ShowsCopy;
+  enquiryEmail?: string;
 };
 
 /**
@@ -30,6 +32,8 @@ export function ShowInfo({
   pinned,
   onHover,
   onClose,
+  copy = showsCopy,
+  enquiryEmail = defaultEmail,
 }: ShowInfoProps) {
   const cityKey = city.trim().toLowerCase();
   const show = shows.find((s) => s.city.toLowerCase() === cityKey) ?? null;
@@ -66,13 +70,13 @@ export function ShowInfo({
         </button>
       ) : null}
 
-      <p className="show-info__label">{show ? "Next show · 2026" : "Open date"}</p>
+      <p className="show-info__label">{show ? (show.year ? `${copy.nextShowLabel} · ${show.year}` : copy.nextShowLabel) : copy.openDateLabel}</p>
       <p className="show-info__city">{city}</p>
 
       {show ? (
         <>
           <p className="show-info__date">
-            {show.day} {show.month} 2026
+            {show.day} {show.month}{show.year ? ` ${show.year}` : ""}
           </p>
           <p className="show-info__venue">{show.venue}</p>
           <a
@@ -81,7 +85,7 @@ export function ShowInfo({
             rel="noreferrer noopener"
             className="btn-tertiary show-info__cta"
           >
-            Get Tickets
+            {copy.ticketsLabel}
             <span aria-hidden className="btn__arrow">
               &rarr;
             </span>
@@ -89,15 +93,15 @@ export function ShowInfo({
         </>
       ) : (
         <>
-          <p className="show-info__date">No show announced</p>
-          <p className="show-info__venue">Bring DJ Ganesh to your city</p>
+          <p className="show-info__date">{copy.noShowText}</p>
+          <p className="show-info__venue">{copy.noShowLede}</p>
           <a
-            href={`mailto:${bookingEmail}?subject=${encodeURIComponent(
+            href={`mailto:${enquiryEmail}?subject=${encodeURIComponent(
               `Booking enquiry — ${city}`,
             )}`}
             className="btn-tertiary show-info__cta"
           >
-            Enquire to Book
+            {copy.enquireLabel}
             <span aria-hidden className="btn__arrow">
               &rarr;
             </span>

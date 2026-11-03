@@ -45,7 +45,8 @@ function threeRows(flat: readonly Stage[]): Stage[][] {
 const durations = [38, 46, 42] as const;
 
 export function MenuMarquee() {
-  const { menuNames } = useSiteData();
+  const { menuNames, nav } = useSiteData();
+  const label = nav?.menuMarqueeLabel?.trim() || trustedLabel;
   const cmsStages = menuNames?.stages ?? [];
   const rows = buildRows(
     cmsStages.length ? threeRows(cmsStages) : codeStageRows,
@@ -53,8 +54,8 @@ export function MenuMarquee() {
   );
 
   return (
-    <div className="menu-marquee" aria-label={trustedLabel}>
-      <p className="menu-marquee__label">{trustedLabel}</p>
+    <div className="menu-marquee" aria-label={label}>
+      <p className="menu-marquee__label">{label}</p>
 
       <div className="menu-marquee__rows">
         {rows.map((row, rowIndex) => {
