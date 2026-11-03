@@ -807,3 +807,65 @@ h3,
 .nav a.nav__link.active {
   color: #10b26c !important;
 }
+
+/* ==========================================================================
+   POP-UP MESSAGES ("Updated … successfully", errors, warnings)
+   Payload colours their text from shades the theme turned near-black, so it
+   vanished into the card. A dark card with white text and a coloured edge
+   and icon for the kind of message.
+   ========================================================================== */
+
+.payload-toast-container .payload-toast-item,
+.payload-toast-container .payload-toast-item.toast-success,
+.payload-toast-container .payload-toast-item.toast-error,
+.payload-toast-container .payload-toast-item.toast-warning,
+.payload-toast-container .payload-toast-item.toast-info {
+  --toast-accent: #a3a3a3;
+  background-color: #0f0f0f !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-left: 4px solid var(--toast-accent) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  font-size: var(--admin-text) !important;
+}
+
+.payload-toast-container .payload-toast-item.toast-success {
+  --toast-accent: #10b26c;
+}
+
+.payload-toast-container .payload-toast-item.toast-error {
+  --toast-accent: #f87171;
+}
+
+.payload-toast-container .payload-toast-item.toast-warning {
+  --toast-accent: #fbbf24;
+}
+
+.payload-toast-container .payload-toast-item.toast-info {
+  --toast-accent: #60a5fa;
+}
+
+/* Every line of text in the message: white, at the reading size. */
+.payload-toast-container .payload-toast-item *:not(svg):not(path) {
+  color: #ffffff !important;
+}
+
+/* The icon takes the message's colour. */
+.payload-toast-container .payload-toast-item .toast-icon,
+.payload-toast-container .payload-toast-item .toast-icon * {
+  color: var(--toast-accent) !important;
+}
+
+.payload-toast-container .payload-toast-item .toast-icon svg,
+.payload-toast-container .payload-toast-item .toast-icon path {
+  fill: currentColor;
+}
+
+/* The close button: visible on the dark card. */
+.payload-toast-container .payload-toast-close-button {
+  color: #d4d4d4 !important;
+}
+
+.payload-toast-container .payload-toast-close-button:hover {
+  color: #ffffff !important;
+}
