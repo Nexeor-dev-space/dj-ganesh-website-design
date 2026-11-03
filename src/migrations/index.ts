@@ -40,6 +40,6 @@ export const migrations = [
   {
     up: migration_20261103_050923_cms_content_audit.up,
     down: migration_20261103_050923_cms_content_audit.down,
-    name: '20261103_050923_cms_content_audit'
+    name: '20261103_050923_cms_content_audit',
   },
 ];

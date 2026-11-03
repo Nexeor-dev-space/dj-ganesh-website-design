@@ -84,6 +84,7 @@ const About: GlobalConfig = {
       type: 'group',
       name: 'careerStats',
       label: 'Career Statistics',
+      admin: { description: 'Shown on the homepage (My Story) and the About page. Add, remove or reorder the figures here.' },
       fields: [
         {
           name: 'stats',

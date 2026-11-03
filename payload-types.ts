@@ -914,7 +914,7 @@ export interface HomePage {
      */
     heroVideo?: (number | null) | Media;
     /**
-     * Optional still shown before the video loads.
+     * Shown on phones that don't autoplay video (e.g. iPhone Low Power Mode, data saver), and while the video loads. Use a still frame from the hero video.
      */
     heroVideoPoster?: (number | null) | Media;
   };
@@ -1413,6 +1413,9 @@ export interface About {
     decks?: (number | null) | Media;
   };
   portrait?: (number | null) | Media;
+  /**
+   * Shown on the homepage (My Story) and the About page. Add, remove or reorder the figures here.
+   */
   careerStats?: {
     stats?:
       | {

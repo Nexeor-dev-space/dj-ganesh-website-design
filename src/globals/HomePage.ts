@@ -34,7 +34,7 @@ const HomePage: GlobalConfig = {
           label: 'Video Poster',
           type: 'upload',
           relationTo: 'media',
-          admin: { description: 'Optional still shown before the video loads.' },
+          admin: { description: "Shown on phones that don't autoplay video (e.g. iPhone Low Power Mode, data saver), and while the video loads. Use a still frame from the hero video." },
         },
       ],
     },

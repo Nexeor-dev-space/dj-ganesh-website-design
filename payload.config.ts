@@ -35,6 +35,12 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL,
+      // The database link drops for a moment now and then (ECONNREFUSED). Keep
+      // connections open and alive between requests, so fewer new ones have to
+      // be opened during a drop, and give a slow connect time to finish.
+      idleTimeoutMillis: 5 * 60_000,
+      connectionTimeoutMillis: 15_000,
+      keepAlive: true,
     },
     // Dev auto-syncs the schema (push), but only against a local database.
     // Remote DBs (preview/production) must use the committed migrations in
