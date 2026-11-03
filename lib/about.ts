@@ -51,7 +51,7 @@ export const careerStart = "";
 export const careerStats: readonly CareerStat[] = [
   { value: 5000, suffix: "+", label: "Gigs played" },
   { value: 50, suffix: "+", label: "Countries toured" },
-  { value: 246, suffix: "K", label: "Followers" },
+  { value: 246, suffix: "K+", label: "Followers" },
 ] as const;
 
 /** The stage frame this section closes around. */

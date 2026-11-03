@@ -29,7 +29,9 @@ export function Footer() {
   const [visible, setVisible] = useState(false);
   const { footer, brand } = useSiteData();
   const brandName = hasText(brand?.name) ? brand.name : siteConfig.name;
-  const copyright = hasText(footer?.copyright) ? footer.copyright : footerCopyright;
+  // The Nexeor credit is fixed below; drop it if it is still typed into the CMS line.
+  const copyright = (hasText(footer?.copyright) ? footer.copyright : footerCopyright)
+    .replace(/\s*\|?\s*Powered by Nexeor\s*$/i, "");
 
   useEffect(() => {
     const footer = footerRef.current;
@@ -86,6 +88,17 @@ export function Footer() {
         <div className="reveal-scroll footer-bar" style={delay(380)}>
           <p className="footer-bar__credit">
             {copyright}
+            <span aria-hidden className="footer-bar__sep">
+              |
+            </span>
+            <a
+              href="https://nexeor.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-bar__privacy"
+            >
+              Powered by Nexeor
+            </a>
             <span aria-hidden className="footer-bar__sep">
               ·
             </span>
