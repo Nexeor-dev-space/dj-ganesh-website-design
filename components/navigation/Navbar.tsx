@@ -43,6 +43,12 @@ export function Navbar() {
   const bookHref = hasText(site.contact?.bookingCtaUrl)
     ? site.contact.bookingCtaUrl
     : bookingHref;
+  const bookLabel = hasText(site.contact?.bookingCtaText) ? site.contact.bookingCtaText : "Book";
+  // Site Settings → Header Logo, else the built-in file (same artwork).
+  const cmsLogo = site.brand?.logo;
+  const logo = cmsLogo?.url
+    ? { src: cmsLogo.url, width: cmsLogo.width || 1004, height: cmsLogo.height || 148 }
+    : { src: "/images/logo-dj-ganesh.png", width: 1004, height: 148 };
 
   /**
    * A link to the page already open goes nowhere, so the wordmark or a menu
@@ -100,10 +106,10 @@ export function Navbar() {
             {/* The client's mark: white on transparent, cropped tight, so its
                 height alone sets the size. */}
             <Image
-              src="/images/logo-dj-ganesh.png"
+              src={logo.src}
               alt=""
-              width={1004}
-              height={148}
+              width={logo.width}
+              height={logo.height}
               /* The largest thing on screen as the page opens, so it is
                  fetched first (`preload` replaces Next 16's deprecated
                  `priority`). Served as the original PNG, not re-encoded:
@@ -151,7 +157,7 @@ export function Navbar() {
                 <circle cx="12" cy="8.5" r="3.5" />
                 <path d="M4.8 19.5a7.2 7.2 0 0 1 14.4 0" strokeLinecap="round" />
               </svg>
-              <span>Book</span>
+              <span>{bookLabel}</span>
             </Link>
 
             <button

@@ -22,12 +22,19 @@ type ContinueListeningProps = {
   label?: string;
   url?: string;
   spotifyUrl?: string;
+  /** The heading's lines; the built-in two lines when not given. */
+  heading?: readonly string[];
+  youtubeLabel?: string;
+  spotifyLabel?: string;
 };
 
 export function ContinueListening({
   label = musicPageLabels.continue,
   url = allReleasesUrl,
   spotifyUrl = defaultSpotifyUrl,
+  heading = ["The rest of the", "sound is on the channel."],
+  youtubeLabel = "All releases on YouTube",
+  spotifyLabel = "Listen on Spotify",
 }: ContinueListeningProps = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
@@ -46,9 +53,12 @@ export function ContinueListening({
         </p>
 
         <h2 id="continue-title" className="reveal-scroll music-continue__title" style={delay(80)}>
-          The rest of the
-          <br />
-          sound is on the channel.
+          {heading.map((line, index) => (
+            <span key={index}>
+              {index > 0 ? <br /> : null}
+              {line}
+            </span>
+          ))}
         </h2>
 
         <div className="reveal-scroll music-continue__links" style={delay(160)}>
@@ -59,7 +69,7 @@ export function ContinueListening({
             data-cursor="explore"
             className="btn-tertiary"
           >
-            All releases on YouTube
+            {youtubeLabel}
             <SocialIcon name="youtube" className="btn__brand" />
           </a>
 
@@ -70,7 +80,7 @@ export function ContinueListening({
             data-cursor="explore"
             className="btn-tertiary"
           >
-            Listen on Spotify
+            {spotifyLabel}
             <SocialIcon name="spotify" className="btn__brand" />
           </a>
         </div>

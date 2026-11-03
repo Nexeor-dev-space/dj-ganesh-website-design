@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { seoGroup } from '../fields/seo.ts'
 
 /**
  * The /about page.
@@ -19,11 +20,11 @@ const About: GlobalConfig = {
       name: 'labels',
       label: 'Section Labels',
       fields: [
-        { name: 'intro', label: 'Intro Label', type: 'text' },
-        // No longer shown: the Story section's heading already says it.
-        { name: 'story', label: 'Story Label', type: 'text', admin: { hidden: true } },
+        // Not shown on the website; hidden, stored value kept.
+        { name: 'intro', label: 'Intro Label', type: 'text', admin: { hidden: true } },
+        { name: 'story', label: 'Story Heading', type: 'text', admin: { placeholder: 'e.g. The Story', description: 'The big heading at the top of the About page. Two words show on two lines.' } },
         { name: 'identity', label: 'Identity / Sound Label', type: 'text' },
-        { name: 'experience', label: 'Experience Label', type: 'text' },
+        { name: 'experience', label: 'Experience Label', type: 'text', admin: { hidden: true } },
         { name: 'sectionLabel', label: 'My Story Section Label', type: 'text' },
       ],
     },
@@ -36,7 +37,10 @@ const About: GlobalConfig = {
           name: 'heading',
           label: 'Heading Lines',
           type: 'array',
-          admin: { description: 'e.g. "Wedding &" / "BollyAfro" / "Pioneer".' },
+          admin: {
+            description:
+              'The heading of the homepage "My Story" block: three lines, the middle one in green, e.g. "Wedding &" / "BollyAfro" / "Pioneer".',
+          },
           fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
         },
         // No longer shown anywhere: the bio carries the line instead.
@@ -47,7 +51,7 @@ const About: GlobalConfig = {
           type: 'array',
           fields: [{ name: 'paragraph', label: 'Paragraph', type: 'textarea', required: true }],
         },
-        { name: 'careerStart', label: 'Career Start Year', type: 'text' },
+        { name: 'careerStart', label: 'Career Start Year', type: 'text', admin: { hidden: true } },
       ],
     },
     {
@@ -80,6 +84,7 @@ const About: GlobalConfig = {
       type: 'group',
       name: 'careerStats',
       label: 'Career Statistics',
+      admin: { description: 'Shown on the homepage (My Story) and the About page. Add, remove or reorder the figures here.' },
       fields: [
         {
           name: 'stats',
@@ -105,9 +110,13 @@ const About: GlobalConfig = {
           type: 'relationship',
           relationTo: 'legacy-milestones',
           hasMany: true,
-          admin: { description: 'Choose the 3 milestones to preview (e.g. origin, taj, world-tour).' },
+          // Not shown on the website; hidden, stored values kept.
+          admin: {
+            hidden: true,
+            description: 'Choose the 3 milestones to preview (e.g. origin, taj, world-tour).',
+          },
         },
-        { name: 'experienceHref', label: 'Experience Link', type: 'text' },
+        { name: 'experienceHref', label: 'Experience Link', type: 'text', admin: { hidden: true } },
         { name: 'bookingHref', label: 'Booking Link', type: 'text' },
       ],
     },
@@ -129,6 +138,7 @@ const About: GlobalConfig = {
         { name: 'href', label: 'CTA Link', type: 'text' },
       ],
     },
+    seoGroup('the About page'),
   ],
 }
 

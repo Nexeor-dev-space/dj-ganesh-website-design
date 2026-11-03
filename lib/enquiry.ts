@@ -48,14 +48,18 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Returns a message per field that needs one. Phone, organisation, audience
  * and budget are optional and never produce an error.
  */
-export function validateEnquiry(values: EnquiryValues): EnquiryErrors {
+export function validateEnquiry(
+  values: EnquiryValues,
+  /** The event types the form offers; the built-in list when not given. */
+  types: readonly string[] = eventTypes,
+): EnquiryErrors {
   const errors: EnquiryErrors = {};
 
   if (!values.name.trim()) errors.name = "Please enter your name.";
   if (!EMAIL.test(values.email.trim())) {
     errors.email = "Please enter a valid email address.";
   }
-  if (!eventTypes.includes(values.eventType as (typeof eventTypes)[number])) {
+  if (!types.includes(values.eventType)) {
     errors.eventType = "Please select an event type.";
   }
   if (!values.eventDate) {

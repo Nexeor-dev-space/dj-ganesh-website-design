@@ -21,7 +21,7 @@ import {
 import { resolveMedia } from "@/lib/cms/media";
 import { toMilestone } from "@/lib/cms/mappers";
 import type { CareerStat } from "@/types/about";
-import { pageMetadata } from "@/lib/seo";
+import { cmsPageMetadata } from "@/lib/seo";
 
 const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
 
@@ -52,12 +52,17 @@ function frame(
  * Description is the client's own bio sentence, trimmed to length — no claim
  * here that the page does not already make.
  */
-export const metadata: Metadata = pageMetadata({
-  title: "DJ Ganesh — About",
-  description:
-    "DJ Ganesh built the BollyAfro sound in Mumbai. From private nights for the Ambani family to stages in 50+ countries.",
-  path: "/about",
-});
+/** Page title, description and share image: the CMS "SEO & Link Previews"
+ *  fields first, these built-in values otherwise. */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getAbout();
+  return cmsPageMetadata(page?.seo, {
+    title: "DJ Ganesh — About",
+    description:
+      "DJ Ganesh built the BollyAfro sound in Mumbai. From private nights for the Ambani family to stages in 50+ countries.",
+    path: "/about",
+  });
+}
 
 export default async function AboutPage() {
   const [about, home, milestoneDocs, services] = await Promise.all([
@@ -89,6 +94,7 @@ export default async function AboutPage() {
         summary: s.shortDescription,
         points: (s.features ?? []).map((f) => f.feature),
         cta: s.ctaText ?? "",
+        ctaHref: str(s.ctaUrl),
         // Optional per-card venue photos from the CMS; none show until uploaded.
         venues: (s.venuePhotos ?? [])
           .map((v) => ({ id: v.id, name: v.name, image: resolveMedia(v.image).url }))
@@ -107,6 +113,7 @@ export default async function AboutPage() {
         <ArtistStory
           paragraphs={paragraphs.length ? paragraphs : undefined}
           stats={stats.length ? stats : undefined}
+          heading={str(about?.labels?.story)}
         />
         <ArtistVisual
           label={str(about?.labels?.identity)}

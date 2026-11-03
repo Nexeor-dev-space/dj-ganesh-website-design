@@ -8,13 +8,18 @@ import { Navbar } from "@/components/navigation/Navbar";
 import { privacyPolicy } from "@/data/privacy";
 import { getPrivacyPolicy } from "@/lib/cms/queries";
 import { itemKey } from "@/lib/keys";
-import { pageMetadata } from "@/lib/seo";
+import { cmsPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
-  title: "DJ Ganesh — Privacy Policy",
-  description: "What we collect through the booking form, why, and your rights over it.",
-  path: "/privacy",
-});
+/** Page title, description and share image: the CMS "SEO & Link Previews"
+ *  fields first, these built-in values otherwise. */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPrivacyPolicy();
+  return cmsPageMetadata(page?.seo, {
+    title: "DJ Ganesh — Privacy Policy",
+    description: "What we collect through the booking form, why, and your rights over it.",
+    path: "/privacy",
+  });
+}
 
 const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
 

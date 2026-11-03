@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { seoGroup } from '../fields/seo.ts'
 
 /**
  * The /privacy page. Short sections of plain text; every field falls back to
@@ -22,6 +23,7 @@ const PrivacyPolicy: GlobalConfig = {
         { name: 'body', label: 'Text', type: 'textarea', required: true },
       ],
     },
+    seoGroup('the Privacy Policy page'),
   ],
 }
 

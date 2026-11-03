@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
-import { VinylCarousel } from "@/components/music/VinylCarousel";
+import { VinylCarousel, type PlayerLabels } from "@/components/music/VinylCarousel";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { spotifyUrl as defaultSpotifyUrl } from "@/data/music-page";
 
@@ -17,7 +17,8 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  */
 export function MusicArchive({
   spotifyUrl = defaultSpotifyUrl,
-}: { spotifyUrl?: string } = {}) {
+  playerLabels,
+}: { spotifyUrl?: string; playerLabels?: Partial<PlayerLabels> } = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -29,7 +30,7 @@ export function MusicArchive({
       className="section-block music-archive relative overflow-hidden"
     >
       <Container className="relative z-10">
-        <VinylCarousel style={delay(0)} spotifyUrl={spotifyUrl} playlist />
+        <VinylCarousel style={delay(0)} spotifyUrl={spotifyUrl} playlist labels={playerLabels} />
       </Container>
     </section>
   );

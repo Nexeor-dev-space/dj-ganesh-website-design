@@ -18,6 +18,8 @@ export type TourShow = {
   city: string;
   day: string;
   month: string;
+  /** e.g. "2026"; taken from the show's date. */
+  year?: string;
   venue: string;
   ticketsUrl: string;
 };

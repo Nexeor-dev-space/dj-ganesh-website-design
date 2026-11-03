@@ -19,9 +19,13 @@ type Social = { label: string; href: string };
 export function DirectContact({
   desks = contactDesks,
   socials = connectLinks,
+  heading = "Or get in touch directly",
+  socialHeading = "Stay connected",
 }: {
   desks?: readonly Desk[];
   socials?: readonly Social[];
+  heading?: string;
+  socialHeading?: string;
 } = {}) {
   return (
     <RevealSection
@@ -33,7 +37,7 @@ export function DirectContact({
         <div className="contact-direct__spread">
           <div>
             <h2 id="direct-title" className="reveal-scroll contact-heading" style={delay(0)}>
-              Or get in touch directly
+              {heading}
             </h2>
 
             <dl className="contact-desks">
@@ -57,7 +61,7 @@ export function DirectContact({
 
           <div className="contact-connect">
             <h2 className="reveal-scroll contact-heading" style={delay(180)}>
-              Stay connected
+              {socialHeading}
             </h2>
 
             <ul className="contact-social">

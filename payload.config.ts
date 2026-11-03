@@ -25,6 +25,7 @@ import ContactBooking from './src/globals/ContactBooking.ts'
 import About from './src/globals/About.ts'
 import MusicPage from './src/globals/MusicPage.ts'
 import PrivacyPolicy from './src/globals/PrivacyPolicy.ts'
+import { withGlobalSiteRefresh, withSiteRefresh } from './src/hooks/revalidateSite.ts'
 
 export default buildConfig({
   // Required by Payload to encrypt tokens and sessions.
@@ -34,6 +35,12 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL,
+      // The database link drops for a moment now and then (ECONNREFUSED). Keep
+      // connections open and alive between requests, so fewer new ones have to
+      // be opened during a drop, and give a slow connect time to finish.
+      idleTimeoutMillis: 5 * 60_000,
+      connectionTimeoutMillis: 15_000,
+      keepAlive: true,
     },
     // Dev auto-syncs the schema (push), but only against a local database.
     // Remote DBs (preview/production) must use the committed migrations in
@@ -57,6 +64,8 @@ export default buildConfig({
   },
 
   // Register all content collections.
+  // Every save or delete refreshes the public site, so edits show on the
+  // next page load instead of after the 60-second refresh.
   collections: [
     Users,
     Media,
@@ -68,7 +77,7 @@ export default buildConfig({
     Testimonials,
     ExperiencesServices,
     ContactSubmissions,
-  ],
+  ].map(withSiteRefresh),
 
   // Register all globals.
   globals: [
@@ -79,7 +88,7 @@ export default buildConfig({
     About,
     MusicPage,
     PrivacyPolicy,
-  ],
+  ].map(withGlobalSiteRefresh),
 
   // TypeScript types output file.
   typescript: {

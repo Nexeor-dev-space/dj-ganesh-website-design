@@ -11,21 +11,30 @@ import { MusicProvider } from "@/components/music/MusicProvider";
 import { Navbar } from "@/components/navigation/Navbar";
 import { getMusicPage, getMusicReleases } from "@/lib/cms/queries";
 import { toTrack } from "@/lib/cms/mappers";
-import { pageMetadata } from "@/lib/seo";
+import { cmsPageMetadata } from "@/lib/seo";
 
 const str = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
+
+/** Drops empty values so the component's built-in words apply to them. */
+const defined = <T extends Record<string, unknown>>(o: T) =>
+  Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as Partial<T>;
 
 /**
  * Description is the client's own line about the sound plus what the page
  * actually holds. No genre list, no release claims, nothing the archive itself
  * does not state.
  */
-export const metadata: Metadata = pageMetadata({
-  title: "DJ Ganesh — Music",
-  description:
-    "The full listening archive: mixes and mashups by DJ Ganesh, wedding DJ and BollyAfro pioneer. Play every track in full.",
-  path: "/music",
-});
+/** Page title, description and share image: the CMS "SEO & Link Previews"
+ *  fields first, these built-in values otherwise. */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getMusicPage();
+  return cmsPageMetadata(page?.seo, {
+    title: "DJ Ganesh — Music",
+    description:
+      "The full listening archive: mixes and mashups by DJ Ganesh, wedding DJ and BollyAfro pioneer. Play every track in full.",
+    path: "/music",
+  });
+}
 
 /**
  * `/music` — the complete listening archive.
@@ -51,11 +60,24 @@ export default async function MusicPage() {
             intro={str(page?.labels?.intro)}
             title={str(page?.pageTitle)}
           />
-          <MusicArchive spotifyUrl={str(page?.homeSection?.spotifyUrl)} />
+          <MusicArchive
+            spotifyUrl={str(page?.homeSection?.spotifyUrl)}
+            playerLabels={defined({
+              youtube: str(page?.player?.youtubeLabel),
+              spotify: str(page?.player?.spotifyLabel),
+              playlist: str(page?.player?.playlistHeading),
+            })}
+          />
           <ContinueListening
             label={str(page?.labels?.continue)}
             url={str(page?.homeSection?.allReleasesUrl)}
             spotifyUrl={str(page?.homeSection?.spotifyUrl)}
+            heading={(() => {
+              const lines = (page?.labels?.continueHeading ?? []).map((l) => l.line?.trim()).filter(Boolean) as string[];
+              return lines.length ? lines : undefined;
+            })()}
+            youtubeLabel={str(page?.labels?.youtubeButton)}
+            spotifyLabel={str(page?.labels?.spotifyButton)}
           />
         </main>
       </MusicProvider>

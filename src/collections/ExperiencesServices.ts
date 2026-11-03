@@ -14,7 +14,7 @@ const ExperiencesServices: CollectionConfig = {
   fields: [
     { name: 'title', label: 'Title', type: 'text', required: true },
     { name: 'shortDescription', label: 'Short Description', type: 'text', required: true },
-    { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea' },
+    { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', admin: { hidden: true } },
     { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
     {
       name: 'venuePhotos',
@@ -39,7 +39,7 @@ const ExperiencesServices: CollectionConfig = {
       name: 'ctaUrl',
       label: 'CTA URL',
       type: 'text',
-      admin: { placeholder: 'https://...' },
+      admin: { placeholder: 'e.g. /contact#booking', description: 'Where the card button goes. Empty: the booking form.' },
       validate: (value: string | null | undefined) => {
         if (value && !/^https?:\/\/.+/.test(value)) return 'Must be a valid URL'
         return true

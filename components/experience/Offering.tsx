@@ -91,7 +91,7 @@ export function Offering({
         </div>
 
         <a
-          href={ctaHref}
+          href={offering.ctaHref ?? ctaHref}
           data-cursor="book"
           className="btn-tertiary exp-card__link"
           aria-label={`${offering.cta} — ${offering.title}`}

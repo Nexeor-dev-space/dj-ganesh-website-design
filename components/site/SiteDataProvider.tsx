@@ -10,12 +10,19 @@ import { createContext, useContext, type ReactNode } from "react";
  * keep their own hardcoded constants, so an empty CMS renders today's site.
  */
 export type SiteData = {
+  /** Site Settings → Brand Name and Header Logo. */
+  brand?: {
+    name?: string | null;
+    logo?: { url: string; alt?: string | null; width?: number | null; height?: number | null } | null;
+  } | null;
   /** Names for the menu's scrolling strip, from Home Page → Stages / Trusted By. */
   menuNames?: {
     stages?: { name: string; featured?: boolean }[] | null;
     trusted?: string[] | null;
   } | null;
   nav?: {
+    /** Navigation → Menu Names Label. */
+    menuMarqueeLabel?: string | null;
     items?: {
       label?: string | null;
       url?: string | null;
@@ -35,6 +42,7 @@ export type SiteData = {
     contactEmail?: string | null;
   } | null;
   contact?: {
+    bookingCtaText?: string | null;
     bookingCtaUrl?: string | null;
     whatsappNumber?: string | null;
     whatsappLabel?: string | null;

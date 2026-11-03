@@ -1,4 +1,4 @@
-﻿import type { GlobalConfig } from 'payload'
+import type { GlobalConfig } from 'payload'
 
 const Navigation: GlobalConfig = {
   slug: 'navigation',
@@ -9,6 +9,12 @@ const Navigation: GlobalConfig = {
   },
   access: { read: () => true },
   fields: [
+    {
+      name: 'menuMarqueeLabel',
+      label: 'Menu Names Label',
+      type: 'text',
+      admin: { placeholder: 'e.g. Trusted by, and the rooms he plays', description: 'The small heading over the moving names in the full-screen menu.' },
+    },
     {
       name: 'items',
       label: 'Navigation Items',
