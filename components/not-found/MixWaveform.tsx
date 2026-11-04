@@ -18,7 +18,7 @@ export function MixWaveform() {
     if (!canvas || !ctx) return;
 
     const accent =
-      getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#10b26c";
+      getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#39ff14";
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let width = 0;
     let height = 0;

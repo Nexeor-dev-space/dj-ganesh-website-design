@@ -46,7 +46,7 @@ export function AudioVisualizer({ className, accent = true }: AudioVisualizerPro
     const heights = new Array<number>(BAR_COUNT).fill(IDLE_HEIGHT);
     const accentColor = accent
       ? getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
-        "#10b26c"
+        "#39ff14"
       : "#ffffff";
 
     const paint = () => {

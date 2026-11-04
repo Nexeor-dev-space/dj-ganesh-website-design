@@ -1,11 +1,11 @@
 /* ==========================================================================
-   DJ GANESH CMS — PURE BLACK & EMERALD ADMIN THEME
+   DJ GANESH CMS — PURE BLACK & NEON GREEN ADMIN THEME
    Colour, type and finish only. Payload's own layout (padding, widths,
    grids, positions) is left alone: overriding it is what pushed the search
    icon onto the text, clipped wide tables and misaligned the edit views.
    - Background: Pure Pitch Black & Neutral Carbon (#000000, #0a0a0a, #121212)
    - All Text: Crisp Pure White (#ffffff, #f5f5f5)
-   - Hover & Highlights: Emerald (#10b26c, #14c97a)
+   - Hover & Highlights: Neon green (#39ff14, #49ff27)
    - ZERO Blue / Slate tones anywhere in the UI.
    ========================================================================== */
 
@@ -34,28 +34,28 @@ html[data-theme='light'] {
   --style-radius-m: 10px;
   --style-radius-l: 14px;
 
-  /* Emerald Highlight System */
-  --admin-accent: #10b26c;
-  --admin-accent-bright: #14c97a;
-  --admin-accent-hover: #0e9a5d;
-  --admin-accent-subtle: rgba(16, 178, 108, 0.15);
-  --admin-accent-glow: 0 0 22px rgba(16, 178, 108, 0.4);
-  --admin-accent-border: rgba(16, 178, 108, 0.45);
+  /* Neon Green Highlight System */
+  --admin-accent: #39ff14;
+  --admin-accent-bright: #49ff27;
+  --admin-accent-hover: #25ee00;
+  --admin-accent-subtle: rgba(57, 255, 20, 0.15);
+  --admin-accent-glow: 0 0 22px rgba(57, 255, 20, 0.4);
+  --admin-accent-border: rgba(57, 255, 20, 0.45);
 
-  /* Override ALL Payload internal blue variables to emerald */
-  --color-blue-50: rgba(16, 178, 108, 0.05);
-  --color-blue-100: rgba(16, 178, 108, 0.1);
-  --color-blue-150: rgba(16, 178, 108, 0.18);
-  --color-blue-200: rgba(16, 178, 108, 0.25);
-  --color-blue-250: rgba(16, 178, 108, 0.35);
-  --color-blue-300: #6ee7b7;
-  --color-blue-350: #34d399;
-  --color-blue-400: #14c97a;
-  --color-blue-450: #10b26c;
-  --color-blue-500: #0e9a5d;
-  --color-blue-550: #0b7f4c;
-  --color-blue-600: #08653c;
-  --color-blue-650: #064e2f;
+  /* Override ALL Payload internal blue variables to neon green */
+  --color-blue-50: rgba(57, 255, 20, 0.05);
+  --color-blue-100: rgba(57, 255, 20, 0.1);
+  --color-blue-150: rgba(57, 255, 20, 0.18);
+  --color-blue-200: rgba(57, 255, 20, 0.25);
+  --color-blue-250: rgba(57, 255, 20, 0.35);
+  --color-blue-300: #90ff7c;
+  --color-blue-350: #62ff45;
+  --color-blue-400: #49ff27;
+  --color-blue-450: #39ff14;
+  --color-blue-500: #25ee00;
+  --color-blue-550: #1fc400;
+  --color-blue-600: #189b00;
+  --color-blue-650: #137700;
   --color-blue-700: #431407;
   --color-blue-750: #2c0e04;
   --color-blue-800: #1a0802;
@@ -63,20 +63,20 @@ html[data-theme='light'] {
   --color-blue-900: #0a0301;
   --color-blue-950: #050100;
 
-  /* Override Payload's success tokens to emerald */
-  --color-success-50: rgba(16, 178, 108, 0.06);
-  --color-success-100: rgba(16, 178, 108, 0.12);
-  --color-success-150: rgba(16, 178, 108, 0.2);
-  --color-success-200: rgba(16, 178, 108, 0.28);
-  --color-success-250: rgba(16, 178, 108, 0.38);
-  --color-success-300: #6ee7b7;
-  --color-success-350: #34d399;
-  --color-success-400: #10b26c;
-  --color-success-450: #14c97a;
-  --color-success-500: #0e9a5d;
-  --color-success-550: #0b7f4c;
-  --color-success-600: #08653c;
-  --color-success-650: #064e2f;
+  /* Override Payload's success tokens to neon green */
+  --color-success-50: rgba(57, 255, 20, 0.06);
+  --color-success-100: rgba(57, 255, 20, 0.12);
+  --color-success-150: rgba(57, 255, 20, 0.2);
+  --color-success-200: rgba(57, 255, 20, 0.28);
+  --color-success-250: rgba(57, 255, 20, 0.38);
+  --color-success-300: #90ff7c;
+  --color-success-350: #62ff45;
+  --color-success-400: #39ff14;
+  --color-success-450: #49ff27;
+  --color-success-500: #25ee00;
+  --color-success-550: #1fc400;
+  --color-success-600: #189b00;
+  --color-success-650: #137700;
   --color-success-700: #431407;
   --color-success-750: #2c0e04;
   --color-success-800: #1a0802;
@@ -84,19 +84,19 @@ html[data-theme='light'] {
   --color-success-900: #0a0301;
   --color-success-950: #050100;
 
-  --theme-success-50: rgba(16, 178, 108, 0.08);
-  --theme-success-100: rgba(16, 178, 108, 0.15);
-  --theme-success-150: rgba(16, 178, 108, 0.25);
-  --theme-success-200: rgba(16, 178, 108, 0.35);
-  --theme-success-250: rgba(16, 178, 108, 0.45);
-  --theme-success-300: #6ee7b7;
-  --theme-success-350: #34d399;
-  --theme-success-400: #10b26c;
-  --theme-success-500: #14c97a;
-  --theme-success-550: #0e9a5d;
-  --theme-success-600: #0b7f4c;
-  --theme-success-650: #08653c;
-  --theme-success-700: #064e2f;
+  --theme-success-50: rgba(57, 255, 20, 0.08);
+  --theme-success-100: rgba(57, 255, 20, 0.15);
+  --theme-success-150: rgba(57, 255, 20, 0.25);
+  --theme-success-200: rgba(57, 255, 20, 0.35);
+  --theme-success-250: rgba(57, 255, 20, 0.45);
+  --theme-success-300: #90ff7c;
+  --theme-success-350: #62ff45;
+  --theme-success-400: #39ff14;
+  --theme-success-500: #49ff27;
+  --theme-success-550: #25ee00;
+  --theme-success-600: #1fc400;
+  --theme-success-650: #189b00;
+  --theme-success-700: #137700;
   --theme-success-750: #431407;
   --theme-success-800: #2c0e04;
   --theme-success-850: #1a0802;
@@ -128,15 +128,15 @@ html[data-theme='light'] {
   --card-bg: #0c0c0c;
   --card-border: rgba(255, 255, 255, 0.09);
   --card-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.8);
-  --card-shadow-hover: 0 16px 32px 0 rgba(0, 0, 0, 0.95), 0 0 18px rgba(16, 178, 108, 0.25);
+  --card-shadow-hover: 0 16px 32px 0 rgba(0, 0, 0, 0.95), 0 0 18px rgba(57, 255, 20, 0.25);
   --sidebar-bg: #000000;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --header-bg: rgba(0, 0, 0, 0.9);
   --table-stripe: rgba(255, 255, 255, 0.02);
-  --table-hover: rgba(16, 178, 108, 0.08);
+  --table-hover: rgba(57, 255, 20, 0.08);
   --input-border: rgba(255, 255, 255, 0.15);
-  --input-focus-border: #10b26c;
-  --input-focus-shadow: 0 0 0 3px rgba(16, 178, 108, 0.35);
+  --input-focus-border: #39ff14;
+  --input-focus-shadow: 0 0 0 3px rgba(57, 255, 20, 0.35);
 }
 
 /* ==========================================================================
@@ -249,23 +249,23 @@ th,
 
 a {
   color: #ffffff;
-  text-decoration-color: rgba(16, 178, 108, 0.5);
+  text-decoration-color: rgba(57, 255, 20, 0.5);
   transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
 a:hover,
 a:focus-visible {
-  color: #10b26c;
-  text-decoration-color: #10b26c;
+  color: #39ff14;
+  text-decoration-color: #39ff14;
 }
 
 ::selection {
-  background: rgba(16, 178, 108, 0.45);
+  background: rgba(57, 255, 20, 0.45);
   color: #ffffff;
 }
 
 :focus-visible {
-  outline-color: #10b26c !important;
+  outline-color: #39ff14 !important;
 }
 
 /* Text Payload hides for screen readers must stay hidden: a blanket colour
@@ -331,21 +331,21 @@ a:focus-visible {
 
 /* No sideways nudge on hover: it made the list jitter. */
 .nav__link:hover {
-  background: rgba(16, 178, 108, 0.12) !important;
-  color: #10b26c !important;
+  background: rgba(57, 255, 20, 0.12) !important;
+  color: #39ff14 !important;
 }
 
 div.nav__link,
 .nav__link[aria-current='page'],
 a.nav__link.active {
-  background: rgba(16, 178, 108, 0.16) !important;
-  color: #10b26c !important;
+  background: rgba(57, 255, 20, 0.16) !important;
+  color: #39ff14 !important;
   font-weight: 600;
 }
 
 .nav__link-indicator {
-  background: #10b26c !important;
-  box-shadow: 0 0 12px rgba(16, 178, 108, 0.8);
+  background: #39ff14 !important;
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.8);
 }
 
 .nav__controls {
@@ -372,7 +372,7 @@ a.nav__link.active {
 }
 
 .step-nav__link:hover {
-  color: #10b26c !important;
+  color: #39ff14 !important;
 }
 
 .step-nav__label {
@@ -399,16 +399,16 @@ a.nav__link.active {
 }
 
 .btn--style-primary {
-  background: #10b26c !important;
-  color: #ffffff !important;
-  border-color: #10b26c !important;
-  box-shadow: 0 2px 12px rgba(16, 178, 108, 0.35) !important;
+  background: #39ff14 !important;
+  color: #000000 !important;
+  border-color: #39ff14 !important;
+  box-shadow: 0 2px 12px rgba(57, 255, 20, 0.35) !important;
 }
 
 .btn--style-primary:hover:not(.btn--disabled) {
-  background: #14c97a !important;
-  border-color: #14c97a !important;
-  box-shadow: 0 4px 18px rgba(16, 178, 108, 0.5) !important;
+  background: #49ff27 !important;
+  border-color: #49ff27 !important;
+  box-shadow: 0 4px 18px rgba(57, 255, 20, 0.5) !important;
 }
 
 .btn--style-secondary {
@@ -420,8 +420,8 @@ a.nav__link.active {
 
 .btn--style-secondary:hover:not(.btn--disabled) {
   background: #1c1c1c !important;
-  border-color: #10b26c !important;
-  color: #10b26c !important;
+  border-color: #39ff14 !important;
+  color: #39ff14 !important;
 }
 
 .btn--style-subtle,
@@ -432,8 +432,8 @@ a.nav__link.active {
 
 .btn--style-subtle:hover:not(.btn--disabled),
 .btn--style-pill:hover:not(.btn--disabled) {
-  background: rgba(16, 178, 108, 0.18) !important;
-  color: #10b26c !important;
+  background: rgba(57, 255, 20, 0.18) !important;
+  color: #39ff14 !important;
 }
 
 /* ==========================================================================
@@ -449,7 +449,7 @@ a.nav__link.active {
 }
 
 .card:hover {
-  border-color: #10b26c !important;
+  border-color: #39ff14 !important;
   box-shadow: var(--card-shadow-hover) !important;
 }
 
@@ -475,7 +475,7 @@ a.nav__link.active {
 }
 
 .search-bar:focus-within {
-  border-color: #10b26c !important;
+  border-color: #39ff14 !important;
   box-shadow: var(--input-focus-shadow) !important;
 }
 
@@ -530,11 +530,11 @@ a.nav__link.active {
 }
 
 .table tbody tr:hover {
-  background: rgba(16, 178, 108, 0.08) !important;
+  background: rgba(57, 255, 20, 0.08) !important;
 }
 
 .table tbody tr:has(input[type='checkbox']:checked) {
-  background-color: rgba(16, 178, 108, 0.14) !important;
+  background-color: rgba(57, 255, 20, 0.14) !important;
 }
 
 .table tbody tr:last-child td {
@@ -547,7 +547,7 @@ a.nav__link.active {
 
 .no-results {
   background: #0c0c0c !important;
-  border: 1px dashed rgba(16, 178, 108, 0.35) !important;
+  border: 1px dashed rgba(57, 255, 20, 0.35) !important;
   border-radius: var(--style-radius-m) !important;
   color: #ffffff !important;
 }
@@ -568,7 +568,7 @@ a.nav__link.active {
 
 .doc-tab--active,
 .tabs-field__tab-button--active {
-  color: #10b26c !important;
+  color: #39ff14 !important;
 }
 
 .tabs-field__tab-button {
@@ -582,7 +582,7 @@ label.field-label:not(.unstyled) {
 }
 
 label.field-label .required {
-  color: #10b26c !important;
+  color: #39ff14 !important;
 }
 
 .field-description {
@@ -606,7 +606,7 @@ textarea:not(.unstyled),
 input:focus:not(.unstyled):not(.search-filter__input),
 textarea:focus:not(.unstyled),
 .text-input__input:focus {
-  border-color: #10b26c !important;
+  border-color: #39ff14 !important;
   box-shadow: var(--input-focus-shadow) !important;
   outline: none !important;
 }
@@ -623,19 +623,19 @@ textarea:focus:not(.unstyled),
 
 [class*='option--is-selected'],
 [class*='option--is-focused'] {
-  background-color: rgba(16, 178, 108, 0.22) !important;
-  color: #10b26c !important;
+  background-color: rgba(57, 255, 20, 0.22) !important;
+  color: #39ff14 !important;
 }
 
 .checkbox-input--checked .checkbox-input__input,
 input[type='checkbox']:checked,
 input[type='radio']:checked {
-  background-color: #10b26c !important;
-  border-color: #10b26c !important;
+  background-color: #39ff14 !important;
+  border-color: #39ff14 !important;
 }
 
 .checkbox-input--checked .checkbox-input__icon svg {
-  stroke: #ffffff !important;
+  stroke: #000000 !important;
 }
 
 .collapsible {
@@ -649,7 +649,7 @@ input[type='radio']:checked {
 }
 
 .collapsible__toggle-wrap:hover {
-  background: rgba(16, 178, 108, 0.1) !important;
+  background: rgba(57, 255, 20, 0.1) !important;
 }
 
 .collapsible__content {
@@ -661,15 +661,15 @@ input[type='radio']:checked {
    ========================================================================== */
 
 .dropzone {
-  border: 2px dashed rgba(16, 178, 108, 0.45) !important;
+  border: 2px dashed rgba(57, 255, 20, 0.45) !important;
   border-radius: var(--style-radius-l) !important;
-  background: rgba(16, 178, 108, 0.04) !important;
+  background: rgba(57, 255, 20, 0.04) !important;
 }
 
 .dropzone:hover,
 .dropzone--drag-over {
-  border-color: #10b26c !important;
-  background: rgba(16, 178, 108, 0.1) !important;
+  border-color: #39ff14 !important;
+  background: rgba(57, 255, 20, 0.1) !important;
 }
 
 .thumbnail-card {
@@ -679,7 +679,7 @@ input[type='radio']:checked {
 }
 
 .thumbnail-card:hover {
-  border-color: #10b26c !important;
+  border-color: #39ff14 !important;
 }
 
 .collection-music-releases .table td img,
@@ -704,8 +704,8 @@ input[type='radio']:checked {
 }
 
 .pill--style-success {
-  background: rgba(16, 178, 108, 0.18) !important;
-  color: #10b26c !important;
+  background: rgba(57, 255, 20, 0.18) !important;
+  color: #39ff14 !important;
 }
 
 .pill--style-warning {
@@ -719,7 +719,7 @@ input[type='radio']:checked {
 }
 
 .status {
-  color: #10b26c !important;
+  color: #39ff14 !important;
 }
 
 /* ==========================================================================
@@ -746,8 +746,8 @@ input[type='radio']:checked {
 }
 
 .popup-button-list__button:hover {
-  background: rgba(16, 178, 108, 0.2) !important;
-  color: #10b26c !important;
+  background: rgba(57, 255, 20, 0.2) !important;
+  color: #39ff14 !important;
 }
 
 /* ==========================================================================
@@ -805,7 +805,7 @@ h3,
 .nav div.nav__link,
 .nav .nav__link[aria-current='page'],
 .nav a.nav__link.active {
-  color: #10b26c !important;
+  color: #39ff14 !important;
 }
 
 /* ==========================================================================
@@ -830,7 +830,7 @@ h3,
 }
 
 .payload-toast-container .payload-toast-item.toast-success {
-  --toast-accent: #10b26c;
+  --toast-accent: #39ff14;
 }
 
 .payload-toast-container .payload-toast-item.toast-error {

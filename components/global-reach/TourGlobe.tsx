@@ -23,7 +23,7 @@ type TourGlobeProps = {
   onAnchorChange: (anchor: GlobeAnchor | null) => void;
 };
 
-const ACCENT = "16, 178, 108"; // --accent as an rgb triplet, for alpha compositing
+const ACCENT = "57, 255, 20"; // --accent as an rgb triplet, for alpha compositing
 
 /** Degrees of spin per frame while nothing is focused — one turn takes ~3 min. */
 const IDLE_SPIN = 0.035;

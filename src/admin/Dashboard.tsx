@@ -20,10 +20,10 @@ async function count(slug: string, where = ''): Promise<number | null> {
 }
 
 const card: React.CSSProperties = {
-  border: '1px solid rgba(16,178,108,0.35)',
+  border: '1px solid rgba(57, 255, 20,0.35)',
   borderRadius: 10,
   padding: '14px 16px',
-  background: 'rgba(16,178,108,0.06)',
+  background: 'rgba(57, 255, 20,0.06)',
   textDecoration: 'none',
   color: 'inherit',
   display: 'block',
@@ -31,7 +31,7 @@ const card: React.CSSProperties = {
 const btn: React.CSSProperties = {
   padding: '9px 16px',
   borderRadius: 8,
-  background: '#10b26c',
+  background: '#39ff14',
   color: '#000',
   fontWeight: 700,
   textDecoration: 'none',
@@ -64,7 +64,7 @@ export default function Dashboard() {
 
   const stat = (label: string, key: string, href: string) => (
     <Link href={href} style={card} key={key}>
-      <div style={{ fontSize: 28, fontWeight: 800, color: '#10b26c' }}>{counts[key] ?? '–'}</div>
+      <div style={{ fontSize: 28, fontWeight: 800, color: '#39ff14' }}>{counts[key] ?? '–'}</div>
       <div style={{ fontSize: 14, opacity: 0.85 }}>{label}</div>
     </Link>
   )
