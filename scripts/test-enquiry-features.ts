@@ -277,6 +277,10 @@ describe('Enquiry System & Spam Protection Tests', () => {
       assert.ok(subject.includes('Rohan Mehta'), 'Subject should contain name')
       assert.ok(subject.includes('Corporate Event'), 'Subject should contain eventType')
 
+      // Branding logo
+      assert.ok(html.includes('<img'), 'HTML must include brand logo img tag')
+      assert.ok(html.includes('alt="DJ Ganesh"'), 'HTML must include brand logo alt text')
+
       // HTML safety
       assert.ok(!html.includes('<script>'), 'HTML must escape scripts')
       assert.ok(html.includes('&lt;script&gt;'), 'HTML must have entity escaping')
