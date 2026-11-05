@@ -271,15 +271,19 @@ describe('Enquiry System & Spam Protection Tests', () => {
         message: 'Need sound check by 4pm, performance from 8pm onwards.',
       }
 
-      const { subject, html, text } = formatEnquiryEmail(sample)
+      const { subject, html, text, attachments } = formatEnquiryEmail(sample)
 
       // Subject
       assert.ok(subject.includes('Rohan Mehta'), 'Subject should contain name')
       assert.ok(subject.includes('Corporate Event'), 'Subject should contain eventType')
 
-      // Branding logo
+      // Branding logo & attachments
       assert.ok(html.includes('<img'), 'HTML must include brand logo img tag')
       assert.ok(html.includes('alt="DJ Ganesh"'), 'HTML must include brand logo alt text')
+      assert.ok(Array.isArray(attachments), 'Attachments should be an array')
+      assert.ok(attachments.length > 0, 'Attachments should contain embedded logo')
+      assert.strictEqual(attachments[0].filename, 'logo-dj-ganesh-full-1.png')
+      assert.strictEqual(attachments[0].content_id, 'dj-ganesh-logo')
 
       // HTML safety
       assert.ok(!html.includes('<script>'), 'HTML must escape scripts')
@@ -347,6 +351,8 @@ describe('Enquiry System & Spam Protection Tests', () => {
       )
       assert.ok(sentPayload.subject.includes('Meera Kapoor'))
       assert.ok(sentPayload.html.includes('Udaipur, Rajasthan'))
+      assert.ok(Array.isArray(sentPayload.attachments), 'sentPayload should include attachments array')
+      assert.ok(sentPayload.attachments.length > 0, 'sentPayload should include logo attachment')
     })
 
     it('bookingEmailAdapter logs delivery simulation cleanly when no external provider is set', async () => {

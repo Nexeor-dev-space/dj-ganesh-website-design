@@ -140,6 +140,7 @@ const ContactSubmissions: CollectionConfig = {
             subject: emailContent.subject,
             html: emailContent.html,
             text: emailContent.text,
+            attachments: emailContent.attachments,
           })
 
           req.payload.logger.info(

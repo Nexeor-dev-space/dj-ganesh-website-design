@@ -1,5 +1,14 @@
 import type { EmailAdapter, SendEmailOptions } from 'payload'
 
+interface EmailAttachmentInput {
+  filename?: string
+  content?: string | Buffer
+  path?: string
+  content_id?: string
+  cid?: string
+  contentId?: string
+}
+
 function formatAddress(addr: unknown): string {
   if (typeof addr === 'string') return addr
   if (addr && typeof addr === 'object' && 'address' in addr) {
@@ -64,20 +73,41 @@ export const bookingEmailAdapter: EmailAdapter = ({ payload }) => {
       // 1. Resend API (HTTP-based, zero extra dependencies)
       if (resendApiKey) {
         try {
+          const resendPayload: Record<string, unknown> = {
+            from,
+            to,
+            reply_to: replyTo,
+            subject: message.subject,
+            html: message.html,
+            text: message.text,
+          }
+
+          if (
+            message.attachments &&
+            Array.isArray(message.attachments) &&
+            message.attachments.length > 0
+          ) {
+            resendPayload.attachments = (
+              message.attachments as EmailAttachmentInput[]
+            ).map((att) => ({
+              filename: att.filename,
+              content: att.content
+                ? typeof att.content === 'string'
+                  ? att.content
+                  : Buffer.from(att.content).toString('base64')
+                : undefined,
+              path: att.path,
+              content_id: att.content_id || att.cid || att.contentId,
+            }))
+          }
+
           const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
               Authorization: `Bearer ${resendApiKey}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              from,
-              to,
-              reply_to: replyTo,
-              subject: message.subject,
-              html: message.html,
-              text: message.text,
-            }),
+            body: JSON.stringify(resendPayload),
           })
 
           if (!res.ok) {
@@ -129,6 +159,7 @@ export const bookingEmailAdapter: EmailAdapter = ({ payload }) => {
             subject: message.subject,
             html: message.html,
             text: message.text,
+            attachments: message.attachments,
           })
 
           payload.logger.info(

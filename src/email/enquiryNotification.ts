@@ -1,3 +1,6 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 export interface EnquiryNotificationData {
   id?: string | number
   name: string
@@ -39,9 +42,62 @@ function escapeHtml(text: string | null | undefined): string {
     .replace(/'/g, '&#039;')
 }
 
+export interface EnquiryEmailAttachment {
+  filename: string
+  content?: string
+  content_id?: string
+  cid?: string
+  contentType?: string
+}
+
+let cachedLogo: { base64: string; filename: string } | null | false = null
+
+function getLocalLogo(): { base64: string; filename: string } | null {
+  if (cachedLogo !== null) {
+    return cachedLogo === false ? null : cachedLogo
+  }
+
+  try {
+    const filename = 'logo-dj-ganesh-full-1.png'
+    const filePath = path.resolve(process.cwd(), 'public', 'media', filename)
+    if (fs.existsSync(filePath)) {
+      const buffer = fs.readFileSync(filePath)
+      cachedLogo = {
+        base64: buffer.toString('base64'),
+        filename,
+      }
+      return cachedLogo
+    }
+  } catch {
+    // Graceful fallback if filesystem cannot be read
+  }
+
+  cachedLogo = false
+  return null
+}
+
 export function formatEnquiryEmail(data: EnquiryNotificationData) {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://djganeshbombay.com').replace(/\/$/, '')
-  const logoUrl = (process.env.EMAIL_LOGO_URL || `${siteUrl}/images/logo-dj-ganesh.png`).trim()
+  const customLogoUrl = process.env.EMAIL_LOGO_URL?.trim()
+
+  const localLogo = getLocalLogo()
+  const attachments: EnquiryEmailAttachment[] = []
+
+  let logoUrl: string
+  if (customLogoUrl) {
+    logoUrl = customLogoUrl
+  } else if (localLogo) {
+    logoUrl = 'cid:dj-ganesh-logo'
+    attachments.push({
+      filename: localLogo.filename,
+      content: localLogo.base64,
+      content_id: 'dj-ganesh-logo',
+      cid: 'dj-ganesh-logo',
+      contentType: 'image/png',
+    })
+  } else {
+    logoUrl = `${siteUrl}/media/logo-dj-ganesh-full-1.png`
+  }
 
   const formattedDate = formatDate(data.eventDate)
   const subject = `New Booking Enquiry: ${data.name} — ${data.eventType || 'Event'} (${formattedDate})`
@@ -167,5 +223,5 @@ Reply to: ${data.name} <${data.email}>
 Received via ${siteUrl}/contact
 `.trim()
 
-  return { subject, html, text }
+  return { subject, html, text, attachments }
 }
