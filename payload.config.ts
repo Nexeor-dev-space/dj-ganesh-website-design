@@ -27,7 +27,13 @@ import MusicPage from './src/globals/MusicPage.ts'
 import PrivacyPolicy from './src/globals/PrivacyPolicy.ts'
 import { withGlobalSiteRefresh, withSiteRefresh } from './src/hooks/revalidateSite.ts'
 
+// Email
+import { bookingEmailAdapter } from './src/email/adapter.ts'
+
 export default buildConfig({
+  // Email adapter for transactional notifications (e.g. contact enquiries)
+  email: bookingEmailAdapter,
+
   // Required by Payload to encrypt tokens and sessions.
   secret: process.env.PAYLOAD_SECRET || 'change-me-in-production',
 

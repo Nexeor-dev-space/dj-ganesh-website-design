@@ -427,11 +427,32 @@ export interface ContactSubmission {
   email: string;
   phone?: string | null;
   /**
+   * Venue, company or event host.
+   */
+  organisation?: string | null;
+  /**
    * e.g. Wedding, Festival, Corporate Event.
    */
   eventType?: string | null;
+  /**
+   * Scheduled date of the event.
+   */
+  eventDate?: string | null;
+  /**
+   * City, Country or Venue location.
+   */
+  location?: string | null;
+  /**
+   * Estimated guest count or venue capacity.
+   */
+  audience?: string | null;
+  /**
+   * Budget indication or fee range.
+   */
+  budget?: string | null;
   message: string;
   status?: ('new' | 'read' | 'responded') | null;
+  honeypot?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -763,9 +784,15 @@ export interface ContactSubmissionsSelect<T extends boolean = true> {
   name?: T;
   email?: T;
   phone?: T;
+  organisation?: T;
   eventType?: T;
+  eventDate?: T;
+  location?: T;
+  audience?: T;
+  budget?: T;
   message?: T;
   status?: T;
+  honeypot?: T;
   updatedAt?: T;
   createdAt?: T;
 }
