@@ -42,7 +42,7 @@ export default async function PrivacyPage() {
     <>
       <Navbar />
 
-      <main className="policy">
+      <main id="main-content" tabIndex={-1} className="policy">
         <Container>
           <p className="policy__label">Last updated · {updated}</p>
           <h1 className="section-title policy__title">{title}</h1>

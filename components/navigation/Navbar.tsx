@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -35,6 +35,9 @@ import { itemKey } from "@/lib/keys";
  */
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const site = useSiteData();
   const links: readonly { label: string; href: string }[] =
@@ -66,7 +69,9 @@ export function Navbar() {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   };
 
-  // Freeze the page behind the overlay and let Escape close it.
+  // Freeze the page behind the overlay, keep Tab inside the bar and the
+  // overlay (the page under it is covered), and let Escape close it, handing
+  // focus back to the button that opened it.
   useEffect(() => {
     if (!open) return;
 
@@ -78,7 +83,28 @@ export function Navbar() {
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = [headerRef.current, menuRef.current].flatMap((root) =>
+        root ? Array.from(root.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")) : [],
+      ).filter((el) => el.offsetParent !== null);
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const inside = focusable.includes(document.activeElement as HTMLElement);
+      if (event.shiftKey && (document.activeElement === first || !inside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !inside)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
 
@@ -90,7 +116,12 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50">
+      {/* First stop for keyboard users: past the bar, straight to the page. */}
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
+
+      <header ref={headerRef} className="fixed inset-x-0 top-0 z-50">
         <Container
           as="nav"
           aria-label="Primary"
@@ -161,6 +192,7 @@ export function Navbar() {
             </Link>
 
             <button
+              ref={toggleRef}
               type="button"
               onClick={() => setOpen((value) => !value)}
               aria-label={open ? "Close menu" : "Open menu"}
@@ -186,6 +218,7 @@ export function Navbar() {
       {/* Full-screen menu */}
       <div
         id="primary-menu"
+        ref={menuRef}
         hidden={!open}
         className="fixed inset-0 z-40 bg-background/98 pt-16 backdrop-blur-xl md:pt-20"
       >

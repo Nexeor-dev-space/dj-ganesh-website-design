@@ -106,7 +106,7 @@ export default async function AboutPage() {
     <>
       <Navbar />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <AboutHero
           stage={frame(about?.frames?.stage, aboutFrames.stage)}
         />

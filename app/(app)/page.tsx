@@ -296,7 +296,7 @@ export default async function HomePage() {
     <>
       <HomeStructuredData email={str(contact?.bookingEmail)} profiles={profiles} />
       <Navbar />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Hero videoSrc={heroVideo} poster={heroPoster} {...stripUndefined(heroProps)} />
 
         {/* Who he is, straight after the banner: the story and the career
