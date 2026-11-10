@@ -203,6 +203,33 @@
     outline-offset: 2px;
   }
 
+  /* The skip link's target takes focus only so Tab continues from the page;
+     a ring round the whole page would say nothing. */
+  #main-content:focus {
+    outline: none;
+  }
+
+  /* Off-screen until a keyboard user tabs to it, then over the bar. */
+  .skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 9999px;
+    background: var(--foreground);
+    color: var(--background);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus-visible {
+    transform: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -6447,8 +6474,9 @@
     color: var(--accent);
   }
 
+  /* 0.55 keeps it quieter than the label but at ~6:1 on the form ground (AA). */
   .enquiry-field__optional {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.55);
   }
 
   /* Editorial rather than boxed: a rule under the text, nothing around it. */

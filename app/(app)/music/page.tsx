@@ -55,7 +55,7 @@ export default async function MusicPage() {
       <Navbar />
 
       <MusicProvider tracks={tracks}>
-        <main>
+        <main id="main-content" tabIndex={-1}>
           <MusicHero
             intro={str(page?.labels?.intro)}
             title={str(page?.pageTitle)}

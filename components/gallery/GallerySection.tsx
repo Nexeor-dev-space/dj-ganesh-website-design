@@ -106,6 +106,7 @@ export function GallerySection({
             <video
               ref={videoRef}
               className="gallery__video"
+              aria-label={`${feature.label} — show reel`}
               src={feature.videoSrc}
               poster={feature.poster}
               preload="none"
