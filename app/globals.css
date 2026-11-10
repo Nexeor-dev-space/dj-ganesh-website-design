@@ -15,11 +15,11 @@
   --border: rgba(255, 255, 255, 0.12);
 
   /* The single signature accent — electric, atmospheric, used sparingly. */
-  /* Emerald. Near-black text reads on it at ~7.6:1, so filled buttons keep
-     their dark labels; white would only reach ~2.9:1. */
-  --accent: #10b26c;
+  /* Neon green. Near-black text reads on it at ~15:1, so filled buttons keep
+     their dark labels; white would only reach ~1.4:1. */
+  --accent: #39ff14;
   /* The deeper shade a button sweeps to on hover. */
-  --accent-hover: #0e9a5d;
+  --accent-hover: #25ee00;
 
   /* Layout */
   --container-max-width: 1440px;
@@ -150,7 +150,7 @@
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
     /* One colour scheme, in every mode: "only" forbids a browser's own dark
-       mode from re-tinting the page, so #10b26c stays #10b26c on phones too. */
+       mode from re-tinting the page, so #39ff14 stays #39ff14 on phones too. */
     color-scheme: only dark;
   }
 
@@ -1587,7 +1587,7 @@
   .artwork-glow {
     background: radial-gradient(
       120% 90% at 50% 100%,
-      rgba(16, 178, 108, 0.16) 0%,
+      rgba(57, 255, 20, 0.16) 0%,
       transparent 62%
     );
   }
@@ -1711,12 +1711,12 @@
   .release-card:hover,
   .release-card:focus-within {
     transform: translateY(-6px);
-    border-color: rgba(16, 178, 108, 0.28);
+    border-color: rgba(57, 255, 20, 0.28);
     box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
   .release-card[data-current] {
-    border-color: rgba(16, 178, 108, 0.4);
+    border-color: rgba(57, 255, 20, 0.4);
   }
 
   /* The artwork is the control: one button, the whole frame. */
@@ -1976,7 +1976,7 @@
 
   .vinyl__item[data-active] .vinyl__sleeve:hover,
   .vinyl__item[data-active] .vinyl__sleeve:focus-visible {
-    border-color: rgba(16, 178, 108, 0.4);
+    border-color: rgba(57, 255, 20, 0.4);
   }
 
   .vinyl__item[data-active] .vinyl__sleeve:hover .vinyl__art,
@@ -2061,7 +2061,7 @@
     inset: 33.5%;
     overflow: hidden;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(16, 178, 108, 0.45);
+    box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.45);
   }
 
   .vinyl__label-art {
@@ -2485,7 +2485,7 @@
   }
 
   .playlist__row[data-current] {
-    border-color: rgba(16, 178, 108, 0.4);
+    border-color: rgba(57, 255, 20, 0.4);
   }
 
   .playlist__thumb {
@@ -2973,7 +2973,7 @@
 
   .story-fact__suffix {
     font-size: 0.62em;
-    color: rgba(16, 178, 108, 0.55);
+    color: rgba(57, 255, 20, 0.55);
   }
 
   .story-fact__label {
@@ -3009,7 +3009,7 @@
     pointer-events: none;
     background: radial-gradient(
       46% 46% at 74% 42%,
-      rgba(16, 178, 108, 0.05) 0%,
+      rgba(57, 255, 20, 0.05) 0%,
       transparent 70%
     );
   }
@@ -3171,7 +3171,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 42% at 72% 12%,
-      rgba(16, 178, 108, 0.045) 0%,
+      rgba(57, 255, 20, 0.045) 0%,
       transparent 68%
     );
   }
@@ -3380,7 +3380,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 44% at 50% 38%,
-      rgba(16, 178, 108, 0.045) 0%,
+      rgba(57, 255, 20, 0.045) 0%,
       transparent 72%
     );
   }
@@ -4035,7 +4035,7 @@
     pointer-events: none;
     background: radial-gradient(
       54% 48% at 50% 58%,
-      rgba(16, 178, 108, 0.04) 0%,
+      rgba(57, 255, 20, 0.04) 0%,
       transparent 72%
     );
   }
@@ -4146,8 +4146,8 @@
      travelling sideways, and a card that rises as it passes reads as the run
      jolting rather than as the card answering the pointer. */
   .reaction-card:hover {
-    border-color: rgba(16, 178, 108, 0.4);
-    background-color: rgba(16, 178, 108, 0.03);
+    border-color: rgba(57, 255, 20, 0.4);
+    background-color: rgba(57, 255, 20, 0.03);
   }
 
   .reaction-card__head {
@@ -4178,7 +4178,7 @@
   }
 
   .reaction-card:hover .reaction-card__mark {
-    color: rgba(16, 178, 108, 0.32);
+    color: rgba(57, 255, 20, 0.32);
   }
 
   .reaction-card__quote {
@@ -4278,7 +4278,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 46% at 74% 62%,
-      rgba(16, 178, 108, 0.06) 0%,
+      rgba(57, 255, 20, 0.06) 0%,
       transparent 70%
     );
   }
@@ -5434,7 +5434,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 52% at 22% 34%,
-      rgba(16, 178, 108, 0.06) 0%,
+      rgba(57, 255, 20, 0.06) 0%,
       transparent 70%
     );
   }
@@ -5873,7 +5873,7 @@
   .btn-primary:focus-visible,
   .btn-secondary:hover,
   .btn-secondary:focus-visible {
-    box-shadow: 0 14px 40px rgba(16, 178, 108, 0.22);
+    box-shadow: 0 14px 40px rgba(57, 255, 20, 0.22);
   }
 
   /* A glyph on its own small disc — the play mark, a platform badge. It
@@ -6295,7 +6295,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 48% at 22% 34%,
-      rgba(16, 178, 108, 0.07) 0%,
+      rgba(57, 255, 20, 0.07) 0%,
       transparent 70%
     );
   }
@@ -6375,7 +6375,7 @@
     pointer-events: none;
     background: radial-gradient(
       48% 44% at 78% 18%,
-      rgba(16, 178, 108, 0.05) 0%,
+      rgba(57, 255, 20, 0.05) 0%,
       transparent 70%
     );
   }
@@ -6564,9 +6564,9 @@
   /* ---- Sent -------------------------------------------------------------- */
 
   .enquiry-done {
-    border: 1px solid rgba(16, 178, 108, 0.3);
+    border: 1px solid rgba(57, 255, 20, 0.3);
     padding: clamp(28px, 5vw, 56px);
-    background-color: rgba(16, 178, 108, 0.04);
+    background-color: rgba(57, 255, 20, 0.04);
   }
 
   .enquiry-done:focus-visible {
@@ -6745,7 +6745,7 @@
     pointer-events: none;
     background: radial-gradient(
       50% 46% at 68% 60%,
-      rgba(16, 178, 108, 0.06) 0%,
+      rgba(57, 255, 20, 0.06) 0%,
       transparent 70%
     );
   }
@@ -6813,7 +6813,7 @@
     position: absolute;
     inset: -20%;
     background:
-      radial-gradient(40% 32% at 30% 70%, rgba(16, 178, 108, 0.12), transparent 70%),
+      radial-gradient(40% 32% at 30% 70%, rgba(57, 255, 20, 0.12), transparent 70%),
       radial-gradient(36% 28% at 72% 60%, rgba(255, 255, 255, 0.05), transparent 70%);
     filter: blur(20px);
     animation: ootm-haze 26s var(--ease-in-out) infinite alternate;
@@ -6837,7 +6837,7 @@
       from 168deg at 50% 0%,
       transparent 0deg,
       rgba(255, 255, 255, 0.07) 10deg,
-      rgba(16, 178, 108, 0.09) 12deg,
+      rgba(57, 255, 20, 0.09) 12deg,
       rgba(255, 255, 255, 0.07) 14deg,
       transparent 24deg
     );
@@ -6864,7 +6864,7 @@
     width: min(90vw, 900px);
     aspect-ratio: 2 / 1;
     transform: translate(-50%, -50%);
-    background: radial-gradient(closest-side, rgba(16, 178, 108, 0.22), transparent);
+    background: radial-gradient(closest-side, rgba(57, 255, 20, 0.22), transparent);
     opacity: 0;
     animation: ootm-pulse 6s ease-out infinite;
   }
