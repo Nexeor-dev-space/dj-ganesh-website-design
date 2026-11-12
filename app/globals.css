@@ -2877,8 +2877,14 @@
     letter-spacing: -0.045em;
     text-transform: uppercase;
     /* The face's "&" stands taller than its capitals; room for it to clear
-       the eyebrow above. */
-    padding-top: 0.14em;
+       the eyebrow above (the 0.14em the layout keeps). The title-hover sheen
+       paints the letters with a text-clipped background, which only reaches
+       as far as the box — on a 0.88 line the "&" rises past it and its top
+       was cut off on hover. So the box reaches further up and out (padding)
+       and the layout is pulled back the same amount (negative margin):
+       nothing moves, the sheen covers every glyph. */
+    padding: 0.4em 0.12em 0.12em 0;
+    margin: -0.26em -0.12em -0.12em 0;
   }
 
   /* The strands, as a rule with the three names hung off it. */
