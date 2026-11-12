@@ -7614,6 +7614,59 @@
     }
   }
 
+  .shared-stages__progress {
+    display: none;
+  }
+
+  /* Phones: each group is one side-scrolling row, about one and a half
+     portraits wide so the next one peeks in. The row runs to the screen
+     edges (the gutter moves inside it) and snaps card by card; a thin bar
+     under it fills as the row is swiped. */
+  @media (width < 640px) {
+    .shared-stages__grid {
+      display: flex;
+      gap: var(--space-sm);
+      margin-inline: calc(-1 * var(--container-padding));
+      padding-inline: var(--container-padding);
+      scroll-padding-inline: var(--container-padding);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .shared-stages__grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .shared-stages__grid:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .shared-stages__tile {
+      flex: 0 0 62%;
+      scroll-snap-align: start;
+    }
+
+    .shared-stages__progress {
+      display: block;
+      height: 2px;
+      margin-top: var(--space-md);
+      background-color: var(--border);
+      overflow: hidden;
+    }
+
+    .shared-stages__progress-bar {
+      display: block;
+      height: 100%;
+      background-color: var(--accent);
+      transform: scaleX(var(--p, 0.4));
+      transform-origin: left;
+      transition: transform 150ms linear;
+    }
+  }
+
   @media (width >= 1024px) {
     .shared-stages__grid {
       grid-template-columns: repeat(5, minmax(0, 1fr));

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, type CSSProperties, type UIEvent } from "react";
 import { Container } from "@/components/layout/Container";
 import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import {
@@ -19,6 +19,20 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 
 /** Gap between tiles of the same row as they sweep in, in ms. */
 const ROW_STEP = 90;
+
+/**
+ * Phones: the share of a side-scrolling row that is in view or already
+ * passed, written to the row's progress bar (0–1). The bar starts at the
+ * visible share, so it reads as "this much of the row seen".
+ */
+function setRowProgress(row: HTMLElement) {
+  const bar = row.parentElement?.querySelector<HTMLElement>(".shared-stages__progress-bar");
+  if (!bar) return;
+  const seen = row.scrollWidth > 0 ? (row.scrollLeft + row.clientWidth) / row.scrollWidth : 1;
+  bar.style.setProperty("--p", Math.min(1, seen).toFixed(3));
+}
+
+const onRowScroll = (e: UIEvent<HTMLUListElement>) => setRowProgress(e.currentTarget);
 
 /**
  * Shared Stages — the international and Indian artists he has shared stages
@@ -50,6 +64,18 @@ export function SharedStages({
 } = {}) {
   const [ref, visible] = useSectionVisible<HTMLElement>();
   const reduced = usePrefersReducedMotion();
+
+  // Phones: start each row's progress bar at the share already in view, and
+  // keep it right when the screen is resized or rotated.
+  useEffect(() => {
+    const section = ref.current;
+    if (!section) return;
+    const rows = Array.from(section.querySelectorAll<HTMLElement>(".shared-stages__grid"));
+    const update = () => rows.forEach(setRowProgress);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [ref, groups]);
 
   // Reveal each tile as it enters. The grid is only "armed" (tiles hidden)
   // once this runs, so without JavaScript every photo simply shows.
@@ -116,7 +142,14 @@ export function SharedStages({
             <h3 className="reveal-scroll shared-stages__group" style={delay(200 + gi * 80)}>
               {group.label}
             </h3>
-            <ul className="shared-stages__grid">
+            <ul
+              className="shared-stages__grid"
+              // A side-scrolling row on phones: focusable so it can be
+              // scrolled from the keyboard, named for screen readers.
+              tabIndex={0}
+              aria-label={`${group.label} artists`}
+              onScroll={onRowScroll}
+            >
               {group.artists.map((artist, i) => (
                 <li
                   key={itemKey(artist.name, i)}
@@ -175,6 +208,10 @@ export function SharedStages({
                 </li>
               ))}
             </ul>
+            {/* Phones only: how far along the row the swipe has got. */}
+            <span className="shared-stages__progress" aria-hidden>
+              <span className="shared-stages__progress-bar" />
+            </span>
           </div>
         ))}
 
