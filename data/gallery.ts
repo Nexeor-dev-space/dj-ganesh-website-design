@@ -1,3 +1,5 @@
+import { liveShows, liveShowsHeading, liveShowsLabel } from "@/data/live-shows";
+
 /**
  * Section — Gallery.
  *
@@ -47,15 +49,13 @@ export const galleryItems: readonly { src: string; alt: string; href?: string }[
 ];
 
 /**
- * The reel that opens the gallery, ahead of the covers: footage from his
- * latest headline nights, with those nights listed beside it.
+ * The reel that opens the gallery, with the major live shows set beside it as
+ * a numbered setlist (see data/live-shows.ts).
  */
 export const galleryFeature = {
   videoSrc: "/videos/recent-big-shows.mp4",
   poster: "/images/recent-big-shows-poster.jpg",
-  label: "Recent Big Shows",
-  shows: [
-    "Emraan Hashmi at Quake Hyderabad",
-    "Honey Singh at Surf Club Dubai",
-  ],
-} as const;
+  label: liveShowsHeading,
+  eyebrow: liveShowsLabel,
+  shows: liveShows,
+};

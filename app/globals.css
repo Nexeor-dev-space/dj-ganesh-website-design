@@ -1128,6 +1128,17 @@
     margin-top: var(--rhythm-eyebrow);
   }
 
+  /* The international intro (the site's lede voice), between the heading
+     and the hover hint. */
+  .shows__intro {
+    max-width: 52ch;
+    margin-top: var(--rhythm-heading);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
   .shows__sub {
     margin-top: var(--rhythm-heading);
     font-size: 12px;
@@ -3723,38 +3734,41 @@
     color: var(--foreground);
   }
 
-  /* The reel ahead of the covers, the full width of the grid, with its
-     nights in one line underneath. */
+  /* The reel beside the major live shows as a numbered setlist: stacked on a
+     phone; side by side from 1024px, where the reel is stretched to the
+     list's own height so it starts on the first row's line and ends on the
+     last. Its column is the narrower one, which keeps the frame portrait. */
   .gallery__feature {
     display: grid;
-    gap: var(--space-md);
+    gap: var(--space-lg);
     margin: 0 0 var(--rhythm-block);
   }
 
-  @media (width >= 768px) {
-    .gallery__shows {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--space-md);
-    }
-
-    .gallery__shows-title {
-      margin: 0;
-    }
-
-    .gallery__shows-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-md);
-    }
-  }
-
+  /* Portrait on a phone (the reel is shot on one), capped so it does not fill
+     the whole screen before the list. */
   .gallery__video-frame {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 5;
+    width: min(100%, 520px);
     overflow: hidden;
     background-color: #060606;
+    border: 1px solid var(--border);
+  }
+
+  @media (width >= 1024px) {
+    .gallery__feature {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      gap: clamp(32px, 4vw, 64px);
+      align-items: stretch;
+    }
+
+    /* No aspect ratio of its own here: the video is absolutely placed, so
+       the row's height is the list's, and the frame fills it. */
+    .gallery__video-frame {
+      aspect-ratio: auto;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .gallery__video {
@@ -3765,29 +3779,130 @@
     object-fit: cover;
   }
 
-  .gallery__shows-title {
-    margin: 0 0 0.75rem;
-    font-family: var(--font-consul), var(--font-display);
-    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+  .gallery__shows-eyebrow {
+    margin: 0 0 var(--rhythm-eyebrow);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
     color: var(--accent);
   }
 
-  .gallery__shows-list {
-    display: grid;
-    gap: 0.5rem;
+  /* "Gallery", now a sub-heading between the setlist and the photographs. */
+  .gallery__grid-title {
+    margin: var(--space-xl) 0 var(--space-md);
+    font-family: var(--font-consul), var(--font-display);
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+  }
+
+  .gallery__setlist {
     margin: 0;
     padding: 0;
     list-style: none;
-    color: var(--foreground);
-    font-size: clamp(1.125rem, 1.8vw, 1.5rem);
-    font-weight: 500;
+    border-top: 1px solid var(--border);
   }
 
-  .gallery__shows-list li {
-    padding-left: 1.25rem;
-    border-left: 3px solid var(--accent);
+  .gallery__set {
+    position: relative;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: var(--space-sm);
+    padding-block: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* An accent rule draws along the row's own hairline under the pointer. */
+  .gallery__set::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -1px;
+    height: 1px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .gallery__set:hover::after {
+    transform: scaleX(1);
+  }
+
+  .gallery__set-index {
+    padding-top: 4px;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.35);
+    transition: color 300ms var(--ease-out);
+  }
+
+  .gallery__set:hover .gallery__set-index {
+    color: var(--accent);
+  }
+
+  .gallery__set-body {
+    min-width: 0;
+  }
+
+  .gallery__set-head {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(19px, 1.9vw, 27px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    transition:
+      color 250ms var(--ease-out),
+      transform 450ms var(--ease-out);
+  }
+
+  .gallery__set:hover .gallery__set-head {
+    color: var(--accent);
+    transform: translateX(6px);
+  }
+
+  .gallery__set-detail {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .gallery__set-facts {
+    color: var(--muted-foreground);
+  }
+
+  .gallery__set-kind {
+    align-self: start;
+    padding: 4px 10px;
+    border: 1px solid rgba(57, 255, 20, 0.4);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--accent);
+  }
+
+  /* On a phone the tag would squeeze the name; it moves under the detail. */
+  @media (width < 480px) {
+    .gallery__set {
+      grid-template-columns: 28px minmax(0, 1fr);
+    }
+
+    .gallery__set-kind {
+      grid-column: 2;
+      justify-self: start;
+    }
   }
 
   /* A hairline between tiles rather than a gutter, so the six read as one
@@ -5927,6 +6042,13 @@
     height: 11px;
   }
 
+  .btn__glyph {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
   /* A brand logo is its own mark: no accent disc behind the red badge. */
   .btn__mark:has(> svg),
   .btn-secondary:hover .btn__mark:has(> svg),
@@ -7074,5 +7196,558 @@
   .ootm__code::after {
     -webkit-mask-position: 50% 0;
     mask-position: 50% 0;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Private Clientele — the business families and the celebrity weddings as   */
+/*  a rail of invitation cards, before Testimonials.                          */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .clientele__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* The site's intro voice (as .nonstop__lede): 15px, light, loose. */
+  .clientele__lede {
+    max-width: 42ch;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .clientele__bar {
+    margin-top: var(--rhythm-block);
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .clientele__chips {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--space-xs);
+  }
+
+  .clientele__chip-short {
+    display: none;
+  }
+
+  /* Phones: one-word pills, a touch smaller, so all three sit on one line. */
+  @media (width < 640px) {
+    .clientele__chip-full {
+      display: none;
+    }
+
+    .clientele__chip-short {
+      display: inline;
+    }
+
+    .clientele__chip {
+      min-height: 40px;
+      padding-inline: 14px;
+      letter-spacing: 0.16em;
+    }
+  }
+
+  .clientele__chip {
+    white-space: nowrap;
+    min-height: 44px;
+    padding-inline: var(--space-sm);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .clientele__chip:hover {
+    border-color: var(--foreground);
+    color: var(--foreground);
+  }
+
+  .clientele__chip[aria-pressed="true"] {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--background);
+  }
+
+  .clientele__arrows {
+    display: flex;
+    gap: var(--space-xs);
+  }
+
+  /* Phones swipe the rail; the arrows are for pointers. */
+  @media (width < 768px) {
+    .clientele__arrows {
+      display: none;
+    }
+  }
+
+  .clientele__arrow {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .clientele__arrow:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Bleeds to the viewport edge but snaps cards to the container gutter. */
+  .clientele__rail {
+    position: relative;
+    z-index: 10;
+    margin-top: var(--space-lg);
+    display: flex;
+    gap: 16px;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    padding: 12px var(--edge) 28px;
+    scrollbar-width: none;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .clientele__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .clientele__rail:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: -1px;
+  }
+
+  .clientele__rail[data-dragging="true"] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+
+  .clientele__slot {
+    /* ~62% of a phone's width, so the next card peeks in; 240px on desktop. */
+    flex: 0 0 min(62vw, 240px);
+    scroll-snap-align: start;
+    perspective: 900px;
+    animation: clientele-deal 700ms var(--ease-out) backwards;
+    animation-delay: calc(var(--i) * 50ms);
+  }
+
+  @keyframes clientele-deal {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+    }
+  }
+
+  .clientele__card {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 0%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    min-height: 320px;
+    padding: 22px 18px;
+    text-align: center;
+    border: 1px solid var(--border-strong);
+    outline: 1px solid var(--border);
+    outline-offset: -10px;
+    background: linear-gradient(180deg, #0d0d0d, #070707);
+    overflow: hidden;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition:
+      transform 300ms var(--ease-out),
+      border-color 300ms var(--ease-out);
+  }
+
+  .clientele__card:hover {
+    border-color: rgba(57, 255, 20, 0.55);
+  }
+
+  .clientele__sheen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(420px circle at var(--mx) var(--my), rgba(57, 255, 20, 0.16), transparent 45%);
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+    pointer-events: none;
+  }
+
+  .clientele__card:hover .clientele__sheen {
+    opacity: 1;
+  }
+
+  .clientele__tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .clientele__mono {
+    margin-top: 26px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-consul), var(--font-display);
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .clientele__star {
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .clientele__name {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .clientele__amp {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--muted-foreground);
+  }
+
+  .clientele__rule {
+    margin-block: 16px 12px;
+    width: 32px;
+    height: 1px;
+    background-color: var(--border-strong);
+    transition:
+      width 500ms var(--ease-out),
+      background-color 300ms var(--ease-out);
+  }
+
+  .clientele__card:hover .clientele__rule {
+    width: 72px;
+    background-color: var(--accent);
+  }
+
+  .clientele__secondary {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    line-height: 1.6;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* "And many more…": the intro's voice, not the testimonials' serif. */
+  .clientele__closing {
+    margin-top: var(--space-xs);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  /* The figures use the About band's story-fact type; only the gap above
+     is this section's own. */
+  .clientele__stats {
+    margin-top: var(--space-xl);
+  }
+
+  .clientele__cta {
+    margin-top: var(--rhythm-body);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clientele__slot {
+    animation: none;
+  }
+
+  .clientele__card {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Shared Stages — the artists as two grids of portrait tiles, after Stages. */
+/*  Entry: rise + curtain + typed name. Hover: photo zoom, name lifts with a  */
+/*  green rule, the other tiles dim. Hover is pointer-only; reduced motion    */
+/*  switches everything off.                                                  */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .shared-stages__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .shared-stages__lede {
+    max-width: 42ch;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .shared-stages__block {
+    margin-top: var(--rhythm-block);
+  }
+
+  .shared-stages__block + .shared-stages__block {
+    margin-top: var(--space-xl);
+  }
+
+  .shared-stages__group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-bottom: 14px;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .shared-stages__grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+  }
+
+  @media (width >= 640px) {
+    .shared-stages__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 1024px) {
+    .shared-stages__grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .shared-stages__tile {
+    display: grid;
+    gap: 12px;
+    transition: opacity 350ms var(--ease-out);
+  }
+
+  /* Portrait 4:5; each photo is placed by its own focus point. */
+  .shared-stages__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: #0b0b0b;
+    border: 1px solid var(--border);
+    transition: border-color 300ms var(--ease-out);
+  }
+
+  .shared-stages__zoom {
+    position: absolute;
+    inset: 0;
+    transition: transform 900ms var(--ease-out);
+  }
+
+  .shared-stages__img {
+    object-fit: cover;
+  }
+
+  .shared-stages__empty {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #1a1a1a, #0b0b0b);
+  }
+
+  /* The shutter that lifts off each photo on entry. */
+  .shared-stages__curtain {
+    position: absolute;
+    inset: 0;
+    background-color: var(--background);
+    transform: scaleY(0);
+    transform-origin: top;
+    pointer-events: none;
+  }
+
+  .shared-stages__name {
+    position: relative;
+    justify-self: start;
+    padding-bottom: 6px;
+    font-family: var(--font-display);
+    font-size: clamp(15px, 1.3vw, 18px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    transition:
+      color 250ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+
+  .shared-stages__name::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .shared-stages__char {
+    display: inline-block;
+    white-space: pre;
+  }
+
+  /* ---- Entry: per tile, as it scrolls into view ------------------------
+     The grid is armed by script (data-armed) and each tile gets data-shown
+     plus its row stagger (--d) when it enters, so nothing hides without
+     JavaScript and nothing plays off screen. */
+
+  [data-armed="true"] .shared-stages__tile:not([data-shown]),
+  [data-armed="true"] .shared-stages__tile:not([data-shown]) .shared-stages__char {
+    opacity: 0;
+  }
+
+  [data-armed="true"] .shared-stages__tile:not([data-shown]) .shared-stages__curtain {
+    transform: scaleY(1);
+  }
+
+  .shared-stages__tile[data-shown] {
+    animation: shared-rise 700ms var(--ease-out) backwards;
+    animation-delay: var(--d, 0ms);
+  }
+
+  .shared-stages__tile[data-shown] .shared-stages__curtain {
+    animation: shared-curtain 900ms var(--ease-in-out) backwards;
+    animation-delay: calc(var(--d, 0ms) + 80ms);
+  }
+
+  .shared-stages__tile[data-shown] .shared-stages__char {
+    animation: shared-char 300ms var(--ease-out) backwards;
+    animation-delay: calc(var(--d, 0ms) + 500ms + var(--c) * 28ms);
+  }
+
+  @keyframes shared-rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  @keyframes shared-curtain {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes shared-char {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .shared-stages__closing {
+    margin-top: var(--space-md);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Hover (pointer devices only) ------------------------------------- */
+
+  @media (hover: hover) {
+    .shared-stages__tile:hover .shared-stages__zoom {
+      transform: scale(1.06);
+    }
+
+    .shared-stages__tile:hover .shared-stages__frame {
+      border-color: rgba(57, 255, 20, 0.55);
+    }
+
+    .shared-stages__tile:hover .shared-stages__name {
+      color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .shared-stages__tile:hover .shared-stages__name::after {
+      transform: scaleX(1);
+    }
+
+    .shared-stages__grid:has(.shared-stages__tile:hover) .shared-stages__tile:not(:hover) {
+      opacity: 0.4;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shared-stages__tile,
+  .shared-stages__frame,
+  .shared-stages__zoom,
+  .shared-stages__name,
+  .shared-stages__name::after {
+    transition: none;
+  }
+
+  .shared-stages__tile,
+  .shared-stages__char {
+    opacity: 1;
+    animation: none !important;
+  }
+
+  .shared-stages__curtain {
+    transform: scaleY(0) !important;
+    animation: none !important;
+  }
+
+  .shared-stages__tile:hover .shared-stages__zoom {
+    transform: none;
   }
 }

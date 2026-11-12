@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { CityList } from "@/components/global-reach/CityList";
+import { destinationsClosing as defaultClosing, destinationsLede as defaultIntro } from "@/data/destinations";
 import { Container } from "@/components/layout/Container";
 import { ShowInfo } from "@/components/global-reach/ShowInfo";
 import { TourGlobe, type GlobeAnchor } from "@/components/global-reach/TourGlobe";
@@ -47,6 +48,8 @@ export function GlobalReach({
   tourShows = defaultShows,
   copy: copyOverrides,
   enquiryEmail = defaultEmail,
+  intro = defaultIntro,
+  closing = defaultClosing,
 }: {
   tourName?: string;
   tourCities?: readonly TourCity[];
@@ -54,6 +57,10 @@ export function GlobalReach({
   /** Any of the section's words; the rest keep their defaults. */
   copy?: Partial<ShowsCopy>;
   enquiryEmail?: string;
+  /** The international intro under the heading (CMS: International Intro). */
+  intro?: string;
+  /** Closing line beside the enquiry in the foot. */
+  closing?: string;
 } = {}) {
   const copy: ShowsCopy = { ...showsCopy, ...copyOverrides };
   // Memoised: the globe restarts if its route identity changes.
@@ -173,6 +180,12 @@ export function GlobalReach({
           {copy.heading}
         </h2>
 
+        {intro ? (
+          <p className="reveal-scroll shows__intro" style={delay(130)}>
+            {intro}
+          </p>
+        ) : null}
+
         {/* The instruction has to be true on the device reading it: a phone
             has no hover, and telling it to hover is an instruction it cannot
             follow. Both words are in the markup and CSS shows the one that
@@ -255,6 +268,14 @@ export function GlobalReach({
           <span aria-hidden className="shows__foot-sep">
             ·
           </span>
+          {closing ? (
+            <>
+              <span>{closing}</span>
+              <span aria-hidden className="shows__foot-sep">
+                ·
+              </span>
+            </>
+          ) : null}
           <a
             href={`mailto:${enquiryEmail}?subject=${encodeURIComponent(
               `Booking enquiry — ${tourName}`,

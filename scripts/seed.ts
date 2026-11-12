@@ -21,6 +21,9 @@ const { siteConfig, navLinks, socialLinks } = await ld('../lib/site.ts')
 const { statement, statementLabel } = await ld('../data/statement.ts')
 const { stageRows, stagesSectionLabel, stagesHeading, stagesLede, stagesCtaHref, stagesCtaLabel } = await ld('../lib/stages.ts')
 const { trustedNames, trustedLabel } = await ld('../data/trusted.ts')
+const clientele = await ld('../data/guest-list.ts')
+const intlShows = await ld('../data/destinations.ts')
+const shared = await ld('../data/shared-stages.ts')
 const { galleryItems, gallerySectionLabel, galleryFeature } = await ld('../data/gallery.ts')
 const { privacyPolicy } = await ld('../data/privacy.ts')
 const { nonstopLabel, nonstopHeading, nonstopLede, nonstopSets, nonstopSpotifyUrl, nonstopPodcastUrl } = await ld('../data/nonstop.ts')
@@ -180,6 +183,7 @@ const countryOf: Record<string, string> = {
   Nairobi: 'Kenya',
   'New York': 'United States',
   Singapore: 'Singapore',
+  Bali: 'Indonesia',
 }
 const showDocs: SeedDoc[] = []
 for (const [i, s] of tourShows.entries()) {
@@ -397,10 +401,63 @@ await g('home-page', {
     stages: stageRows.flat().map((s) => ({ name: s.name, featured: !!s.featured })),
   },
   trustedBy: { label: trustedLabel, names: trustedNames.map((name) => ({ name })) },
+  sharedStages: {
+    label: shared.sharedStagesLabel,
+    heading: lines(shared.sharedStagesHeading),
+    lede: shared.sharedStagesLede,
+    internationalLabel: shared.internationalArtists.label,
+    // Names and crop focus only; the built-in photo for each name is used until
+    // a photo is uploaded in the CMS.
+    internationalArtists: shared.internationalArtists.artists.map((a: { name: string; focus?: string }) => ({
+      name: a.name,
+      focus: a.focus,
+    })),
+    indianLabel: shared.indianArtists.label,
+    indianArtists: shared.indianArtists.artists.map((a: { name: string; focus?: string }) => ({
+      name: a.name,
+      focus: a.focus,
+    })),
+    closing: shared.sharedStagesClosing,
+  },
+  internationalShows: {
+    lede: intlShows.destinationsLede,
+    closing: intlShows.destinationsClosing,
+  },
+  privateClientele: {
+    label: clientele.guestListLabel,
+    heading: lines(clientele.guestListHeading),
+    lede: clientele.guestListLede,
+    privateLabel: clientele.privateCelebrations.label,
+    privateEntries: clientele.privateCelebrations.entries.map((e: { primary: string; secondary: string }) => ({
+      primary: e.primary,
+      secondary: e.secondary,
+    })),
+    privateClosing: clientele.privateCelebrations.closing,
+    weddingsLabel: clientele.celebrityWeddings.label,
+    weddingEntries: clientele.celebrityWeddings.entries.map((e: { primary: string; secondary: string }) => ({
+      primary: e.primary,
+      secondary: e.secondary,
+    })),
+    stats: clientele.guestListStats.map((x: { value: number; suffix: string; label: string }) => ({
+      value: x.value,
+      suffix: x.suffix,
+      label: x.label,
+    })),
+    ctaLabel: clientele.guestListCta.label,
+    ctaHref: clientele.guestListCta.href,
+  },
   galleryStrip: {
     label: gallerySectionLabel,
     reelLabel: galleryFeature.label,
-    bigShows: galleryFeature.shows.map((show: string) => ({ show })),
+    liveShows: galleryFeature.shows.map(
+      (x: { headliner: string; detail: string; place?: string; date?: string; kind?: string }) => ({
+        headliner: x.headliner,
+        detail: x.detail,
+        place: x.place,
+        date: x.date,
+        kind: x.kind,
+      }),
+    ),
     items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt })),
   },
   follow: {

@@ -60,7 +60,16 @@ export function Hero({
 
           <a href={secondaryCta.href} className="btn-secondary">
             <span aria-hidden className="btn__mark">
-              &#9654;
+              {/* A drawn triangle, not the ▶ character: a text glyph carries
+                  the font's side-bearings and never sits centred on the disc.
+                  Wrapped so .btn__mark:has(> svg) (the brand-logo rule) does
+                  not strip the disc. Optically centred: the triangle's
+                  centroid, not its box, is on the disc's centre. */}
+              <span className="btn__glyph">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.33 5v14l11-7z" />
+                </svg>
+              </span>
             </span>
             <span>{secondaryCta.label}</span>
           </a>

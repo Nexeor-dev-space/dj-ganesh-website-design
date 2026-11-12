@@ -16,6 +16,17 @@ import { NonstopSets } from "@/components/nonstop/NonstopSets";
 import { nonstopSets as codeNonstop } from "@/data/nonstop";
 import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
 import { TrustedBy } from "@/components/trusted/TrustedBy";
+import { PrivateClientele } from "@/components/guest-list/PrivateClientele";
+import { SharedStages } from "@/components/shared-stages/SharedStages";
+import {
+  indianArtists as codeIndianArtists,
+  internationalArtists as codeIntlArtists,
+} from "@/data/shared-stages";
+import {
+  celebrityWeddings as codeWeddings,
+  guestListCta as codeClienteleCta,
+  privateCelebrations as codePrivate,
+} from "@/data/guest-list";
 import { Navbar } from "@/components/navigation/Navbar";
 import {
   getAbout,
@@ -233,6 +244,73 @@ export default async function HomePage() {
      CMS groups remain in the schema and still seed; they are simply unread
      here. ------------------------------------------------------------------ */
 
+  /* Private Clientele: each list falls back to its built-in names on its own. */
+  const pc = home?.privateClientele;
+  const clienteleEntries = (
+    rows: readonly { id?: string | null; primary?: string | null; secondary?: string | null }[] | null | undefined,
+  ) => {
+    const out = (rows ?? [])
+      .filter((r) => r.primary?.trim())
+      .map((r, i) => ({ id: r.id ?? `row-${i}`, primary: r.primary!.trim(), secondary: r.secondary?.trim() ?? "" }));
+    return out.length ? out : undefined;
+  };
+  const clienteleCategories = [
+    {
+      ...codePrivate,
+      label: str(pc?.privateLabel) ?? codePrivate.label,
+      shortLabel: str(pc?.privateShortLabel) ?? codePrivate.shortLabel,
+      entries: clienteleEntries(pc?.privateEntries) ?? codePrivate.entries,
+      closing: str(pc?.privateClosing) ?? codePrivate.closing,
+    },
+    {
+      ...codeWeddings,
+      label: str(pc?.weddingsLabel) ?? codeWeddings.label,
+      shortLabel: str(pc?.weddingsShortLabel) ?? codeWeddings.shortLabel,
+      entries: clienteleEntries(pc?.weddingEntries) ?? codeWeddings.entries,
+    },
+  ];
+  const clienteleStats = (() => {
+    const rows = (pc?.stats ?? [])
+      .filter((s) => s.label && Number.isFinite(Number(s.value)))
+      .map((s) => ({ id: s.id ?? undefined, value: Number(s.value), suffix: s.suffix ?? undefined, label: s.label }));
+    return rows.length ? rows : undefined;
+  })();
+
+  /* Shared Stages: each list falls back to its built-in artists on its own.
+     Per artist, an uploaded photo / focus wins; otherwise the built-in photo
+     for that name (matched case-insensitively), so typing a name is enough. */
+  const ss = home?.sharedStages;
+  const codeArtists = [...codeIntlArtists.artists, ...codeIndianArtists.artists];
+  const toArtists = (
+    rows: readonly { name?: string | null; photo?: unknown; focus?: string | null }[] | null | undefined,
+  ) => {
+    const out = (rows ?? [])
+      .filter((r) => r.name?.trim())
+      .map((r) => {
+        const name = r.name!.trim();
+        const code = codeArtists.find((c) => c.name.toLowerCase() === name.toLowerCase());
+        const photo = resolveMedia(r.photo as Parameters<typeof resolveMedia>[0], code?.image);
+        return { name, image: photo.url, focus: str(r.focus) ?? code?.focus };
+      });
+    return out.length ? out : undefined;
+  };
+  const sharedGroups = [
+    {
+      ...codeIntlArtists,
+      label: str(ss?.internationalLabel) ?? codeIntlArtists.label,
+      artists: toArtists(ss?.internationalArtists) ?? codeIntlArtists.artists,
+    },
+    {
+      ...codeIndianArtists,
+      label: str(ss?.indianLabel) ?? codeIndianArtists.label,
+      artists: toArtists(ss?.indianArtists) ?? codeIndianArtists.artists,
+    },
+  ];
+
+  /* The international intro and closing line, shown inside Global Reach. The
+     CMS group is still named internationalShows (it began as its own band). */
+  const intl = home?.internationalShows;
+
   /* Testimonials ---------------------------------------------------------- */
   const testimonials = testimonialDocs.length ? testimonialDocs.map(toTestimonial) : undefined;
 
@@ -255,7 +333,20 @@ export default async function HomePage() {
     videoSrc: resolveMedia(gs?.reelVideo, codeFeature.videoSrc).url ?? codeFeature.videoSrc,
     poster: resolveMedia(gs?.reelPoster, codeFeature.poster).url,
     label: str(gs?.reelLabel) ?? codeFeature.label,
-    shows: strings(gs?.bigShows, "show") ?? codeFeature.shows,
+    eyebrow: str(gs?.reelEyebrow) ?? codeFeature.eyebrow,
+    shows: (() => {
+      const rows = (gs?.liveShows ?? [])
+        .filter((x) => x.headliner?.trim())
+        .map((x, i) => ({
+          id: x.id ?? `show-${i}`,
+          headliner: x.headliner.trim(),
+          detail: str(x.detail) ?? "",
+          place: str(x.place),
+          date: str(x.date),
+          kind: str(x.kind),
+        }));
+      return rows.length ? rows : codeFeature.shows;
+    })(),
   };
 
   /* Nonstop Sets ------------------------------------------------------------ */
@@ -323,6 +414,7 @@ export default async function HomePage() {
           tourCities={cities.length ? cities : undefined}
           tourShows={shows.length ? shows : undefined}
           enquiryEmail={str(contact?.bookingEmail)}
+          {...stripUndefined({ intro: str(intl?.lede), closing: str(intl?.closing) })}
           copy={stripUndefined({
             heading: str(home?.globalReach?.heading),
             hint: str(home?.globalReach?.hint),
@@ -346,6 +438,17 @@ export default async function HomePage() {
           stagesCtaLabel={str(home?.stages?.ctaLabel)}
           stagesCtaHref={str(home?.stages?.ctaHref)}
           stageRows={stageRows}
+        />
+
+        {/* The artists behind those rooms: after the venues, who shared them. */}
+        <SharedStages
+          {...stripUndefined({
+            label: str(ss?.label),
+            heading: strings(ss?.heading, "line"),
+            lede: str(ss?.lede),
+            closing: str(ss?.closing),
+          })}
+          groups={sharedGroups}
         />
         <MusicSection
           musicSectionLabel={str(musicPage?.homeSection?.sectionLabel)}
@@ -381,6 +484,23 @@ export default async function HomePage() {
           gallerySectionLabel={str(home?.galleryStrip?.label)}
           galleryItems={galleryItems}
           feature={galleryFeature}
+        />
+
+        {/* Who has booked him behind closed doors, just before what clients
+            say about him. */}
+        <PrivateClientele
+          {...stripUndefined({
+            label: str(pc?.label),
+            heading: strings(pc?.heading, "line"),
+            lede: str(pc?.lede),
+            stats: clienteleStats,
+          })}
+          categories={clienteleCategories}
+          cta={
+            str(pc?.ctaLabel) || str(pc?.ctaHref)
+              ? { label: str(pc?.ctaLabel) ?? codeClienteleCta.label, href: str(pc?.ctaHref) ?? codeClienteleCta.href }
+              : undefined
+          }
         />
 
         <TestimonialsSection

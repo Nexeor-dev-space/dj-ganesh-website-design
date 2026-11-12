@@ -25,6 +25,7 @@ export const tourCities: readonly TourCity[] = [
   { name: "Nairobi", lat: -1.2921, lng: 36.8219, labelDy: 16 },
   { name: "New York", lat: 40.7128, lng: -74.006, labelDy: -10 },
   { name: "Singapore", lat: 1.3521, lng: 103.8198, labelDx: 8, labelDy: 16 },
+  { name: "Bali", lat: -8.3405, lng: 115.092, labelDx: 10, labelDy: 18 },
 ] as const;
 
 /** Announced dates, in tour order. */
