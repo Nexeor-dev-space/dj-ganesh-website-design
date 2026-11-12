@@ -7636,9 +7636,14 @@
     transition: transform 500ms var(--ease-out);
   }
 
+  /* A whole word stays on one line; lines break only at the spaces. */
+  .shared-stages__word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
   .shared-stages__char {
     display: inline-block;
-    white-space: pre;
   }
 
   /* ---- Entry: per tile, as it scrolls into view ------------------------

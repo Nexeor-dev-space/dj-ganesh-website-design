@@ -145,16 +145,32 @@ export function SharedStages({
                   <span className="shared-stages__name">
                     {/* Screen readers get the whole name; the letters are for the eye. */}
                     <span className="sr-only">{artist.name}</span>
-                    {artist.name.split("").map((ch, k) => (
-                      <span
-                        key={k}
-                        aria-hidden
-                        className="shared-stages__char"
-                        style={{ "--c": k } as CSSProperties}
-                      >
-                        {ch}
-                      </span>
-                    ))}
+                    {/* Letters are grouped per word (a hyphen ends a word
+                        too, e.g. "Vishal-|Shekhar") so a line only ever
+                        breaks between words, never inside one. --c keeps
+                        counting across words for the typing stagger. */}
+                    {(() => {
+                      let c = 0;
+                      return artist.name.split(/(?<=[ -])/).map((chunk, w) => {
+                        const word = chunk.trimEnd();
+                        return (
+                          <span key={w} aria-hidden>
+                            <span className="shared-stages__word">
+                              {word.split("").map((ch, k) => (
+                                <span
+                                  key={k}
+                                  className="shared-stages__char"
+                                  style={{ "--c": c++ } as CSSProperties}
+                                >
+                                  {ch}
+                                </span>
+                              ))}
+                            </span>
+                            {word !== chunk ? " " : null}
+                          </span>
+                        );
+                      });
+                    })()}
                   </span>
                 </li>
               ))}
