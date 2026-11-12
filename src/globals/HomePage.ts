@@ -300,7 +300,7 @@ const HomePage: GlobalConfig = {
             },
           ],
         },
-        { name: 'closing', label: 'Closing Line', type: 'text', admin: { placeholder: 'e.g. And many more.' } },
+        { name: 'closing', label: 'Closing Line', type: 'text', admin: { placeholder: 'e.g. And many more.', description: 'Optional line under the artist rows. Empty: no line.' } },
       ],
     },
     {

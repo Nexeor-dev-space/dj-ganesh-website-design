@@ -61,4 +61,5 @@ export const sharedStagesLabel = "Shared Stages";
 export const sharedStagesHeading = ["Same Stage,", "Same Night"] as const;
 export const sharedStagesLede =
   "International headliners and India's biggest voices — the artists he has shared stages and performances with.";
-export const sharedStagesClosing = "And many more.";
+// No closing line by default; editors can add one in the CMS.
+export const sharedStagesClosing = "";
