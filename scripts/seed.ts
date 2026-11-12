@@ -90,7 +90,12 @@ const counts: Record<string, number> = {}
 
 // ---------- Media ----------
 const mediaIds: Record<string, number | string> = {}
-const MIME: Record<string, string> = { '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4' }
+const MIME: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+}
 
 async function media(src: string, alt: string): Promise<number | string | undefined> {
   if (TEXT_ONLY) return undefined
@@ -111,6 +116,16 @@ async function media(src: string, alt: string): Promise<number | string | undefi
   })
   console.log('uploaded media:', filename)
   return (mediaIds[src] = doc.id)
+}
+
+type SeedArtist = { name: string; image?: string; focus?: string }
+
+async function artistRows(artists: readonly SeedArtist[]) {
+  const rows = []
+  for (const a of artists) {
+    rows.push({ name: a.name, focus: a.focus, photo: a.image ? await media(a.image, a.name) : undefined })
+  }
+  return rows
 }
 
 // Seed data is assembled from plain objects rather than each collection's
@@ -406,17 +421,11 @@ await g('home-page', {
     heading: lines(shared.sharedStagesHeading),
     lede: shared.sharedStagesLede,
     internationalLabel: shared.internationalArtists.label,
-    // Names and crop focus only; the built-in photo for each name is used until
-    // a photo is uploaded in the CMS.
-    internationalArtists: shared.internationalArtists.artists.map((a: { name: string; focus?: string }) => ({
-      name: a.name,
-      focus: a.focus,
-    })),
+    // Each artist with their current portrait uploaded to Media, so editors
+    // see (and can swap) the photo the site shows.
+    internationalArtists: await artistRows(shared.internationalArtists.artists),
     indianLabel: shared.indianArtists.label,
-    indianArtists: shared.indianArtists.artists.map((a: { name: string; focus?: string }) => ({
-      name: a.name,
-      focus: a.focus,
-    })),
+    indianArtists: await artistRows(shared.indianArtists.artists),
     closing: shared.sharedStagesClosing,
   },
   internationalShows: {
