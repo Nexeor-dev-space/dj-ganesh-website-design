@@ -7586,12 +7586,16 @@
     margin-top: var(--space-xl);
   }
 
-  .shared-stages__group {
+  /* Group title on the left, the row's arrow buttons on the right. */
+  .shared-stages__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-sm);
     padding-bottom: 14px;
+  }
+
+  .shared-stages__group {
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.34em;
@@ -7599,78 +7603,119 @@
     color: var(--accent);
   }
 
+  /* Phones swipe; the arrows are for tablet and desktop. Same round buttons
+     as the Private Clientele rail. */
+  .shared-stages__arrows {
+    display: none;
+    gap: var(--space-xs);
+  }
+
+  @media (width >= 640px) {
+    .shared-stages__arrows {
+      display: flex;
+    }
+  }
+
+  .shared-stages__arrow {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .shared-stages__arrow:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .shared-stages__arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  /* Each group is one side-scrolling row at every size: about 1.5 portraits
+     on a phone, 2.5 on a tablet, 4.5 on a desktop, so the next one always
+     peeks in. Phones run the row to both screen edges; from tablets it
+     starts in line with the page text and runs off the right edge only.
+     The row's content box stays the width of the page column either way,
+     so a card's width is a share of that column. Cards snap one by one. */
   .shared-stages__grid {
-    margin: 0;
-    padding: 0;
+    --peek-gap: var(--space-sm);
+    --cards: 1.5;
+    --gaps: 1;
+    margin: 0 calc(-1 * var(--container-padding));
+    padding: 0 var(--container-padding);
+    scroll-padding-inline: var(--container-padding);
     list-style: none;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-sm);
+    display: flex;
+    gap: var(--peek-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
   }
 
   @media (width >= 640px) {
     .shared-stages__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  .shared-stages__progress {
-    display: none;
-  }
-
-  /* Phones: each group is one side-scrolling row, about one and a half
-     portraits wide so the next one peeks in. The row runs to the screen
-     edges (the gutter moves inside it) and snaps card by card; a thin bar
-     under it fills as the row is swiped. */
-  @media (width < 640px) {
-    .shared-stages__grid {
-      display: flex;
-      gap: var(--space-sm);
-      margin-inline: calc(-1 * var(--container-padding));
-      padding-inline: var(--container-padding);
-      scroll-padding-inline: var(--container-padding);
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
-    }
-
-    .shared-stages__grid::-webkit-scrollbar {
-      display: none;
-    }
-
-    .shared-stages__grid:focus-visible {
-      outline: 1px solid var(--accent);
-      outline-offset: 4px;
-    }
-
-    .shared-stages__tile {
-      flex: 0 0 62%;
-      scroll-snap-align: start;
-    }
-
-    .shared-stages__progress {
-      display: block;
-      height: 2px;
-      margin-top: var(--space-md);
-      background-color: var(--border);
-      overflow: hidden;
-    }
-
-    .shared-stages__progress-bar {
-      display: block;
-      height: 100%;
-      background-color: var(--accent);
-      transform: scaleX(var(--p, 0.4));
-      transform-origin: left;
-      transition: transform 150ms linear;
+      --cards: 2.5;
+      --gaps: 2;
+      margin: 0 calc(-1 * var(--edge)) 0 0;
+      padding: 0 var(--edge) 0 0;
+      scroll-padding-inline: 0;
+      cursor: grab;
     }
   }
 
   @media (width >= 1024px) {
     .shared-stages__grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      --peek-gap: var(--space-md);
+      --cards: 4.5;
+      --gaps: 4;
     }
+  }
+
+  .shared-stages__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shared-stages__grid:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* While dragged with a mouse: no snapping (it returns on release and
+     settles the nearest card), no text selection. */
+  .shared-stages__grid[data-dragging="true"] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .shared-stages__grid > .shared-stages__tile {
+    /* --gaps whole gaps sit in the column beside the whole cards. */
+    flex: 0 0 calc((100% - var(--gaps) * var(--peek-gap)) / var(--cards));
+    scroll-snap-align: start;
+  }
+
+  .shared-stages__progress {
+    display: block;
+    height: 2px;
+    margin-top: var(--space-md);
+    background-color: var(--border);
+    overflow: hidden;
+  }
+
+  .shared-stages__progress-bar {
+    display: block;
+    height: 100%;
+    background-color: var(--accent);
+    transform: scaleX(var(--p, 0.4));
+    transform-origin: left;
+    transition: transform 150ms linear;
   }
 
   .shared-stages__tile {
