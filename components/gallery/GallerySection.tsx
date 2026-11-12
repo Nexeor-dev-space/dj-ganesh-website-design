@@ -8,6 +8,7 @@ import {
   galleryItems as defaultItems,
   gallerySectionLabel as defaultLabel,
 } from "@/data/gallery";
+import type { LiveShow } from "@/data/live-shows";
 import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
@@ -18,8 +19,9 @@ const STEP = 70;
 /**
  * Section — Gallery.
  *
- * Opens on the recent-shows reel with the nights it was cut from, then the
- * six covers.
+ * Headed by the major live shows: a portrait show reel with the shows beside
+ * it as a numbered setlist (the reel stays in view beside the list on
+ * desktop). The Gallery heading and the six photographs follow underneath.
  *
  * Six covers on one ruled grid, held back to grey until pointed at. Built to
  * the client's own composition: a 16:9 tile, a hairline between them rather
@@ -37,8 +39,14 @@ export function GallerySection({
 }: {
   gallerySectionLabel?: string;
   galleryItems?: readonly { src: string; alt: string; href?: string }[];
-  /** The reel and the shows beside it; CMS Home Page → Gallery Strip. */
-  feature?: { videoSrc: string; poster?: string; label: string; shows: readonly string[] };
+  /** The reel and the setlist beside it; CMS Home Page → Gallery Strip. */
+  feature?: {
+    videoSrc: string;
+    poster?: string;
+    label: string;
+    eyebrow?: string;
+    shows: readonly LiveShow[];
+  };
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -95,8 +103,13 @@ export function GallerySection({
       className="gallery section-block relative overflow-hidden"
     >
       <Container className="relative z-10">
-        <h2 id="gallery-title" className="section-title gallery__title reveal-scroll" style={delay(0)}>
-          {gallerySectionLabel}
+        {feature.eyebrow ? (
+          <p className="gallery__shows-eyebrow reveal-scroll" style={delay(0)}>
+            {feature.eyebrow}
+          </p>
+        ) : null}
+        <h2 id="gallery-title" className="section-title gallery__title reveal-scroll" style={delay(40)}>
+          {feature.label}
         </h2>
 
         <figure className="gallery__feature reveal-scroll" style={delay(60)}>
@@ -106,7 +119,7 @@ export function GallerySection({
             <video
               ref={videoRef}
               className="gallery__video"
-              aria-label={`${feature.label} — show reel`}
+              aria-label={`${feature.label}: show reel`}
               src={feature.videoSrc}
               poster={feature.poster}
               preload="none"
@@ -117,14 +130,39 @@ export function GallerySection({
             />
           </div>
           <figcaption className="gallery__shows">
-            <h3 className="gallery__shows-title">{feature.label}</h3>
-            <ul className="gallery__shows-list">
-              {feature.shows.map((show, index) => (
-                <li key={itemKey(show, index)}>{show}</li>
-              ))}
-            </ul>
+            <ol className="gallery__setlist">
+              {feature.shows.map((show, index) => {
+                const facts = [show.place, show.date].filter(Boolean).join(" · ");
+                return (
+                  <li
+                    key={itemKey(show.headliner, index)}
+                    className="gallery__set reveal-scroll"
+                    style={delay(120 + index * 60)}
+                  >
+                    <span className="gallery__set-index" aria-hidden>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="gallery__set-body">
+                      <span className="gallery__set-head">{show.headliner}</span>
+                      {show.detail || facts ? (
+                        <span className="gallery__set-detail">
+                          {show.detail}
+                          {show.detail && facts ? " — " : null}
+                          {facts ? <span className="gallery__set-facts">{facts}</span> : null}
+                        </span>
+                      ) : null}
+                    </span>
+                    {show.kind ? <span className="gallery__set-kind">{show.kind}</span> : null}
+                  </li>
+                );
+              })}
+            </ol>
           </figcaption>
         </figure>
+
+        <h3 className="gallery__grid-title reveal-scroll" style={delay(80)}>
+          {gallerySectionLabel}
+        </h3>
 
         <ul className="gallery__grid">
           {galleryItems.map((item, index) => (

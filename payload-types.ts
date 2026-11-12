@@ -1092,6 +1092,114 @@ export interface HomePage {
       | null;
   };
   /**
+   * The two numbered artist lists after Stages. Empty fields keep the built-in text; an empty list keeps the built-in names.
+   */
+  sharedStages?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    internationalLabel?: string | null;
+    internationalArtists?:
+      | {
+          name: string;
+          /**
+           * Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.
+           */
+          photo?: (number | null) | Media;
+          /**
+           * Where the tile crops the photo: horizontal % then vertical %. Lower vertical % keeps more of the top (the face).
+           */
+          focus?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    indianLabel?: string | null;
+    indianArtists?:
+      | {
+          name: string;
+          /**
+           * Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.
+           */
+          photo?: (number | null) | Media;
+          /**
+           * Where the tile crops the photo: horizontal % then vertical %. Lower vertical % keeps more of the top (the face).
+           */
+          focus?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    closing?: string | null;
+  };
+  /**
+   * The intro sentence under the Global Reach heading and the closing line beside "Not on the list?". Empty fields keep the built-in text. (Stored as internationalShows: it began as a separate band, now removed; its other fields are hidden and unused.)
+   */
+  internationalShows?: {
+    label?: string | null;
+    heading?: string | null;
+    lede?: string | null;
+    cities?:
+      | {
+          city: string;
+          country?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    closing?: string | null;
+  };
+  /**
+   * The invitation-card section before Testimonials: business families and celebrity weddings. Empty fields keep the built-in text; an empty list keeps the built-in names.
+   */
+  privateClientele?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    privateLabel?: string | null;
+    /**
+     * One short word; phones show this so the filters fit on one line.
+     */
+    privateShortLabel?: string | null;
+    privateEntries?:
+      | {
+          primary: string;
+          secondary?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    privateClosing?: string | null;
+    weddingsLabel?: string | null;
+    /**
+     * One short word; phones show this so the filters fit on one line.
+     */
+    weddingsShortLabel?: string | null;
+    weddingEntries?:
+      | {
+          primary: string;
+          secondary?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    stats?:
+      | {
+          value: number;
+          suffix?: string | null;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
+  };
+  /**
    * The long-form sets band after Music. Empty fields fall back to the built-in copy.
    */
   nonstop?: {
@@ -1119,16 +1227,36 @@ export interface HomePage {
     podcastLabel?: string | null;
   };
   galleryStrip?: {
+    /**
+     * The heading above the photographs, under the shows.
+     */
     label?: string | null;
     /**
      * The video above the photos. Falls back to /videos/recent-big-shows.mp4.
      */
     reelVideo?: (number | null) | Media;
     reelPoster?: (number | null) | Media;
+    /**
+     * The big heading above the reel and the shows.
+     */
     reelLabel?: string | null;
     bigShows?:
       | {
           show: string;
+          id?: string | null;
+        }[]
+      | null;
+    reelEyebrow?: string | null;
+    /**
+     * The numbered setlist beside the reel. Empty: the built-in seven shows.
+     */
+    liveShows?:
+      | {
+          headliner: string;
+          detail?: string | null;
+          place?: string | null;
+          date?: string | null;
+          kind?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -1804,6 +1932,93 @@ export interface HomePageSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  sharedStages?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        internationalLabel?: T;
+        internationalArtists?:
+          | T
+          | {
+              name?: T;
+              photo?: T;
+              focus?: T;
+              id?: T;
+            };
+        indianLabel?: T;
+        indianArtists?:
+          | T
+          | {
+              name?: T;
+              photo?: T;
+              focus?: T;
+              id?: T;
+            };
+        closing?: T;
+      };
+  internationalShows?:
+    | T
+    | {
+        label?: T;
+        heading?: T;
+        lede?: T;
+        cities?:
+          | T
+          | {
+              city?: T;
+              country?: T;
+              id?: T;
+            };
+        closing?: T;
+      };
+  privateClientele?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        privateLabel?: T;
+        privateShortLabel?: T;
+        privateEntries?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              id?: T;
+            };
+        privateClosing?: T;
+        weddingsLabel?: T;
+        weddingsShortLabel?: T;
+        weddingEntries?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              id?: T;
+            };
+        stats?:
+          | T
+          | {
+              value?: T;
+              suffix?: T;
+              label?: T;
+              id?: T;
+            };
+        ctaLabel?: T;
+        ctaHref?: T;
+      };
   nonstop?:
     | T
     | {
@@ -1841,6 +2056,17 @@ export interface HomePageSelect<T extends boolean = true> {
           | T
           | {
               show?: T;
+              id?: T;
+            };
+        reelEyebrow?: T;
+        liveShows?:
+          | T
+          | {
+              headliner?: T;
+              detail?: T;
+              place?: T;
+              date?: T;
+              kind?: T;
               id?: T;
             };
         items?:

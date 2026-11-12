@@ -376,7 +376,7 @@ export function VinylCarousel({
             </svg>
           ) : (
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M8 5v14l11-7z" />
+              <path d="M8.33 5v14l11-7z" />
             </svg>
           )}
           <span>{out ? "Pause" : "Play"}</span>
