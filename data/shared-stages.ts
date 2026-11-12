@@ -27,7 +27,7 @@ export const internationalArtists: ArtistGroup = {
   label: "International",
   artists: [
     { name: "Jennifer Lopez", image: img("jennifer-lopez"), focus: "50% 22%" },
-    { name: "Rihanna", image: img("rihanna"), focus: "56% 35%" },
+    { name: "Rihanna", image: img("rihanna-fenty"), focus: "52% 30%", lowRes: true },
     { name: "Black Coffee", image: img("black-coffee"), focus: "48% 35%", lowRes: true },
     { name: "Marshmello", image: img("marshmello"), focus: "50% 40%", lowRes: true },
     { name: "Eric Prydz", image: img("eric-prydz"), focus: "48% 25%" },
