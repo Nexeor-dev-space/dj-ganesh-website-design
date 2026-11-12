@@ -4591,6 +4591,42 @@
   .booking-links__link:hover {
     color: var(--accent);
   }
+
+  /* Small phones: the pass and its button give the label room to stay on
+     one line ("Book DJ Ganesh →", not one word per line), and each channel
+     stacks its name over its value, so an address or handle runs the full
+     width instead of breaking mid-word beside the label. */
+  @media (width < 480px) {
+    .booking-pass {
+      padding: var(--space-md) var(--space-sm);
+    }
+
+    .booking-pass .btn-primary {
+      padding-inline: var(--space-md);
+      white-space: nowrap;
+    }
+
+    .booking-links {
+      margin-top: var(--space-xl);
+    }
+
+    .booking-links__row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding-block: var(--space-sm) 0;
+    }
+
+    .booking-links__row dd {
+      text-align: left;
+    }
+
+    .booking-links__link {
+      min-height: 40px;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
