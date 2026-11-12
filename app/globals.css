@@ -6038,6 +6038,19 @@
     cursor: pointer;
   }
 
+  /* Small phones: the 48px sides left a full-width button too little room,
+     so labels like "Send booking request" broke onto two lines. Tighter
+     sides and tracking keep a label on one line; a label that still cannot
+     fit wraps between words, balanced, never mid-word. */
+  @media (width < 480px) {
+    .btn-primary,
+    .btn-secondary {
+      padding-inline: var(--space-md);
+      letter-spacing: 0.18em;
+      text-wrap: balance;
+    }
+  }
+
   .btn-primary {
     border-color: var(--accent);
     background-color: var(--accent);
