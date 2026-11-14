@@ -1,4 +1,5 @@
 import type { Track } from "@/types/music";
+import { assetUrl } from "@/lib/asset-url";
 
 /** The still YouTube publishes for a video, at the size the cards need. */
 function youtubeThumbnail(youtubeId: string): string {
@@ -24,40 +25,40 @@ export const tracks: Track[] = [
     title: "Toh Phir Aao × Rapture",
     tag: "Indo Tech",
     artist: "DJ Ganesh · Indo Tech Project",
-    audio: "/audio/openformat.mp3",
+    audio: assetUrl("/audio/openformat.mp3"),
     youtubeId: "IJqZAwTsOo8",
     thumbnail: youtubeThumbnail("IJqZAwTsOo8"),
-    artwork: "/images/hero-toh-phir-aao.jpg",
+    artwork: assetUrl("/images/hero-toh-phir-aao.jpg"),
   },
   {
     id: "move-with-woh-lamhe",
     title: "Move With Woh Lamhe",
     tag: "Afro House",
     artist: "DJ Ganesh · BollyAfro Mashup",
-    audio: "/audio/afrohouse.mp3",
+    audio: assetUrl("/audio/afrohouse.mp3"),
     youtubeId: "ZYjbzUSR3gc",
     thumbnail: youtubeThumbnail("ZYjbzUSR3gc"),
-    artwork: "/images/hero-beach-club-mumbai.jpg",
+    artwork: assetUrl("/images/hero-beach-club-mumbai.jpg"),
   },
   {
     id: "ishq-jalakar",
     title: "Ishq Jalakar (Dhurandar)",
     tag: "Afro Mashup",
     artist: "DJ Ganesh × Ranveer Singh",
-    audio: "/audio/commercial.mp3",
+    audio: assetUrl("/audio/commercial.mp3"),
     youtubeId: "9C3XDY8hu6A",
     thumbnail: youtubeThumbnail("9C3XDY8hu6A"),
-    artwork: "/images/hero-bastian-breakdown.jpg",
+    artwork: assetUrl("/images/hero-bastian-breakdown.jpg"),
   },
   {
     id: "tujhe-bhula-diya",
     title: "Tujhe Bhula Diya × Adore You",
     tag: "BollyAfro",
     artist: "DJ Ganesh · 2026 Blessing Edit",
-    audio: "/audio/bollywood.mp3",
+    audio: assetUrl("/audio/bollywood.mp3"),
     youtubeId: "r94pqduA0a8",
     thumbnail: youtubeThumbnail("r94pqduA0a8"),
-    artwork: "/images/hero-bengaluru-bastian.jpg",
+    artwork: assetUrl("/images/hero-bengaluru-bastian.jpg"),
   },
 ];
 

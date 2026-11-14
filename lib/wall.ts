@@ -1,3 +1,5 @@
+import { assetUrl } from "@/lib/asset-url";
+
 /**
  * The Wall of Love — the imagery that drifts behind the quotes.
  *
@@ -12,12 +14,12 @@
  * is the only thing that needs to change.
  */
 export const wallImages = [
-  { src: "/images/wall/gallery-wedding.png", alt: "" },
-  { src: "/images/wall/gallery-club.png", alt: "" },
-  { src: "/images/wall/gallery-concert.png", alt: "" },
-  { src: "/images/wall/gallery-beach.png", alt: "" },
-  { src: "/images/wall/gallery-corporate.png", alt: "" },
-  { src: "/images/wall/gallery-cdj.png", alt: "" },
+  { src: assetUrl("/images/wall/gallery-wedding.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-club.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-concert.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-beach.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-corporate.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-cdj.png"), alt: "" },
 ] as const;
 
 /**

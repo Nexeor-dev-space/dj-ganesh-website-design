@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site";
+import { assetUrl } from "@/lib/asset-url";
 
 /**
  * The link-preview image for every page: a stage photo with the logo, set in
@@ -7,7 +8,7 @@ import { siteConfig } from "@/lib/site";
  * Facebook, LinkedIn and X all crop from.
  */
 export const shareImage = {
-  url: "/og/dj-ganesh-share.jpg",
+  url: assetUrl("/og/dj-ganesh-share.jpg"),
   width: 1200,
   height: 630,
   alt: "DJ Ganesh on stage, arms open to the crowd — Wedding DJ and BollyAfro pioneer",

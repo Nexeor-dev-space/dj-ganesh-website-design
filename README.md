@@ -102,8 +102,8 @@ Runs `scripts/seed.ts` (with `node --experimental-strip-types --no-warnings`).
   music releases, upcoming shows, legacy milestones, testimonials, experiences &
   services, performance history and the "Live Sets" gallery album — taken from
   the hardcoded content in `data/` and `lib/`. It also uploads the images and
-  videos those reference (from `public/images`, `public/videos`) into the Media
-  collection. It prints the document counts at the end.
+  videos those reference into the Media collection (read from `public/` when the
+  file is there, else downloaded from `NEXT_PUBLIC_MEDIA_BASE_URL`). It prints the document counts at the end.
 - **Not seeded**: users and contact submissions.
 - **Re-running**: safe, no duplicates. Media is matched by filename and reused;
   documents are matched (by slug, title, venue + city, etc.) and updated in place.
@@ -116,7 +116,8 @@ Runs `scripts/seed.ts` (with `node --experimental-strip-types --no-warnings`).
   media disk can't be populated.
 - **Prerequisites**: `DATABASE_URL` and `PAYLOAD_SECRET` set, and the schema in
   place (local push via `npm run dev`, or `npm run migrate` on a remote DB).
-  Uploads are written to `public/media` on the machine running the script.
+  Uploads go to MinIO when the media variables are set (see
+  [Media storage and delivery](#media-storage-and-delivery)), else to `public/media`.
 
 ## Migrations
 
@@ -218,7 +219,7 @@ New contact submissions send a notification email (`src/collections/ContactSubmi
 | `RESEND_FROM_EMAIL` | no | From address for Resend; takes precedence over `EMAIL_FROM`. Must be on a domain verified in Resend. | `DJ Ganesh <bookings@example.com>` |
 | `EMAIL_FROM` | no | Default sender address. Defaults to `bookings@djganeshbombay.com`. | `bookings@example.com` |
 | `EMAIL_FROM_NAME` | no | Default sender name. Defaults to `DJ Ganesh Bookings`. | `DJ Ganesh Bookings` |
-| `EMAIL_LOGO_URL` | no | Absolute URL of the logo in notification emails. Unset → `public/media/logo-dj-ganesh-full-1.png` is attached inline if present, otherwise `<NEXT_PUBLIC_SITE_URL>/media/logo-dj-ganesh-full-1.png`. | `https://example.com/logo.png` |
+| `EMAIL_LOGO_URL` | no | Absolute URL of the logo in notification emails. Unset → `public/media/logo-dj-ganesh-full-1.png` is attached inline if present, otherwise `<NEXT_PUBLIC_MEDIA_BASE_URL>/media/logo-dj-ganesh-full-1.png` (or the same path on `NEXT_PUBLIC_SITE_URL` when no media host is set). | `https://example.com/logo.png` |
 | `SMTP_HOST` | no | SMTP host, used when `RESEND_API_KEY` is not set. Requires `nodemailer`, which is **not** in `package.json` — `npm install nodemailer` first. | `smtp.example.com` |
 | `SMTP_PORT` | no | SMTP port. Defaults to `587`. | `587` |
 | `SMTP_SECURE` | no | `true` for implicit TLS (port 465). | `false` |
@@ -261,50 +262,50 @@ or those moves are counted twice. Mark `booking_submitted` as a Key event
 
 ## Media storage and delivery
 
-**Today, media is stored on local disk. There is no S3 / MinIO storage adapter
-and no CDN setting in the code**, so there are no S3 or CDN environment
-variables to set.
+Photos, video and audio are stored in **MinIO** (S3-compatible object storage),
+bucket `dj-ganesh`, folder `assets/`, and served straight from the MinIO API
+host. There is no CDN yet: adding one later only means changing
+`NEXT_PUBLIC_MEDIA_BASE_URL` (and pointing the CDN at that folder).
 
-- Uploads to the Media collection (images and videos) are written to
-  `public/media` (`staticDir` in `src/collections/Media.ts`). Payload also
-  generates `thumbnail` (400×300), `card` (768×576) and `hero` (1920×1080)
-  sizes for images.
-- Payload serves them at `/api/media/file/<filename>` — a relative URL, since
-  no `serverURL` is set. Media is publicly readable (`access.read: () => true`).
-- Pages render those URLs as they are (`lib/cms/media.ts`). Because the URLs are
-  same-origin, `next/image` needs no `remotePatterns` for them; the only remote
-  pattern in `next.config.ts` is `i.ytimg.com` (YouTube thumbnails).
-- In Docker, **mount a persistent volume at `/app/public/media`**, otherwise
-  uploads are lost on every redeploy. Each environment has its own disk, so
-  media uploaded on one is not on another (that is what `SEED_TEXT_ONLY` is for).
-- Static assets committed to the repo (`public/images`, `public/videos`,
-  `public/audio`) are served by Next directly.
-
-### Moving to S3 / MinIO and a CDN (not set up yet)
-
-This move is tracked in issue #28 (media migration to MinIO behind a CDN);
-update this section with the real settings once it lands.
-
-To put uploads in object storage, the project would need the
-`@payloadcms/storage-s3` plugin (not installed) added to `plugins` in
-`payload.config.ts` for the `media` collection, plus environment variables of
-your choosing for bucket, region, endpoint and credentials. For MinIO, the S3
-client needs the MinIO endpoint and `forcePathStyle: true`. A local MinIO for
-that work:
-
-```bash
-docker run -d --name minio -p 9000:9000 -p 9001:9001 \
-  -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin \
-  minio/minio server /data --console-address ":9001"
-# create the bucket in the console at http://localhost:9001, or with mc:
-mc alias set local http://localhost:9000 minioadmin minioadmin
-mc mb local/media
+```
+dj-ganesh/assets/
+  audio/    the four track mixes          (were public/audio)
+  images/   site photos, artists/, wall/  (were public/images, logos excluded)
+  og/       link-preview image            (was public/og)
+  videos/   hero video and reel           (were public/videos)
+  media/    CMS Media uploads             (were public/media)
 ```
 
-For a CDN today, put it in front of the whole site (or of `/api/media/file/*`
-and `/_next/image`) at the host or DNS level; nothing in the app needs to
-change. If media moves to a separate CDN hostname, that hostname must be added
-to `images.remotePatterns` in `next.config.ts`.
+- **Built-in assets** (`data/`, `lib/`): every path goes through
+  `assetUrl()` in `lib/asset-url.ts`, which prefixes
+  `NEXT_PUBLIC_MEDIA_BASE_URL`. Unset (local dev), paths stay relative and are
+  served from `public/`. The logos and fonts stay in `public/`.
+- **CMS uploads**: `@payloadcms/storage-s3` in `payload.config.ts` writes the
+  Media collection to `assets/media/` and builds every Media URL as
+  `NEXT_PUBLIC_MEDIA_BASE_URL/media/<filename>`. Payload generates
+  `thumbnail` (400×300), `card` (768×576) and `hero` (1920×1080) sizes with
+  `sharp`. Without `MINIO_ENDPOINT`/`MINIO_BUCKET`/`NEXT_PUBLIC_MEDIA_BASE_URL`
+  the plugin is off and uploads go to `public/media` on disk (local dev).
+- `next/image` may optimise from the media host: `next.config.ts` adds
+  `NEXT_PUBLIC_MEDIA_BASE_URL/**` to `images.remotePatterns`.
+- The music player reads audio through Web Audio, so it loads the mixes with
+  `crossOrigin="anonymous"`. The media host must send CORS headers
+  (`Access-Control-Allow-Origin`), or the files fail to load.
+- The bucket's `assets/` prefix is public **read-only**; the app's MinIO key
+  is limited to the `dj-ganesh` bucket.
+- Payload sends files under 50 MB to MinIO in one request, so the proxy in
+  front of the MinIO API must accept request bodies that large.
+
+### Media environment variables
+
+| Variable | Build var | Purpose | Example |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_MEDIA_BASE_URL` | yes | Public URL of the `assets/` folder (or a CDN in front of it), no trailing slash. | `https://<minio-api-host>/dj-ganesh/assets` |
+| `MINIO_ENDPOINT` | yes | MinIO S3 API URL, with `https://`. | `https://<minio-api-host>` |
+| `MINIO_BUCKET` | yes | Bucket name. | `dj-ganesh` |
+| `MINIO_REGION` | no | S3 region; MinIO ignores it. Defaults to `us-east-1`. | `us-east-1` |
+| `MINIO_ACCESS_KEY` | no (runtime only) | Access key scoped to the bucket. Secret. | — |
+| `MINIO_SECRET_KEY` | no (runtime only) | Its secret. Secret. | — |
 
 ## Scripts
 
@@ -349,8 +350,9 @@ payload.config.ts  Payload config
   (1440px) and gutter.
 - **Accent**: one signature colour, `--accent` (`#B8FF66`), used sparingly —
   small labels, nav hover, CTA hover, the sound indicator. Never as a fill.
-- **Assets**: client-provided media goes in `public/audio`, `public/images`,
-  `public/videos`. Do not rename or re-encode client audio files.
+- **Assets**: client-provided media goes in the MinIO bucket under
+  `dj-ganesh/assets/` (`audio/`, `images/`, `videos/`, `og/`) and is referenced
+  through `assetUrl()`. Do not rename client files.
 - **Schema changes** ship with their migration and regenerated types in the
   same commit (see [Migrations](#migrations)).
 
@@ -359,9 +361,8 @@ payload.config.ts  Payload config
 - **Photograph**: `public/images/banner-bg.png` is the fixed visual identity of
   the first viewport. It is never modified on disk — grade, grain, vignette and
   scrims are applied in CSS (`.hero-photo`, `.overlay-*` in `globals.css`).
-- **Sound**: the hero toggle activates automatically once a client mix is placed
-  at `public/audio/hero-mix.mp3` (see `lib/media.ts`). Until then the control
-  renders disabled. Nothing ever autoplays.
+- **Sound**: the `/dev/interactions` sandbox plays `assets/audio/openformat.mp3`
+  (see `lib/media.ts`). Nothing ever autoplays.
 
 ## Troubleshooting
 
@@ -403,5 +404,6 @@ means `BOOKING_NOTIFICATION_EMAIL` is unset; "Simulated Delivery" means neither
 `RESEND_API_KEY` nor `SMTP_HOST` is set; an SMTP error with `nodemailer` missing
 means it needs installing.
 
-**Uploaded images missing after a redeploy.** `public/media` isn't on a
-persistent volume (see [Media storage and delivery](#media-storage-and-delivery)).
+**Uploaded images missing after a redeploy.** The MinIO variables aren't set,
+so uploads went to `public/media` inside the container (see
+[Media storage and delivery](#media-storage-and-delivery)).

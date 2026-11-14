@@ -54,6 +54,7 @@ import type { Metadata } from "next";
 import { HomeStructuredData } from "@/components/seo/HomeStructuredData";
 import { siteConfig } from "@/lib/site";
 import { cmsPageMetadata } from "@/lib/seo";
+import { assetUrl } from "@/lib/asset-url";
 
 /** Page title, description and share image: the CMS "SEO & Link Previews"
  *  fields first, these built-in values otherwise. */
@@ -148,7 +149,7 @@ export default async function HomePage() {
     .filter((u): u is string => typeof u === "string" && /^https?:\/\//.test(u));
 
   /* Hero ------------------------------------------------------------------ */
-  const heroVideo = resolveMedia(home?.hero?.heroVideo, "/videos/dj-ganesh.mp4").url;
+  const heroVideo = resolveMedia(home?.hero?.heroVideo, assetUrl("/videos/dj-ganesh.mp4")).url;
   const heroPoster = resolveMedia(home?.hero?.heroVideoPoster).url;
 
   /* Global reach ---------------------------------------------------------- */

@@ -96,7 +96,12 @@ export function formatEnquiryEmail(data: EnquiryNotificationData) {
       contentType: 'image/png',
     })
   } else {
-    logoUrl = `${siteUrl}/media/logo-dj-ganesh-full-1.png`
+    // No local copy (public/media now lives in object storage): link the
+    // logo from the media host, or from the site when no host is set.
+    const mediaBase = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL || '').trim().replace(/\/+$/, '')
+    logoUrl = mediaBase
+      ? `${mediaBase}/media/logo-dj-ganesh-full-1.png`
+      : `${siteUrl}/media/logo-dj-ganesh-full-1.png`
   }
 
   const formattedDate = formatDate(data.eventDate)
