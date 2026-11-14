@@ -2,8 +2,19 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { s3Storage } from '@payloadcms/storage-s3'
+import sharp from 'sharp'
 
 const configDir = path.dirname(fileURLToPath(import.meta.url))
+
+// Media uploads live in MinIO: bucket MINIO_BUCKET, folder assets/media/.
+// The files already there were copied from public/media with the same names,
+// so existing rows (no stored prefix) and new uploads share one folder, and
+// every URL is built from NEXT_PUBLIC_MEDIA_BASE_URL (MinIO now, a CDN later).
+// Without MINIO_ENDPOINT/MINIO_BUCKET (local dev) Payload keeps using
+// public/media on disk.
+const MEDIA_BASE_URL = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL || '').trim().replace(/\/+$/, '')
+const objectStorageEnabled = Boolean(process.env.MINIO_ENDPOINT && process.env.MINIO_BUCKET && MEDIA_BASE_URL)
 
 // Collections
 import Users from './src/collections/Users.ts'
@@ -95,6 +106,34 @@ export default buildConfig({
     MusicPage,
     PrivacyPolicy,
   ].map(withGlobalSiteRefresh),
+
+  // Generates the Media image sizes (thumbnail, card, hero) on upload.
+  sharp,
+
+  plugins: [
+    s3Storage({
+      enabled: objectStorageEnabled,
+      // Keep the plugin's `prefix` column in the schema even when it is off,
+      // so local dev and the servers share one schema and one migration set.
+      alwaysInsertFields: true,
+      bucket: process.env.MINIO_BUCKET || '',
+      collections: {
+        media: {
+          prefix: 'assets/media',
+          generateFileURL: ({ filename }) => `${MEDIA_BASE_URL}/media/${encodeURIComponent(filename)}`,
+        },
+      },
+      config: {
+        endpoint: process.env.MINIO_ENDPOINT,
+        region: process.env.MINIO_REGION || 'us-east-1',
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.MINIO_ACCESS_KEY || '',
+          secretAccessKey: process.env.MINIO_SECRET_KEY || '',
+        },
+      },
+    }),
+  ],
 
   // TypeScript types output file.
   typescript: {

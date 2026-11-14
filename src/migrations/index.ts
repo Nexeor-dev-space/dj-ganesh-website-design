@@ -12,6 +12,7 @@ import * as migration_20261110_120937_international_shows from './20261110_12093
 import * as migration_20261110_123027_shared_stages from './20261110_123027_shared_stages';
 import * as migration_20261112_053605_shared_stages_photos from './20261112_053605_shared_stages_photos';
 import * as migration_20261112_054149_cms_short_labels from './20261112_054149_cms_short_labels';
+import * as migration_20261113_170746_media_object_storage from './20261113_170746_media_object_storage';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20261112_054149_cms_short_labels.up,
     down: migration_20261112_054149_cms_short_labels.down,
-    name: '20261112_054149_cms_short_labels'
+    name: '20261112_054149_cms_short_labels',
+  },
+  {
+    up: migration_20261113_170746_media_object_storage.up,
+    down: migration_20261113_170746_media_object_storage.down,
+    name: '20261113_170746_media_object_storage'
   },
 ];
