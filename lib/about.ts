@@ -1,4 +1,5 @@
 import type { CareerStat } from "@/types/about";
+import { assetUrl } from "@/lib/asset-url";
 
 /**
  * Section 04 — My Story.
@@ -56,7 +57,7 @@ export const careerStats: readonly CareerStat[] = [
 
 /** The stage frame this section closes around. */
 export const aboutPortrait = {
-  src: "/images/about-07467.jpg",
+  src: assetUrl("/images/about-07467.jpg"),
   alt: "DJ Ganesh at the decks, arms raised to a packed arena, his name on the screens above",
 };
 

@@ -78,8 +78,9 @@ const ROOT = process.cwd()
 const pub = (p: string) => path.join(ROOT, 'public', p.replace(/^\//, ''))
 const lines = (a: readonly string[]) => a.map((line) => ({ line }))
 // Text-only mode: skip ALL media uploads/references so upload fields stay empty
-// and the frontend falls back to the committed /images and /videos files.
-// Used to seed environments (e.g. staging) whose media disk we can't populate.
+// and the frontend falls back to the built-in assets in data/ and lib/, served
+// from the media host (assetUrl). Used to seed environments whose Media
+// collection we don't want to populate.
 const TEXT_ONLY = process.env.SEED_TEXT_ONLY === '1'
 
 async function main() {
@@ -97,8 +98,22 @@ const MIME: Record<string, string> = {
   '.mp4': 'video/mp4',
 }
 
-async function media(src: string, alt: string): Promise<number | string | undefined> {
+// Asset paths in data/ may be absolute media-host URLs (lib/asset-url.ts).
+// Reduce them to `/images/...` so lookups match, and read each file from
+// public/ when it is still there, else download it from the media host.
+const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL || '').trim().replace(/\/+$/, '')
+const relPath = (src: string) => (MEDIA_BASE && src.startsWith(MEDIA_BASE) ? src.slice(MEDIA_BASE.length) : src)
+async function readAsset(src: string): Promise<Buffer> {
+  if (fs.existsSync(pub(src))) return fs.readFileSync(pub(src))
+  if (!MEDIA_BASE) throw new Error(`${src} is not in public/ and NEXT_PUBLIC_MEDIA_BASE_URL is not set`)
+  const res = await fetch(`${MEDIA_BASE}${src}`)
+  if (!res.ok) throw new Error(`download ${MEDIA_BASE}${src}: HTTP ${res.status}`)
+  return Buffer.from(await res.arrayBuffer())
+}
+
+async function media(rawSrc: string, alt: string): Promise<number | string | undefined> {
   if (TEXT_ONLY) return undefined
+  const src = relPath(rawSrc)
   const filename = path.basename(src)
   if (mediaIds[src]) return mediaIds[src]
   const found = await payload.find({
@@ -108,7 +123,7 @@ async function media(src: string, alt: string): Promise<number | string | undefi
     depth: 0,
   })
   if (found.docs[0]) return (mediaIds[src] = found.docs[0].id)
-  const data = fs.readFileSync(pub(src))
+  const data = await readAsset(src)
   const doc = await payload.create({
     collection: 'media',
     data: { alt },

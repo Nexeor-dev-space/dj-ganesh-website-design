@@ -1,4 +1,5 @@
 import { liveShows, liveShowsHeading, liveShowsLabel } from "@/data/live-shows";
+import { assetUrl } from "@/lib/asset-url";
 
 /**
  * Section — Gallery.
@@ -23,27 +24,27 @@ export const gallerySectionLabel = "Gallery";
  */
 export const galleryItems: readonly { src: string; alt: string; href?: string }[] = [
   {
-    src: "/images/gallery-00665.jpg",
+    src: assetUrl("/images/gallery-00665.jpg"),
     alt: "DJ Ganesh and Emraan Hashmi at the decks, arms up in front of a packed club",
   },
   {
-    src: "/images/gallery-07499.jpg",
+    src: assetUrl("/images/gallery-07499.jpg"),
     alt: "DJ Ganesh at the decks, smoke cannons firing over the crowd",
   },
   {
-    src: "/images/gallery-09602.jpg",
+    src: assetUrl("/images/gallery-09602.jpg"),
     alt: "Emraan Hashmi on stage at Quake, phones raised in the crowd",
   },
   {
-    src: "/images/gallery-09863.jpg",
+    src: assetUrl("/images/gallery-09863.jpg"),
     alt: "Red lasers over a packed floor at Quake, Barsaate on the screens",
   },
   {
-    src: "/images/gallery-00400.jpg",
+    src: assetUrl("/images/gallery-00400.jpg"),
     alt: "DJ Ganesh beside Emraan Hashmi at the desk as he takes the mic",
   },
   {
-    src: "/images/gallery-00529.jpg",
+    src: assetUrl("/images/gallery-00529.jpg"),
     alt: "Looking out over a crowd of phone lights between two smoke cannons",
   },
 ];
@@ -53,8 +54,8 @@ export const galleryItems: readonly { src: string; alt: string; href?: string }[
  * a numbered setlist (see data/live-shows.ts).
  */
 export const galleryFeature = {
-  videoSrc: "/videos/recent-big-shows.mp4",
-  poster: "/images/recent-big-shows-poster.jpg",
+  videoSrc: assetUrl("/videos/recent-big-shows.mp4"),
+  poster: assetUrl("/images/recent-big-shows-poster.jpg"),
   label: liveShowsHeading,
   eyebrow: liveShowsLabel,
   shows: liveShows,

@@ -1,4 +1,5 @@
 import { spotifyUrl } from "@/data/tracks";
+import { assetUrl } from "@/lib/asset-url";
 
 /**
  * Nonstop Sets — the homepage band after Music.
@@ -24,11 +25,11 @@ export type NonstopSet = {
 
 export const nonstopSets: readonly NonstopSet[] = [
   // TODO: YouTube link and title for set 01.
-  { title: "Nonstop Set 01", tag: "BollyAfro", length: "60 min", image: "/images/g-1.jpg", href: "#" },
+  { title: "Nonstop Set 01", tag: "BollyAfro", length: "60 min", image: assetUrl("/images/g-1.jpg"), href: "#" },
   // TODO: YouTube link and title for set 02.
-  { title: "Nonstop Set 02", tag: "Wedding", length: "60 min", image: "/images/g-2.jpg", href: "#" },
+  { title: "Nonstop Set 02", tag: "Wedding", length: "60 min", image: assetUrl("/images/g-2.jpg"), href: "#" },
   // TODO: YouTube link and title for set 03.
-  { title: "Nonstop Set 03", tag: "Club Night", length: "60 min", image: "/images/g-4.jpg", href: "#" },
+  { title: "Nonstop Set 03", tag: "Club Night", length: "60 min", image: assetUrl("/images/g-4.jpg"), href: "#" },
 ];
 
 export const nonstopSpotifyUrl = spotifyUrl;

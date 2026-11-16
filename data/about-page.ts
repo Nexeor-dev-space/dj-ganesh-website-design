@@ -1,3 +1,5 @@
+import { assetUrl } from "@/lib/asset-url";
+
 /**
  * The `/about` page.
  *
@@ -36,15 +38,15 @@ export const aboutParagraphs = [
 /** The two frames this page is told through — both already in the project. */
 export const aboutFrames = {
   stage: {
-    src: "/images/about-hero-00448.jpg",
+    src: assetUrl("/images/about-hero-00448.jpg"),
     alt: "A packed arena lit by phone lights, seen from behind DJ Ganesh at the decks",
   },
   portrait: {
-    src: "/images/dj-ganesh-07541.jpg",
+    src: assetUrl("/images/dj-ganesh-07541.jpg"),
     alt: "DJ Ganesh, arms outstretched, in front of a packed club crowd",
   },
   decks: {
-    src: "/images/dj-about-00023.jpg",
+    src: assetUrl("/images/dj-about-00023.jpg"),
     alt: "A packed club under red lights, Emraan Hashmi alongside DJ Ganesh on the screens",
   },
 } as const;

@@ -15,6 +15,11 @@ import type { Track } from '@/types/music'
 import type { Milestone } from '@/types/legacy'
 import type { Testimonial } from '@/types/testimonials'
 import { resolveMedia } from '@/lib/cms/media'
+import { assetUrl } from '@/lib/asset-url'
+
+/** A site-relative path typed into the CMS (`/audio/x.mp3`) points at the media host; full URLs pass through. */
+const cmsAssetUrl = (value: string | null | undefined) =>
+  value && value.startsWith('/') && !value.startsWith('//') ? assetUrl(value) : (value ?? '')
 
 /** CMS `genre` select value → the human label the release cards show as `tag`. */
 const GENRE_LABEL: Record<string, string> = {
@@ -47,7 +52,7 @@ export function toTrack(r: MusicRelease): Track {
     title: r.title ?? '',
     tag: GENRE_LABEL[r.genre as string] ?? String(r.genre ?? ''),
     artist: r.artist ?? '',
-    audio: r.audioUrl ?? '',
+    audio: cmsAssetUrl(r.audioUrl),
     youtubeId,
     thumbnail: youtubeThumbnail(youtubeId),
     artwork: resolveMedia(r.artwork as never, '').url ?? '',

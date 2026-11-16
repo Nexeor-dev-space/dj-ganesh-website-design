@@ -1,3 +1,5 @@
+import { assetUrl } from "@/lib/asset-url";
+
 /**
  * International & Indian artists DJ Ganesh has shared stages with, as supplied
  * by the client (Dimitri Vegas and Like Mike kept as two names at their
@@ -20,7 +22,7 @@ export type Artist = {
 
 export type ArtistGroup = { id: string; label: string; artists: readonly Artist[] };
 
-const img = (slug: string) => `/images/artists/${slug}.webp`;
+const img = (slug: string) => assetUrl(`/images/artists/${slug}.webp`);
 
 export const internationalArtists: ArtistGroup = {
   id: "international",

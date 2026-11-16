@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# site media: served from MinIO (#28), see README "Media storage and delivery".
+# Only the logos, fonts and .gitkeep files stay in git.
+/public/audio/*
+/public/videos/*
+/public/og/*
+/public/images/*
+/public/media/*
+!/public/audio/.gitkeep
+!/public/videos/.gitkeep
+!/public/images/logo-dj-ganesh.png
+!/public/media/logo-dj-ganesh-full-1.png

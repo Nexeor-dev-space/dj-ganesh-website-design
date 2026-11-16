@@ -101,6 +101,8 @@ export function MusicProvider({
     tracks.forEach((track) => {
       const probe = new Audio();
       probe.preload = "metadata";
+      // Same CORS mode as the player, so the browser can reuse the response.
+      probe.crossOrigin = "anonymous";
       probe.src = track.audio;
       probes.push(probe);
 
@@ -350,8 +352,11 @@ export function MusicProvider({
   return (
     <MusicContext.Provider value={value}>
       {children}
+      {/* The mixes come from the media host. Web Audio plays a cross-origin
+          file without CORS as silence, so it is requested in CORS mode. */}
       <audio
         ref={audioRef}
+        crossOrigin="anonymous"
         src={currentTrack.audio}
         preload="metadata"
         onEnded={advance}
