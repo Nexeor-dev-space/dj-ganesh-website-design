@@ -112,8 +112,8 @@ Runs `scripts/seed.ts` (with `node --experimental-strip-types --no-warnings`).
   against production once editors have started working.
 - **Text-only mode**: `SEED_TEXT_ONLY=1 npm run seed` skips every media upload
   and the gallery album, leaving upload fields empty so the site falls back to
-  the committed `/images` and `/videos` files. Use this for an environment whose
-  media disk can't be populated.
+  the built-in assets in `data/` and `lib/`, served from the media host. Use
+  this for an environment whose Media collection you don't want to populate.
 - **Prerequisites**: `DATABASE_URL` and `PAYLOAD_SECRET` set, and the schema in
   place (local push via `npm run dev`, or `npm run migrate` on a remote DB).
   Uploads go to MinIO when the media variables are set (see
@@ -278,8 +278,9 @@ dj-ganesh/assets/
 
 - **Built-in assets** (`data/`, `lib/`): every path goes through
   `assetUrl()` in `lib/asset-url.ts`, which prefixes
-  `NEXT_PUBLIC_MEDIA_BASE_URL`. Unset (local dev), paths stay relative and are
-  served from `public/`. The logos and fonts stay in `public/`.
+  `NEXT_PUBLIC_MEDIA_BASE_URL`. Unset, paths stay relative and are served from
+  `public/`, which only works with local copies of the files: the media folders
+  are git-ignored, and only the logos, fonts and `.gitkeep` files are tracked.
 - **CMS uploads**: `@payloadcms/storage-s3` in `payload.config.ts` writes the
   Media collection to `assets/media/` and builds every Media URL as
   `NEXT_PUBLIC_MEDIA_BASE_URL/media/<filename>`. Payload generates
@@ -333,7 +334,7 @@ src/            Payload collections, globals, fields, hooks, email, migrations
 scripts/        seed.ts and other Node scripts
 docs/           Deployment / migration notes
 types/          Shared TypeScript types
-public/         images · videos · audio · fonts · media (CMS uploads)
+public/         fonts and logos (site media lives in MinIO, git-ignored here)
 payload.config.ts  Payload config
 ```
 
@@ -358,9 +359,11 @@ payload.config.ts  Payload config
 
 ## Hero media
 
-- **Photograph**: `public/images/banner-bg.png` is the fixed visual identity of
-  the first viewport. It is never modified on disk — grade, grain, vignette and
-  scrims are applied in CSS (`.hero-photo`, `.overlay-*` in `globals.css`).
+- **Video**: the home hero plays `assets/videos/dj-ganesh.mp4`
+  (`components/hero/HeroBackground.tsx`) unless the Home Page global sets a hero
+  video. The footage is never modified — fades and grain are applied in CSS
+  (`.hero-media*`, `.overlay-*` in `globals.css`); `.hero-photo` applies the
+  photo grade to the About portrait.
 - **Sound**: the `/dev/interactions` sandbox plays `assets/audio/openformat.mp3`
   (see `lib/media.ts`). Nothing ever autoplays.
 

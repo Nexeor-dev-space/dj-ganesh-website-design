@@ -78,8 +78,9 @@ const ROOT = process.cwd()
 const pub = (p: string) => path.join(ROOT, 'public', p.replace(/^\//, ''))
 const lines = (a: readonly string[]) => a.map((line) => ({ line }))
 // Text-only mode: skip ALL media uploads/references so upload fields stay empty
-// and the frontend falls back to the committed /images and /videos files.
-// Used to seed environments (e.g. staging) whose media disk we can't populate.
+// and the frontend falls back to the built-in assets in data/ and lib/, served
+// from the media host (assetUrl). Used to seed environments whose Media
+// collection we don't want to populate.
 const TEXT_ONLY = process.env.SEED_TEXT_ONLY === '1'
 
 async function main() {
