@@ -25,6 +25,7 @@ const clientele = await ld('../data/guest-list.ts')
 const intlShows = await ld('../data/destinations.ts')
 const shared = await ld('../data/shared-stages.ts')
 const { galleryItems, gallerySectionLabel, galleryFeature } = await ld('../data/gallery.ts')
+const { journeyPhotos, journeyHeading, journeyAlbum } = await ld('../data/journey.ts')
 const { privacyPolicy } = await ld('../data/privacy.ts')
 const { nonstopLabel, nonstopHeading, nonstopLede, nonstopSets, nonstopSpotifyUrl, nonstopPodcastUrl } = await ld('../data/nonstop.ts')
 const { followHeading, followLinks } = await ld('../data/follow.ts')
@@ -302,6 +303,22 @@ if (!TEXT_ONLY) {
       album: 'Live Sets',
       images: galleryItems.map((it: { alt: string }, i: number) => ({ image: galleryMedia[i], caption: it.alt })),
       order: 0,
+      publishedStatus: true,
+      _status: 'published',
+    },
+  )
+
+  // The About page's photo section under the bio.
+  const journeyMedia = []
+  for (const p of journeyPhotos as { src: string; alt: string }[]) journeyMedia.push(await media(p.src, p.alt))
+  await upsert(
+    'gallery',
+    { album: { equals: journeyAlbum } },
+    {
+      title: journeyHeading,
+      album: journeyAlbum,
+      images: (journeyPhotos as { caption: string }[]).map((p, i) => ({ image: journeyMedia[i], caption: p.caption })),
+      order: 1,
       publishedStatus: true,
       _status: 'published',
     },

@@ -301,21 +301,27 @@ export interface PerformanceHistory {
   createdAt: string;
 }
 /**
- * Gallery albums with multiple images per album.
+ * The album with Album / Category "Journey" is the photo section under the bio on the About page (published albums only). Empty: the built-in photos.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
  */
 export interface Gallery {
   id: number;
+  /**
+   * For the "Journey" album, the heading of the About page photo section.
+   */
   title: string;
   /**
-   * Organises photos here in the admin only; not shown on the website.
+   * Type "Journey" for the About page photo section. Any other value is not shown on the website.
    */
   album: string;
   images?:
     | {
         image: number | Media;
+        /**
+         * The line under the photo, e.g. "Club 77 · London". The alt text comes from the photo in Media.
+         */
         caption?: string | null;
         id?: string | null;
       }[]

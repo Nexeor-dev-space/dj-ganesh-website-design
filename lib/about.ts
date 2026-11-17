@@ -4,9 +4,9 @@ import { assetUrl } from "@/lib/asset-url";
 /**
  * Section 04 — My Story.
  *
- * The copy is the client's existing bio, carried over from `index.html`
- * without embellishment: no awards, no collaborations, no milestones beyond
- * what that paragraph already states.
+ * The copy is the client's revised bio, word for word: no awards,
+ * collaborations or milestones beyond what it already states. Its last
+ * sentence is set apart as the closing line.
  *
  * `careerStats` is the exception, and the only figures on the page that did
  * not come from that file — they were supplied directly by the client. Treat
@@ -19,8 +19,8 @@ export const aboutSectionLabel = "My Story";
 export const aboutHeading = ["Wedding &", "BollyAfro", "Pioneer"] as const;
 
 export const aboutStory = [
-  "Started behind the decks in Mumbai, where DJ Ganesh built the BollyAfro sound: Bollywood, Afrobeats and house, mixed into one. From private nights for the Ambani family to stages in 50+ countries, he is now one of India's most booked DJs.",
-  "Now on a global world tour in 2026, the journey continues.",
+  "DJ Ganesh is an award-winning DJ and music producer from Mumbai, India, whose journey began in 2007 at prestigious institutions like Willingdon Sports Club and Bombay Gymkhana. Known for his signature Afro-Bollywood sound, he has performed at celebrity weddings, billionaire family celebrations, international festivals and India's leading nightclubs, including Bastian's flagship properties across the country.",
+  "A multiple award winner, he continues to blend Bollywood with global electronic music, creating unforgettable dance-floor experiences worldwide.",
 ] as const;
 
 /** The three strands of the BollyAfro sound, named in the bio. */
