@@ -26,13 +26,13 @@ export const aboutStatement = "Bollywood, Afrobeats and house, mixed into one.";
 
 /**
  * The story, broken where a reader needs air. The words are the client's bio,
- * unchanged; only the break points are ours — `aboutStory[0]` is two sentences
- * and reads as a wall set as one block at this size.
+ * unchanged; only the break points are ours — one sentence per paragraph, as
+ * the bio reads as a wall set as one block at this size.
  */
 export const aboutParagraphs = [
-  "Started behind the decks in Mumbai, where DJ Ganesh built the BollyAfro sound: Bollywood, Afrobeats and house, mixed into one.",
-  "From private nights for the Ambani family to stages in 50+ countries, he is now one of India's most booked DJs.",
-  "Now on a global world tour in 2026, the journey continues.",
+  "DJ Ganesh is an award-winning DJ and music producer from Mumbai, India, whose journey began in 2007 at prestigious institutions like Willingdon Sports Club and Bombay Gymkhana.",
+  "Known for his signature Afro-Bollywood sound, he has performed at celebrity weddings, billionaire family celebrations, international festivals and India's leading nightclubs, including Bastian's flagship properties across the country.",
+  "A multiple award winner, he continues to blend Bollywood with global electronic music, creating unforgettable dance-floor experiences worldwide.",
 ] as const;
 
 /** The two frames this page is told through — both already in the project. */

@@ -24,6 +24,11 @@ const config: NextConfig = {
     // 64:ff9b:: address, which Next blocks as private, so every photo 400s on
     // localhost. Servers resolve its public IPv4; production keeps the block.
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
+    // Local opt-in for a slow link to the media host: the optimiser gives up
+    // on any upstream download after a fixed 7s, so on such a connection most
+    // photos 500. NEXT_IMAGE_UNOPTIMIZED=1 has the browser load them from the
+    // media host directly instead. Never set it on a server.
+    unoptimized: process.env.NEXT_IMAGE_UNOPTIMIZED === '1',
     remotePatterns: [
       {
         protocol: 'https',

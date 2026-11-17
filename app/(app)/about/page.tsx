@@ -7,14 +7,17 @@ import { AboutHero } from "@/components/about-page/AboutHero";
 import { ArtistStory } from "@/components/about-page/ArtistStory";
 import { ArtistVisual } from "@/components/about-page/ArtistVisual";
 import { BookingTransition } from "@/components/about-page/BookingTransition";
+import { JourneySection } from "@/components/about-page/JourneySection";
 import { ExperienceSection } from "@/components/experience/ExperienceSection";
 import { Footer } from "@/components/footer/Footer";
 import { LegacySection } from "@/components/legacy/LegacySection";
 import { Navbar } from "@/components/navigation/Navbar";
 import { aboutFrames } from "@/data/about-page";
+import { journeyAlbum, type JourneyPhoto } from "@/data/journey";
 import {
   getAbout,
   getExperiencesServices,
+  getGalleryAlbums,
   getHomePage,
   getLegacyMilestones,
 } from "@/lib/cms/queries";
@@ -59,18 +62,45 @@ export async function generateMetadata(): Promise<Metadata> {
   return cmsPageMetadata(page?.seo, {
     title: "DJ Ganesh — About",
     description:
-      "DJ Ganesh built the BollyAfro sound in Mumbai. From private nights for the Ambani family to stages in 50+ countries.",
+      "DJ Ganesh is an award-winning DJ and music producer from Mumbai, India, known for his signature Afro-Bollywood sound.",
     path: "/about",
   });
 }
 
+/**
+ * The Journey photos from the published Gallery album whose Album / Category
+ * is "Journey": each photo's alt text from the Media library, its caption from
+ * the album row. Undefined when there is no such album or it has no photos,
+ * so the built-in frames show.
+ */
+function journeyFrom(albums: Awaited<ReturnType<typeof getGalleryAlbums>>) {
+  const album = albums.find(
+    (a) => a.album?.trim().toLowerCase() === journeyAlbum.toLowerCase(),
+  );
+  const photos: JourneyPhoto[] = (album?.images ?? []).flatMap((row) => {
+    const media = typeof row.image === "object" ? row.image : null;
+    const { url, alt } = resolveMedia(row.image);
+    if (!url) return [];
+    return [{
+      src: url,
+      alt: alt ?? "",
+      caption: str(row.caption) ?? "",
+      landscape: Boolean(media?.width && media?.height && media.width > media.height),
+    }];
+  });
+  return photos.length ? { heading: str(album?.title), photos } : undefined;
+}
+
 export default async function AboutPage() {
-  const [about, home, milestoneDocs, services] = await Promise.all([
+  const [about, home, milestoneDocs, services, albums] = await Promise.all([
     getAbout(),
     getHomePage(),
     getLegacyMilestones(),
     getExperiencesServices(),
+    getGalleryAlbums(),
   ]);
+
+  const journey = journeyFrom(albums);
 
   const paragraphs = (about?.story?.paragraphs ?? [])
     .map((p) => p.paragraph)
@@ -115,6 +145,8 @@ export default async function AboutPage() {
           stats={stats.length ? stats : undefined}
           heading={str(about?.labels?.story)}
         />
+        {/* The bio in photographs: CMS Gallery → the "Journey" album. */}
+        <JourneySection heading={journey?.heading} photos={journey?.photos} />
         <ArtistVisual
           label={str(about?.labels?.identity)}
           strands={strands.length ? strands : undefined}

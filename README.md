@@ -307,6 +307,7 @@ dj-ganesh/assets/
 | `MINIO_REGION` | no | S3 region; MinIO ignores it. Defaults to `us-east-1`. | `us-east-1` |
 | `MINIO_ACCESS_KEY` | no (runtime only) | Access key scoped to the bucket. Secret. | — |
 | `MINIO_SECRET_KEY` | no (runtime only) | Its secret. Secret. | — |
+| `NEXT_IMAGE_UNOPTIMIZED` | — | Local dev only. `1` serves photos straight from the media host instead of through the Next image optimiser, whose fixed 7s upstream timeout fails most photos on a slow link to MinIO. Never set on a server. | `1` |
 
 ## Scripts
 

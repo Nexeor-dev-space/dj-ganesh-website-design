@@ -5539,6 +5539,87 @@
     color: rgba(255, 255, 255, 0.4);
   }
 
+  /* ---- The journey in photographs ----------------------------------------- */
+
+  /* The homepage gallery's sheet: a hairline between frames, not a gutter.
+     Two across on phones and tablets, four on desktop. Dense, so a CMS album
+     that leaves a gap fills it with the next portrait. */
+  .journey__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: 3px;
+    margin: var(--rhythm-block) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width >= 1024px) {
+    .journey__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Two columns wide, so a landscape stands as tall as a portrait beside it. */
+  .journey__item--landscape {
+    grid-column: span 2;
+  }
+
+  .journey__figure {
+    margin: 0;
+  }
+
+  .journey__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: #060606;
+  }
+
+  .journey__item--landscape .journey__frame {
+    aspect-ratio: 8 / 5;
+  }
+
+  /* In colour, held a shade down until asked for, then full and a step closer. */
+  .journey__img {
+    object-fit: cover;
+    filter: brightness(0.82);
+    transition:
+      filter 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+  }
+
+  .journey__item:hover .journey__img {
+    filter: none;
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .journey__img {
+      transition: filter 500ms var(--ease-out);
+    }
+
+    .journey__item:hover .journey__img {
+      transform: none;
+    }
+  }
+
+  .journey__caption {
+    padding: 10px 2px 14px;
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 1.4;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .journey__caption {
+      font-size: 12px;
+    }
+  }
+
   /* ---- Hand-off to booking ------------------------------------------------ */
 
   .about-outro {
