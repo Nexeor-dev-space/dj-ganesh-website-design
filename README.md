@@ -296,6 +296,16 @@ dj-ganesh/assets/
   is limited to the `dj-ganesh` bucket.
 - Payload sends files under 50 MB to MinIO in one request, so the proxy in
   front of the MinIO API must accept request bodies that large.
+- **Audio uploads**: Media accepts MP3, WAV and M4A next to images and video.
+  A Music / Release plays its **Audio File** (picked from Media) when one is
+  set, else the legacy **Audio URL** (a `/audio/x.mp3` path on the media host
+  or a full link). Alt text is optional for audio; left blank, it is filled
+  from the file name.
+- **Upload size**: Payload accepts files up to 150 MB (`upload.limits` in
+  `payload.config.ts`) and refuses larger ones with 413. The proxy in front of
+  `/admin` must allow that body size too. If the domain is proxied through
+  Cloudflare, uploads over 100 MB will fail at that layer regardless of app
+  config.
 
 ### Media environment variables
 

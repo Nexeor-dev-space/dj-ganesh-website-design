@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { AUDIO_MIME_TYPES } from './Media.ts'
 
 const MusicReleases: CollectionConfig = {
   slug: 'music-releases',
@@ -39,10 +40,20 @@ const MusicReleases: CollectionConfig = {
       },
     },
     {
+      name: 'audioFile',
+      label: 'Audio File',
+      type: 'upload',
+      relationTo: 'media',
+      filterOptions: { mimeType: { in: AUDIO_MIME_TYPES } },
+      admin: { description: 'MP3, WAV or M4A from the Media library. Used instead of the Audio URL below.' },
+    },
+    {
+      // Kept for releases set up before audio uploads (#44): typed paths like
+      // /audio/x.mp3 (served from the media host) or full links.
       name: 'audioUrl',
-      label: 'Audio URL',
+      label: 'Audio URL (legacy)',
       type: 'text',
-      admin: { description: 'Optional: direct link to audio file.' },
+      admin: { description: 'Optional: path or direct link to an audio file. Used only when no Audio File is picked.' },
     },
     {
       name: 'releaseDate',

@@ -183,6 +183,9 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Optional for audio files: left blank, it is filled from the file name.
+   */
   alt: string;
   caption?: string | null;
   prefix?: string | null;
@@ -263,7 +266,11 @@ export interface MusicRelease {
   artwork?: (number | null) | Media;
   youtubeUrl?: string | null;
   /**
-   * Optional: direct link to audio file.
+   * MP3, WAV or M4A from the Media library. Used instead of the Audio URL below.
+   */
+  audioFile?: (number | null) | Media;
+  /**
+   * Optional: path or direct link to an audio file. Used only when no Audio File is picked.
    */
   audioUrl?: string | null;
   releaseDate?: string | null;
@@ -675,6 +682,7 @@ export interface MusicReleasesSelect<T extends boolean = true> {
   artist?: T;
   artwork?: T;
   youtubeUrl?: T;
+  audioFile?: T;
   audioUrl?: T;
   releaseDate?: T;
   description?: T;

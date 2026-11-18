@@ -110,6 +110,13 @@ export default buildConfig({
   // Generates the Media image sizes (thumbnail, card, hero) on upload.
   sharp,
 
+  // Uploads are held in memory before going to MinIO. 150 MB fits a long WAV
+  // (#44); anything larger is refused with 413 instead of being cut short.
+  upload: {
+    limits: { fileSize: 150 * 1024 * 1024 },
+    abortOnLimit: true,
+  },
+
   plugins: [
     s3Storage({
       enabled: objectStorageEnabled,
