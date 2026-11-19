@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { imageOnly } from '../collections/Media.ts'
 
 const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
@@ -10,8 +11,8 @@ const SiteSettings: GlobalConfig = {
   access: { read: () => true },
   fields: [
     { name: 'siteName', label: 'Brand Name', type: 'text', required: true, admin: { description: 'The big name at the foot of every page.' } },
-    { name: 'logo', label: 'Header Logo', type: 'upload', relationTo: 'media', admin: { description: 'The logo in the header on every page. A wide, transparent PNG works best. Empty: the built-in logo.' } },
-    { name: 'favicon', label: 'Favicon', type: 'upload', relationTo: 'media', admin: { hidden: true } },
+    { name: 'logo', label: 'Header Logo', type: 'upload', relationTo: 'media', filterOptions: imageOnly, admin: { description: 'The logo in the header on every page. A wide, transparent PNG works best. Empty: the built-in logo.' } },
+    { name: 'favicon', label: 'Favicon', type: 'upload', relationTo: 'media', filterOptions: imageOnly, admin: { hidden: true } },
     {
       type: 'group',
       name: 'seo',

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { audioOnly, imageOnly } from './Media.ts'
 
 const MusicReleases: CollectionConfig = {
   slug: 'music-releases',
@@ -27,7 +28,7 @@ const MusicReleases: CollectionConfig = {
       required: true,
     },
     { name: 'artist', label: 'Artist / Credits', type: 'text' },
-    { name: 'artwork', label: 'Artwork', type: 'upload', relationTo: 'media' },
+    { name: 'artwork', label: 'Artwork', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
     {
       name: 'youtubeUrl',
       label: 'YouTube URL',
@@ -39,10 +40,20 @@ const MusicReleases: CollectionConfig = {
       },
     },
     {
+      name: 'audioFile',
+      label: 'Audio File',
+      type: 'upload',
+      relationTo: 'media',
+      filterOptions: audioOnly,
+      admin: { description: 'MP3, WAV or M4A from the Media library. Used instead of the Audio URL below.' },
+    },
+    {
+      // Kept for releases set up before audio uploads (#44): typed paths like
+      // /audio/x.mp3 (served from the media host) or full links.
       name: 'audioUrl',
-      label: 'Audio URL',
+      label: 'Audio URL (legacy)',
       type: 'text',
-      admin: { description: 'Optional: direct link to audio file.' },
+      admin: { description: 'Optional: path or direct link to an audio file. Used only when no Audio File is picked.' },
     },
     {
       name: 'releaseDate',

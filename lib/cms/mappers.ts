@@ -52,7 +52,8 @@ export function toTrack(r: MusicRelease): Track {
     title: r.title ?? '',
     tag: GENRE_LABEL[r.genre as string] ?? String(r.genre ?? ''),
     artist: r.artist ?? '',
-    audio: cmsAssetUrl(r.audioUrl),
+    // An uploaded Audio File (#44) wins; else the legacy typed path or link.
+    audio: resolveMedia(r.audioFile as never, '').url || cmsAssetUrl(r.audioUrl),
     youtubeId,
     thumbnail: youtubeThumbnail(youtubeId),
     artwork: resolveMedia(r.artwork as never, '').url ?? '',

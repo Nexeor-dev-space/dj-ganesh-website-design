@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { imageOnly } from './Media.ts'
 
 const PerformanceHistory: CollectionConfig = {
   slug: 'performance-history',
@@ -24,7 +25,7 @@ const PerformanceHistory: CollectionConfig = {
       ],
     },
     { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
     {
       name: 'category',
       label: 'Category / Geography',

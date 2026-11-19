@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { imageOnly } from './Media.ts'
 
 const ExperiencesServices: CollectionConfig = {
   slug: 'experiences-services',
@@ -15,14 +16,14 @@ const ExperiencesServices: CollectionConfig = {
     { name: 'title', label: 'Title', type: 'text', required: true },
     { name: 'shortDescription', label: 'Short Description', type: 'text', required: true },
     { name: 'detailedDescription', label: 'Detailed Description', type: 'textarea', admin: { hidden: true } },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
     {
       name: 'venuePhotos',
       label: 'Venue Photos',
       type: 'array',
       admin: { description: 'Optional small photos shown on the card, each with the venue name under it.' },
       fields: [
-        { name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', required: true },
+        { name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', filterOptions: imageOnly, required: true },
         { name: 'name', label: 'Venue Name', type: 'text', required: true },
       ],
     },

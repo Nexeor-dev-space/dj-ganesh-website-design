@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { imageOnly, videoOnly } from '../collections/Media.ts'
 import { seoGroup } from '../fields/seo.ts'
 
 const HomePage: GlobalConfig = {
@@ -17,7 +18,7 @@ const HomePage: GlobalConfig = {
       fields: [
         { name: 'heroHeading', label: 'Heading', type: 'text' },
         { name: 'heroSubheading', label: 'Line Above the Name', type: 'text', admin: { placeholder: 'e.g. Wedding DJ & BollyAfro Pioneer' } },
-        { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media', admin: { hidden: true } },
+        { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly, admin: { hidden: true } },
         { name: 'heroCtaText', label: 'CTA Button Text', type: 'text' },
         { name: 'heroCtaUrl', label: 'CTA Button URL', type: 'text' },
         { name: 'heroSecondaryCtaText', label: 'Second Button Text', type: 'text', admin: { placeholder: 'e.g. Listen to Music' } },
@@ -27,6 +28,7 @@ const HomePage: GlobalConfig = {
           label: 'Background Video',
           type: 'upload',
           relationTo: 'media',
+          filterOptions: videoOnly,
           admin: { description: 'Full-bleed hero background video (video/* accepted). Falls back to /videos/dj-ganesh.mp4.' },
         },
         {
@@ -34,6 +36,7 @@ const HomePage: GlobalConfig = {
           label: 'Video Poster',
           type: 'upload',
           relationTo: 'media',
+          filterOptions: imageOnly,
           admin: { description: "Shown on phones that don't autoplay video (e.g. iPhone Low Power Mode, data saver), and while the video loads. Use a still frame from the hero video." },
         },
       ],
@@ -55,7 +58,7 @@ const HomePage: GlobalConfig = {
               'The homepage "My Story" text. First paragraph: the story; second paragraph (after an empty line): the closing line in white. Empty: the built-in text. The heading and photo come from the About page (Story → Heading, Portrait).',
           },
         },
-        { name: 'introImage', label: 'Artist Image', type: 'upload', relationTo: 'media', admin: { hidden: true } },
+        { name: 'introImage', label: 'Artist Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly, admin: { hidden: true } },
       ],
     },
     {
@@ -262,6 +265,7 @@ const HomePage: GlobalConfig = {
               label: 'Photo',
               type: 'upload',
               relationTo: 'media',
+              filterOptions: imageOnly,
               admin: { description: 'Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.' },
             },
             {
@@ -287,6 +291,7 @@ const HomePage: GlobalConfig = {
               label: 'Photo',
               type: 'upload',
               relationTo: 'media',
+              filterOptions: imageOnly,
               admin: { description: 'Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.' },
             },
             {
@@ -431,7 +436,7 @@ const HomePage: GlobalConfig = {
             { name: 'title', label: 'Title', type: 'text', required: true },
             { name: 'tag', label: 'Tag', type: 'text', admin: { placeholder: 'e.g. BollyAfro' } },
             { name: 'length', label: 'Length', type: 'text', admin: { placeholder: 'e.g. 60 min' } },
-            { name: 'image', label: 'Thumbnail', type: 'upload', relationTo: 'media' },
+            { name: 'image', label: 'Thumbnail', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
             { name: 'url', label: 'YouTube URL', type: 'text' },
           ],
         },
@@ -452,9 +457,10 @@ const HomePage: GlobalConfig = {
           label: 'Reel Video',
           type: 'upload',
           relationTo: 'media',
+          filterOptions: videoOnly,
           admin: { description: 'The video above the photos. Falls back to /videos/recent-big-shows.mp4.' },
         },
-        { name: 'reelPoster', label: 'Reel Poster', type: 'upload', relationTo: 'media' },
+        { name: 'reelPoster', label: 'Reel Poster', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
         {
           name: 'reelLabel',
           label: 'Section Heading',
@@ -495,7 +501,7 @@ const HomePage: GlobalConfig = {
           label: 'Items',
           type: 'array',
           fields: [
-            { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+            { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
             { name: 'alt', label: 'Alt Text', type: 'text' },
             { name: 'href', label: 'Link', type: 'text' },
           ],
@@ -594,7 +600,7 @@ const HomePage: GlobalConfig = {
           type: 'array',
           maxRows: 6,
           admin: { description: 'Up to 6 photos for the moving wall behind the quotes. Empty: the built-in photos.' },
-          fields: [{ name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', required: true }],
+          fields: [{ name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', filterOptions: imageOnly, required: true }],
         },
         // Stored as `label`; shown on the site as the line under the heading.
         { name: 'label', label: 'Subtitle', type: 'text', admin: { placeholder: 'e.g. 5000+ events · half a million dancers · one dance floor at a time' } },

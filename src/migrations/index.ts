@@ -13,6 +13,7 @@ import * as migration_20261110_123027_shared_stages from './20261110_123027_shar
 import * as migration_20261112_053605_shared_stages_photos from './20261112_053605_shared_stages_photos';
 import * as migration_20261112_054149_cms_short_labels from './20261112_054149_cms_short_labels';
 import * as migration_20261113_170746_media_object_storage from './20261113_170746_media_object_storage';
+import * as migration_20261118_103341_music_audio_file from './20261118_103341_music_audio_file';
 
 export const migrations = [
   {
@@ -88,6 +89,11 @@ export const migrations = [
   {
     up: migration_20261113_170746_media_object_storage.up,
     down: migration_20261113_170746_media_object_storage.down,
-    name: '20261113_170746_media_object_storage'
+    name: '20261113_170746_media_object_storage',
+  },
+  {
+    up: migration_20261118_103341_music_audio_file.up,
+    down: migration_20261118_103341_music_audio_file.down,
+    name: '20261118_103341_music_audio_file'
   },
 ];

@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { imageOnly } from '../collections/Media.ts'
 import { seoGroup } from '../fields/seo.ts'
 
 /**
@@ -74,12 +75,12 @@ const About: GlobalConfig = {
       name: 'frames',
       label: 'Frames (Images)',
       fields: [
-        { name: 'stage', label: 'Stage Image', type: 'upload', relationTo: 'media' },
-        { name: 'portrait', label: 'Portrait Image', type: 'upload', relationTo: 'media' },
-        { name: 'decks', label: 'Decks Image', type: 'upload', relationTo: 'media' },
+        { name: 'stage', label: 'Stage Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
+        { name: 'portrait', label: 'Portrait Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
+        { name: 'decks', label: 'Decks Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
       ],
     },
-    { name: 'portrait', label: 'Closing Portrait Image', type: 'upload', relationTo: 'media' },
+    { name: 'portrait', label: 'Closing Portrait Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
     {
       type: 'group',
       name: 'careerStats',
