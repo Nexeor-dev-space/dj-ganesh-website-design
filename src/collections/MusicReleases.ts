@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { AUDIO_MIME_TYPES } from './Media.ts'
+import { audioOnly, imageOnly } from './Media.ts'
 
 const MusicReleases: CollectionConfig = {
   slug: 'music-releases',
@@ -28,7 +28,7 @@ const MusicReleases: CollectionConfig = {
       required: true,
     },
     { name: 'artist', label: 'Artist / Credits', type: 'text' },
-    { name: 'artwork', label: 'Artwork', type: 'upload', relationTo: 'media' },
+    { name: 'artwork', label: 'Artwork', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
     {
       name: 'youtubeUrl',
       label: 'YouTube URL',
@@ -44,7 +44,7 @@ const MusicReleases: CollectionConfig = {
       label: 'Audio File',
       type: 'upload',
       relationTo: 'media',
-      filterOptions: { mimeType: { in: AUDIO_MIME_TYPES } },
+      filterOptions: audioOnly,
       admin: { description: 'MP3, WAV or M4A from the Media library. Used instead of the Audio URL below.' },
     },
     {

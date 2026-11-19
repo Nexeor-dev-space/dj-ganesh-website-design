@@ -294,18 +294,39 @@ dj-ganesh/assets/
   (`Access-Control-Allow-Origin`), or the files fail to load.
 - The bucket's `assets/` prefix is public **read-only**; the app's MinIO key
   is limited to the `dj-ganesh` bucket.
-- Payload sends files under 50 MB to MinIO in one request, so the proxy in
+- Payload sends files to MinIO in requests of up to 50 MB, so the proxy in
   front of the MinIO API must accept request bodies that large.
 - **Audio uploads**: Media accepts MP3, WAV and M4A next to images and video.
   A Music / Release plays its **Audio File** (picked from Media) when one is
   set, else the legacy **Audio URL** (a `/audio/x.mp3` path on the media host
   or a full link). Alt text is optional for audio; left blank, it is filled
   from the file name.
-- **Upload size**: Payload accepts files up to 150 MB (`upload.limits` in
-  `payload.config.ts`) and refuses larger ones with 413. The proxy in front of
-  `/admin` must allow that body size too. If the domain is proxied through
-  Cloudflare, uploads over 100 MB will fail at that layer regardless of app
-  config.
+- **Pickers are filtered by type**: every upload field that points at Media
+  lists only what the site shows there (`imageOnly`, `videoOnly`, `audioOnly`
+  in `src/collections/Media.ts`), and Payload rejects a wrong type on save.
+- **Upload size**: Payload refuses files over **120 MB** with 413
+  (`upload.limits` in `payload.config.ts`). Tested: a 40 MB WAV saves through
+  the admin API (local dev against staging, about 30 s). Not yet shown to
+  work: an 80–100 MB file. From a slow connection (about 1 MB/s) it failed at
+  the proxy in front of MinIO (HTTP 499), which gave up on a 50 MB part sent
+  alongside a second one; from the server, next to MinIO, it is untested. Use
+  MP3 rather than WAV for long tracks. The proxy in front of `/admin` must
+  allow that body size too. If the domain is proxied through Cloudflare,
+  uploads over 100 MB will fail at that layer regardless of app config.
+- **Database timeout**: the server ends a transaction left idle for 10 s, and
+  Payload keeps one open while it sends an upload to MinIO. The app's own
+  connections raise that limit to 10 minutes (`idle_in_transaction_session_timeout`
+  in the pool options); nothing is changed on the server. The server also
+  closes sessions idle for 5 minutes, so the pool closes its idle connections
+  after 4 (`idleTimeoutMillis`) rather than hand out one the server has ended.
+- **Upload memory**: uploads stream to temp files in `UPLOAD_TEMP_DIR`
+  (default: `dj-ganesh-uploads` in the OS temp dir) rather than into memory.
+  Saving still reads an audio or video file into memory once, and the MinIO
+  step buffers up to a couple of 50 MB parts, so memory use drops but is not
+  zero. Temp files are deleted after every upload, successful or not
+  (`src/hooks/uploadTempFiles.ts`), and files older than an hour are swept at
+  start-up and hourly. The folder needs free disk space for the uploads in
+  flight.
 
 ### Media environment variables
 
@@ -317,6 +338,7 @@ dj-ganesh/assets/
 | `MINIO_REGION` | no | S3 region; MinIO ignores it. Defaults to `us-east-1`. | `us-east-1` |
 | `MINIO_ACCESS_KEY` | no (runtime only) | Access key scoped to the bucket. Secret. | — |
 | `MINIO_SECRET_KEY` | no (runtime only) | Its secret. Secret. | — |
+| `UPLOAD_TEMP_DIR` | no (runtime only) | Folder for uploads in flight. Defaults to `dj-ganesh-uploads` in the OS temp dir (`/tmp` in the container). | `/tmp/dj-ganesh-uploads` |
 | `NEXT_IMAGE_UNOPTIMIZED` | — | Local dev only. `1` serves photos straight from the media host instead of through the Next image optimiser, whose fixed 7s upstream timeout fails most photos on a slow link to MinIO. Never set on a server. | `1` |
 
 ## Scripts

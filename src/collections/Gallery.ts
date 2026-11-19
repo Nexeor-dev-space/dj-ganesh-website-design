@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { imageOnly } from './Media.ts'
 
 const Gallery: CollectionConfig = {
   slug: 'gallery',
@@ -36,7 +37,7 @@ const Gallery: CollectionConfig = {
       type: 'array',
       minRows: 1,
       fields: [
-        { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', required: true },
+        { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly, required: true },
         {
           name: 'caption',
           label: 'Caption',

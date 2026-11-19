@@ -1,11 +1,21 @@
-﻿import type { CollectionConfig } from 'payload'
+﻿import type { CollectionConfig, Where } from 'payload'
+import { removeUploadTempFilesAfterSave } from '../hooks/uploadTempFiles.ts'
 
 /**
  * Audio formats editors may upload (#44): MP3, WAV, M4A. Payload checks the
- * file's bytes, which report `audio/wav` and `audio/x-m4a` or `audio/mp4`;
- * the `x-` aliases cover browsers that send them.
+ * file's bytes, but stores the type the browser sends with the file, which
+ * varies (`audio/wav` or `audio/x-wav`, `audio/mp4` or `audio/x-m4a`).
  */
 export const AUDIO_MIME_TYPES = ['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/x-m4a']
+
+/**
+ * `filterOptions` for upload fields that point at Media, which holds images,
+ * video and audio. Each picker lists only the type the site renders there,
+ * and Payload checks the same filter when the document is saved.
+ */
+export const imageOnly: Where = { mimeType: { contains: 'image/' } }
+export const videoOnly: Where = { mimeType: { contains: 'video/' } }
+export const audioOnly: Where = { mimeType: { in: AUDIO_MIME_TYPES } }
 
 const isAudio = (mimeType: unknown) => typeof mimeType === 'string' && AUDIO_MIME_TYPES.includes(mimeType)
 
@@ -23,6 +33,7 @@ const Media: CollectionConfig = {
     description: 'Media library for all website assets.',
   },
   access: { read: () => true },
+  hooks: { afterOperation: [removeUploadTempFilesAfterSave] },
   upload: {
     staticDir: 'public/media',
     adminThumbnail: 'thumbnail',

@@ -1,4 +1,5 @@
 import type { Field } from 'payload'
+import { imageOnly } from '../collections/Media.ts'
 
 /**
  * A page's search-and-sharing settings: the title and description Google
@@ -33,6 +34,7 @@ export function seoGroup(page: string): Field {
         label: 'Share Image',
         type: 'upload',
         relationTo: 'media',
+        filterOptions: imageOnly,
         admin: { description: 'The picture in link previews. Best at 1200 × 630.' },
       },
     ],
