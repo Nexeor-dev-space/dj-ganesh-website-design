@@ -6569,7 +6569,7 @@
   /* Clears the fixed navigation, and holds more air beneath it than any
      section on the home page: this is a page that opens on a statement. */
   .contact-hero {
-    padding-top: clamp(140px, 20vw, 260px);
+    padding-top: clamp(104px, 9vw, 140px);
     padding-bottom: clamp(28px, 4vw, 56px);
     background-color: var(--background);
   }
