@@ -1,3 +1,5 @@
+import { assetUrl } from "@/lib/asset-url";
+
 /**
  * The Wall of Love — the imagery that drifts behind the quotes.
  *
@@ -12,12 +14,12 @@
  * is the only thing that needs to change.
  */
 export const wallImages = [
-  { src: "/images/wall/gallery-wedding.png", alt: "" },
-  { src: "/images/wall/gallery-club.png", alt: "" },
-  { src: "/images/wall/gallery-concert.png", alt: "" },
-  { src: "/images/wall/gallery-beach.png", alt: "" },
-  { src: "/images/wall/gallery-corporate.png", alt: "" },
-  { src: "/images/wall/gallery-cdj.png", alt: "" },
+  { src: assetUrl("/images/wall/gallery-wedding.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-club.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-concert.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-beach.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-corporate.png"), alt: "" },
+  { src: assetUrl("/images/wall/gallery-cdj.png"), alt: "" },
 ] as const;
 
 /**
@@ -41,9 +43,13 @@ export const WALL_ROW_LENGTH = 28;
  * the same picture in the same column and the wall reads as a crowd rather
  * than as six images repeated three times.
  */
-export function wallRow(rowIndex: number) {
+export function wallRow(
+  rowIndex: number,
+  images: readonly { src: string; alt: string }[] = wallImages,
+) {
+  const photos = images.length ? images : wallImages;
   return Array.from({ length: WALL_ROW_LENGTH }, (_, i) => {
-    const image = wallImages[(rowIndex * 4 + i) % wallImages.length];
+    const image = photos[(rowIndex * 4 + i) % photos.length];
     return { ...image, key: `${rowIndex}-${i}` };
   });
 }

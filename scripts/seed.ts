@@ -21,7 +21,13 @@ const { siteConfig, navLinks, socialLinks } = await ld('../lib/site.ts')
 const { statement, statementLabel } = await ld('../data/statement.ts')
 const { stageRows, stagesSectionLabel, stagesHeading, stagesLede, stagesCtaHref, stagesCtaLabel } = await ld('../lib/stages.ts')
 const { trustedNames, trustedLabel } = await ld('../data/trusted.ts')
-const { galleryItems, gallerySectionLabel } = await ld('../data/gallery.ts')
+const clientele = await ld('../data/guest-list.ts')
+const intlShows = await ld('../data/destinations.ts')
+const shared = await ld('../data/shared-stages.ts')
+const { galleryItems, gallerySectionLabel, galleryFeature } = await ld('../data/gallery.ts')
+const { journeyPhotos, journeyHeading, journeyAlbum } = await ld('../data/journey.ts')
+const { privacyPolicy } = await ld('../data/privacy.ts')
+const { nonstopLabel, nonstopHeading, nonstopLede, nonstopSets, nonstopSpotifyUrl, nonstopPodcastUrl } = await ld('../data/nonstop.ts')
 const { followHeading, followLinks } = await ld('../data/follow.ts')
 const { experienceSectionLabel, experienceHeading, experienceCtaHref, offerings } = await ld('../data/experience.ts')
 const { tourCities, tourShows } = await ld('../lib/tour.ts')
@@ -73,8 +79,9 @@ const ROOT = process.cwd()
 const pub = (p: string) => path.join(ROOT, 'public', p.replace(/^\//, ''))
 const lines = (a: readonly string[]) => a.map((line) => ({ line }))
 // Text-only mode: skip ALL media uploads/references so upload fields stay empty
-// and the frontend falls back to the committed /images and /videos files.
-// Used to seed environments (e.g. staging) whose media disk we can't populate.
+// and the frontend falls back to the built-in assets in data/ and lib/, served
+// from the media host (assetUrl). Used to seed environments whose Media
+// collection we don't want to populate.
 const TEXT_ONLY = process.env.SEED_TEXT_ONLY === '1'
 
 async function main() {
@@ -85,10 +92,29 @@ const counts: Record<string, number> = {}
 
 // ---------- Media ----------
 const mediaIds: Record<string, number | string> = {}
-const MIME: Record<string, string> = { '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4' }
+const MIME: Record<string, string> = {
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+}
 
-async function media(src: string, alt: string): Promise<number | string | undefined> {
+// Asset paths in data/ may be absolute media-host URLs (lib/asset-url.ts).
+// Reduce them to `/images/...` so lookups match, and read each file from
+// public/ when it is still there, else download it from the media host.
+const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL || '').trim().replace(/\/+$/, '')
+const relPath = (src: string) => (MEDIA_BASE && src.startsWith(MEDIA_BASE) ? src.slice(MEDIA_BASE.length) : src)
+async function readAsset(src: string): Promise<Buffer> {
+  if (fs.existsSync(pub(src))) return fs.readFileSync(pub(src))
+  if (!MEDIA_BASE) throw new Error(`${src} is not in public/ and NEXT_PUBLIC_MEDIA_BASE_URL is not set`)
+  const res = await fetch(`${MEDIA_BASE}${src}`)
+  if (!res.ok) throw new Error(`download ${MEDIA_BASE}${src}: HTTP ${res.status}`)
+  return Buffer.from(await res.arrayBuffer())
+}
+
+async function media(rawSrc: string, alt: string): Promise<number | string | undefined> {
   if (TEXT_ONLY) return undefined
+  const src = relPath(rawSrc)
   const filename = path.basename(src)
   if (mediaIds[src]) return mediaIds[src]
   const found = await payload.find({
@@ -98,7 +124,7 @@ async function media(src: string, alt: string): Promise<number | string | undefi
     depth: 0,
   })
   if (found.docs[0]) return (mediaIds[src] = found.docs[0].id)
-  const data = fs.readFileSync(pub(src))
+  const data = await readAsset(src)
   const doc = await payload.create({
     collection: 'media',
     data: { alt },
@@ -106,6 +132,16 @@ async function media(src: string, alt: string): Promise<number | string | undefi
   })
   console.log('uploaded media:', filename)
   return (mediaIds[src] = doc.id)
+}
+
+type SeedArtist = { name: string; image?: string; focus?: string }
+
+async function artistRows(artists: readonly SeedArtist[]) {
+  const rows = []
+  for (const a of artists) {
+    rows.push({ name: a.name, focus: a.focus, photo: a.image ? await media(a.image, a.name) : undefined })
+  }
+  return rows
 }
 
 // Seed data is assembled from plain objects rather than each collection's
@@ -178,6 +214,7 @@ const countryOf: Record<string, string> = {
   Nairobi: 'Kenya',
   'New York': 'United States',
   Singapore: 'Singapore',
+  Bali: 'Indonesia',
 }
 const showDocs: SeedDoc[] = []
 for (const [i, s] of tourShows.entries()) {
@@ -233,10 +270,17 @@ for (const [i, t] of testimonials.entries()) {
   )
 }
 
+// A card is found by its current title or any it used to have, so renaming one
+// in code updates the CMS card instead of adding a second beside it.
+const formerTitles: Record<string, string[]> = { 'Club Nights': ['Club Residencies'] }
+const offeringWhere = (title: string): Where => ({
+  or: [title, ...(formerTitles[title] ?? [])].map((t) => ({ title: { equals: t } })),
+})
+
 for (const [i, o] of offerings.entries()) {
   await upsert(
     'experiences-services',
-    { title: { equals: o.title } },
+    offeringWhere(o.title),
     {
       title: o.title,
       shortDescription: o.summary,
@@ -259,6 +303,22 @@ if (!TEXT_ONLY) {
       album: 'Live Sets',
       images: galleryItems.map((it: { alt: string }, i: number) => ({ image: galleryMedia[i], caption: it.alt })),
       order: 0,
+      publishedStatus: true,
+      _status: 'published',
+    },
+  )
+
+  // The About page's photo section under the bio.
+  const journeyMedia = []
+  for (const p of journeyPhotos as { src: string; alt: string }[]) journeyMedia.push(await media(p.src, p.alt))
+  await upsert(
+    'gallery',
+    { album: { equals: journeyAlbum } },
+    {
+      title: journeyHeading,
+      album: journeyAlbum,
+      images: (journeyPhotos as { caption: string }[]).map((p, i) => ({ image: journeyMedia[i], caption: p.caption })),
+      order: 1,
       publishedStatus: true,
       _status: 'published',
     },
@@ -305,7 +365,7 @@ for (const [i, t] of testimonials.entries()) {
 }
 const offeringImg = [wall('wedding'), artworkIds[2], aboutDecks]
 for (const [i, o] of offerings.entries()) {
-  await upsert('experiences-services', { title: { equals: o.title } }, { image: offeringImg[i] })
+  await upsert('experiences-services', offeringWhere(o.title), { image: offeringImg[i] })
 }
 }
 
@@ -337,7 +397,28 @@ await g('navigation', {
 })
 
 await g('home-page', {
-  hero: { heroVideo },
+  hero: {
+    heroVideo,
+    heroHeading: 'DJ Ganesh',
+    heroSubheading: 'Wedding DJ & BollyAfro Pioneer',
+    heroCtaText: 'Book DJ Ganesh',
+    heroCtaUrl: '/contact#booking',
+    heroSecondaryCtaText: 'Listen to Music',
+    heroSecondaryCtaUrl: '#music',
+  },
+  nonstop: {
+    label: nonstopLabel,
+    heading: lines(nonstopHeading),
+    lede: nonstopLede,
+    sets: nonstopSets.map((x: { title: string; tag: string; length: string; href: string }) => ({
+      title: x.title,
+      tag: x.tag,
+      length: x.length,
+      url: x.href,
+    })),
+    spotifyUrl: nonstopSpotifyUrl,
+    podcastUrl: nonstopPodcastUrl,
+  },
   globalReach: {
     locations: tourCities.map((c) => ({
       city: c.name,
@@ -367,9 +448,58 @@ await g('home-page', {
     stages: stageRows.flat().map((s) => ({ name: s.name, featured: !!s.featured })),
   },
   trustedBy: { label: trustedLabel, names: trustedNames.map((name) => ({ name })) },
+  sharedStages: {
+    label: shared.sharedStagesLabel,
+    heading: lines(shared.sharedStagesHeading),
+    lede: shared.sharedStagesLede,
+    internationalLabel: shared.internationalArtists.label,
+    // Each artist with their current portrait uploaded to Media, so editors
+    // see (and can swap) the photo the site shows.
+    internationalArtists: await artistRows(shared.internationalArtists.artists),
+    indianLabel: shared.indianArtists.label,
+    indianArtists: await artistRows(shared.indianArtists.artists),
+    closing: shared.sharedStagesClosing,
+  },
+  internationalShows: {
+    lede: intlShows.destinationsLede,
+    closing: intlShows.destinationsClosing,
+  },
+  privateClientele: {
+    label: clientele.guestListLabel,
+    heading: lines(clientele.guestListHeading),
+    lede: clientele.guestListLede,
+    privateLabel: clientele.privateCelebrations.label,
+    privateEntries: clientele.privateCelebrations.entries.map((e: { primary: string; secondary: string }) => ({
+      primary: e.primary,
+      secondary: e.secondary,
+    })),
+    privateClosing: clientele.privateCelebrations.closing,
+    weddingsLabel: clientele.celebrityWeddings.label,
+    weddingEntries: clientele.celebrityWeddings.entries.map((e: { primary: string; secondary: string }) => ({
+      primary: e.primary,
+      secondary: e.secondary,
+    })),
+    stats: clientele.guestListStats.map((x: { value: number; suffix: string; label: string }) => ({
+      value: x.value,
+      suffix: x.suffix,
+      label: x.label,
+    })),
+    ctaLabel: clientele.guestListCta.label,
+    ctaHref: clientele.guestListCta.href,
+  },
   galleryStrip: {
     label: gallerySectionLabel,
-    items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt, href: it.href })),
+    reelLabel: galleryFeature.label,
+    liveShows: galleryFeature.shows.map(
+      (x: { headliner: string; detail: string; place?: string; date?: string; kind?: string }) => ({
+        headliner: x.headliner,
+        detail: x.detail,
+        place: x.place,
+        date: x.date,
+        kind: x.kind,
+      }),
+    ),
+    items: galleryItems.map((it, i) => ({ image: galleryMedia[i], alt: it.alt })),
   },
   follow: {
     heading: followHeading,
@@ -431,7 +561,9 @@ await g('music-page', {
 await g('contact-booking', {
   bookingEmail,
   enquiryEmail: bookingEmail,
-  agency: { agencyName: 'BMT Agency', agencyWebsite: 'https://www.bmtagency.in' },
+  // No agency of record: bookings go through Black Hat Talent or VStar (named in
+  // the call band) or to Ganesh directly.
+  agency: { agencyName: null, agencyWebsite: null },
   socialLinks: footerSocialLinks.filter((s) => s.icon !== 'email').map((s) => ({ platform: s.icon, url: s.href })),
   bookingCtaText: bookingCta.label,
   // The site-wide Book CTA (used by the Navbar) historically points at /contact
@@ -451,6 +583,13 @@ await g('contact-booking', {
   },
 })
 
+await g('privacy-policy', {
+  title: privacyPolicy.title,
+  updated: privacyPolicy.updated,
+  intro: privacyPolicy.intro,
+  sections: privacyPolicy.sections.map((x: { heading: string; body: string }) => ({ heading: x.heading, body: x.body })),
+})
+
 for (const c of [
   'media',
   'music-releases',
@@ -461,7 +600,7 @@ for (const c of [
   'performance-history',
   'gallery',
 ] as CollectionSlug[]) {
-  counts[c] = (await payload.count({ collection: c, draft: true })).totalDocs
+  counts[c] = (await payload.count({ collection: c })).totalDocs
 }
 console.log('counts:', JSON.stringify(counts))
 }

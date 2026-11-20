@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { imageOnly } from './Media.ts'
 
 const UpcomingShows: CollectionConfig = {
   slug: 'upcoming-shows',
@@ -33,6 +34,7 @@ const UpcomingShows: CollectionConfig = {
       label: 'Event Poster / Image',
       type: 'upload',
       relationTo: 'media',
+      filterOptions: imageOnly,
     },
     {
       name: 'ticketUrl',

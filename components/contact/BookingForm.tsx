@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
 import { FormField } from "@/components/contact/FormField";
 import { enquiryMeta, eventTypes } from "@/data/contact";
@@ -11,6 +12,8 @@ import {
   type EnquiryErrors,
   type EnquiryValues,
 } from "@/lib/enquiry";
+import { itemKey } from "@/lib/keys";
+import { trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "sending" | "sent" | "failed";
 
@@ -24,21 +27,34 @@ type Status = "idle" | "sending" | "sent" | "failed";
  * first field that needs attention, which is the only way a keyboard or
  * screen reader user learns what stopped it.
  *
- * Nothing here claims an enquiry was delivered. `submitEnquiry` hands the
- * composed message to the visitor's own mail client — the same route every
- * other booking control on this site takes — and the panel below says exactly
- * that. See `lib/enquiry.ts` for the single seam a real endpoint plugs into.
+ * Submissions are securely delivered via POST /api/contact-submissions to
+ * Payload CMS, protected by a honeypot trap and rate limiter, and notified
+ * immediately to the booking team.
  */
 export function BookingForm({
   submitLabel = enquiryMeta.submitLabel,
+  eventTypes: types = eventTypes,
+  successTitle = "Thank you.",
+  successText = "Your enquiry has been received — we'll get back to you as soon as possible.",
+  againLabel = "Send another enquiry",
+  errorText = "Something went wrong. Please try again, or email us directly using the address below.",
 }: {
   submitLabel?: string;
+  /** The "Event type" choices, in order. */
+  eventTypes?: readonly string[];
+  successTitle?: string;
+  successText?: string;
+  againLabel?: string;
+  errorText?: string;
 } = {}) {
   const [values, setValues] = useState<EnquiryValues>(emptyEnquiry);
   const [errors, setErrors] = useState<EnquiryErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const formRef = useRef<HTMLFormElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  // Set for the length of one request, so a double press can't send (or
+  // count) the same enquiry twice.
+  const sendingRef = useRef(false);
 
   const set = (field: keyof EnquiryValues) => (value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -47,7 +63,7 @@ export function BookingForm({
     // never starts complaining about something still being typed.
     setErrors((current) => {
       if (!current[field]) return current;
-      const next = validateEnquiry({ ...values, [field]: value });
+      const next = validateEnquiry({ ...values, [field]: value }, types);
       const merged = { ...current };
       if (next[field]) merged[field] = next[field];
       else delete merged[field];
@@ -58,7 +74,7 @@ export function BookingForm({
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const found = validateEnquiry(values);
+    const found = validateEnquiry(values, types);
     setErrors(found);
 
     const firstInvalid = Object.keys(found)[0];
@@ -68,8 +84,14 @@ export function BookingForm({
       return;
     }
 
+    if (sendingRef.current) return;
+    sendingRef.current = true;
     setStatus("sending");
     const outcome = await submitEnquiry(values);
+    sendingRef.current = false;
+    // The conversion counts only once the server has accepted the enquiry:
+    // never on the press itself, a failed check or an error response.
+    if (outcome === "handed-off") trackEvent("booking_submitted");
     setStatus(outcome === "handed-off" ? "sent" : "failed");
     // The panel replaces the form, so focus has to follow it.
     window.requestAnimationFrame(() => panelRef.current?.focus());
@@ -83,11 +105,8 @@ export function BookingForm({
         role="status"
         className="enquiry-done reveal-fade"
       >
-        <p className="enquiry-done__title">Thank you.</p>
-        <p className="enquiry-done__lede">
-          Your enquiry has been received — we&apos;ll get back to you as soon
-          as possible.
-        </p>
+        <p className="enquiry-done__title">{successTitle}</p>
+        <p className="enquiry-done__lede">{successText}</p>
 
         <button
           type="button"
@@ -98,7 +117,7 @@ export function BookingForm({
           }}
           className="btn-tertiary enquiry-done__again"
         >
-          Send another enquiry
+          {againLabel}
           <span aria-hidden className="btn__arrow">
             →
           </span>
@@ -109,6 +128,33 @@ export function BookingForm({
 
   return (
     <form ref={formRef} onSubmit={onSubmit} noValidate className="enquiry-form">
+      {/* Honeypot field for bot spam protection: hidden from genuine visitors */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "-9999px",
+          opacity: 0,
+          height: 0,
+          width: 0,
+          zIndex: -1,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
+        <label htmlFor="hp_website">Leave this field blank</label>
+        <input
+          id="hp_website"
+          name="honeypot"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={values.honeypot || ""}
+          onChange={(event) => set("honeypot")(event.target.value)}
+        />
+      </div>
+
       <div className="enquiry-grid">
         <FormField id="name" label="Name" error={errors.name}>
           <input
@@ -177,8 +223,8 @@ export function BookingForm({
               className="enquiry-input"
             >
               <option value="">Select an event type</option>
-              {eventTypes.map((type) => (
-                <option key={type} value={type}>
+              {types.map((type, index) => (
+                <option key={itemKey(type, index)} value={type}>
                   {type}
                 </option>
               ))}
@@ -246,10 +292,16 @@ export function BookingForm({
           <textarea
             id="message"
             name="message"
-            rows={6}
+            rows={3}
             placeholder="Tell us about your event, venue, timings and anything else we should know."
             value={values.message}
-            onChange={(event) => set("message")(event.target.value)}
+            onChange={(event) => {
+              set("message")(event.target.value);
+              // Grow with the text; the CSS max-height caps it at ~12 lines.
+              const box = event.target;
+              box.style.height = "auto";
+              box.style.height = `${box.scrollHeight}px`;
+            }}
             aria-invalid={!!errors.message}
             aria-describedby={errors.message ? "message-error" : undefined}
             className="enquiry-input enquiry-input--area"
@@ -259,10 +311,17 @@ export function BookingForm({
 
       {status === "failed" ? (
         <p role="alert" className="enquiry-form__failed">
-          Something went wrong. Please try again, or email us directly using the
-          address below.
+          {errorText}
         </p>
       ) : null}
+
+      <p className="enquiry-consent">
+        By sending this request you agree to our{" "}
+        <Link href="/privacy" className="enquiry-consent__link">
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
       <button type="submit" data-cursor="book" className="btn-primary btn--block enquiry-submit">
         <span>{status === "sending" ? "Sending…" : submitLabel}</span>

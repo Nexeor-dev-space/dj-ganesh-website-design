@@ -3,6 +3,7 @@ import {
   trustedLabel as defaultLabel,
   trustedNames as defaultNames,
 } from "@/data/trusted";
+import { itemKey } from "@/lib/keys";
 
 /**
  * The rooms he has played, as a band that never stops moving — it only eases
@@ -38,8 +39,8 @@ export function TrustedBy({
               /* The second run exists only to close the loop. */
               aria-hidden={copy === 1 || undefined}
             >
-              {trustedNames.map((name) => (
-                <li key={name} className="trusted__item">
+              {trustedNames.map((name, index) => (
+                <li key={itemKey(name, index)} className="trusted__item">
                   <span className="trusted__name">{name}</span>
                   <span className="trusted__mark" aria-hidden>
                     ✦

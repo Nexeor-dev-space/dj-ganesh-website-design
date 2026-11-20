@@ -39,7 +39,8 @@ export const stagesSectionLabel = "Stages";
 export const stagesHeading = ["The", "Rooms"] as const;
 
 /** Verbatim from the client's residency line — not a claim of our own. */
-export const stagesLede = "Every weekend is a sold-out headline set.";
+/** None for now: the old line made a claim ("sold-out, every weekend") the client has retired. */
+export const stagesLede = "";
 
 /**
  * Announced dates already carry their own ticket links in section 02, so this

@@ -1,11 +1,12 @@
 import type { CareerStat } from "@/types/about";
+import { assetUrl } from "@/lib/asset-url";
 
 /**
  * Section 04 — My Story.
  *
- * The copy is the client's existing bio, carried over from `index.html`
- * without embellishment: no awards, no collaborations, no milestones beyond
- * what that paragraph already states.
+ * The copy is the client's revised bio, word for word: no awards,
+ * collaborations or milestones beyond what it already states. Its last
+ * sentence is set apart as the closing line.
  *
  * `careerStats` is the exception, and the only figures on the page that did
  * not come from that file — they were supplied directly by the client. Treat
@@ -15,11 +16,11 @@ import type { CareerStat } from "@/types/about";
 export const aboutSectionLabel = "My Story";
 
 /** Set in three lines so the accent can fall on BOLLYAFRO alone. */
-export const aboutHeading = ["The", "BollyAfro", "Pioneer"] as const;
+export const aboutHeading = ["Wedding &", "BollyAfro", "Pioneer"] as const;
 
 export const aboutStory = [
-  "Started behind the decks in Mumbai, 1998, where DJ Ganesh built the BollyAfro sound: Bollywood, Afrobeats and house, mixed into one. From private nights for the Ambani family to stages in 45+ countries, he is now one of India's most booked DJs.",
-  "Now on a global world tour in 2026, the journey continues.",
+  "DJ Ganesh is an award-winning DJ and music producer from Mumbai, India, whose journey began in 2007 at prestigious institutions like Willingdon Sports Club and Bombay Gymkhana. Known for his signature Afro-Bollywood sound, he has performed at celebrity weddings, billionaire family celebrations, international festivals and India's leading nightclubs, including Bastian's flagship properties across the country.",
+  "A multiple award winner, he continues to blend Bollywood with global electronic music, creating unforgettable dance-floor experiences worldwide.",
 ] as const;
 
 /** The three strands of the BollyAfro sound, named in the bio. */
@@ -38,28 +39,26 @@ export const strandDescriptions: Readonly<Record<string, string>> = {
     "The engine room: a steady four-to-the-floor that holds a set together from first track to last, built up live with saxophone, violin and percussion on stage.",
 };
 
-/** The year the story starts, printed on the stage frame. */
-export const careerStart = "1998";
+/**
+ * No start year until the client's revised bio arrives — the site no longer
+ * dates the career anywhere. Empty, so the CMS field and seed stay in step.
+ */
+export const careerStart = "";
 
 /**
- * The career in four figures. Supplied by the client.
- *
- * `28` is the span from {@link careerStart} to the 2026 tour the rest of the
- * section is written around, so the three numbers stay consistent with each
- * other; it is written out rather than computed from today's date, which
- * would drift away from that framing.
+ * The career in three figures. Supplied by the client. The years-behind-the-
+ * decks figure is gone with the start year it was counted from.
  */
 export const careerStats: readonly CareerStat[] = [
-  { value: 28, label: "Years behind the decks" },
   { value: 5000, suffix: "+", label: "Gigs played" },
-  { value: 45, suffix: "+", label: "Countries toured" },
-  { value: 246, suffix: "K", label: "Followers" },
+  { value: 50, suffix: "+", label: "Countries toured" },
+  { value: 246, suffix: "K+", label: "Followers" },
 ] as const;
 
 /** The stage frame this section closes around. */
 export const aboutPortrait = {
-  src: "/images/about.jpg",
-  alt: "DJ Ganesh performing behind the decks, his name on the screen behind him",
+  src: assetUrl("/images/about-07467.jpg"),
+  alt: "DJ Ganesh at the decks, arms raised to a packed arena, his name on the screens above",
 };
 
 export const aboutCta = {

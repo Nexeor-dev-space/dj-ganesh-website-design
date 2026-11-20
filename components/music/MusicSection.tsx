@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { MusicProvider } from "@/components/music/MusicProvider";
-import { VinylCarousel } from "@/components/music/VinylCarousel";
+import { VinylCarousel, type PlayerLabels } from "@/components/music/VinylCarousel";
 import {
   spotifyUrl as defaultSpotifyUrl,
   musicHeading as defaultHeading,
@@ -31,11 +31,15 @@ export function MusicSection({
   musicHeading = defaultHeading,
   spotifyUrl = defaultSpotifyUrl,
   tracks = defaultTracks,
+  playerLabels,
+  archiveLabel = "View the full archive",
 }: {
   musicSectionLabel?: string;
   musicHeading?: string;
   spotifyUrl?: string;
   tracks?: Track[];
+  playerLabels?: Partial<PlayerLabels>;
+  archiveLabel?: string;
 } = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
@@ -84,12 +88,12 @@ export function MusicSection({
             </h2>
           </div>
 
-          <VinylCarousel style={delay(200)} spotifyUrl={spotifyUrl} />
+          <VinylCarousel style={delay(200)} spotifyUrl={spotifyUrl} labels={playerLabels} />
 
           <div className="reveal-scroll releases__cta" style={delay(320)}>
             {/* The section is the four latest; the archive is all of them. */}
             <Link href="/music" className="btn-tertiary">
-              View the full archive
+              {archiveLabel}
               <span aria-hidden className="btn__arrow">
                 →
               </span>

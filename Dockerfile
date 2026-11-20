@@ -16,9 +16,27 @@ FROM base AS builder
 ARG DATABASE_URL
 ARG PAYLOAD_SECRET
 ARG NEXT_PUBLIC_PAYLOAD_URL
+# Read at build time: the live domain (canonical URLs, sitemap, link
+# previews), the GA4 Measurement ID (analytics stays off when it is empty)
+# and the Search Console verification code.
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
+ARG NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+# Media host (MinIO bucket folder, or a CDN in front of it): inlined into the
+# site and used for CMS media URLs in prerendered pages. Not secrets; the
+# MinIO keys stay runtime-only.
+ARG NEXT_PUBLIC_MEDIA_BASE_URL
+ARG MINIO_ENDPOINT
+ARG MINIO_BUCKET
 ENV DATABASE_URL=$DATABASE_URL \
+    NEXT_PUBLIC_MEDIA_BASE_URL=$NEXT_PUBLIC_MEDIA_BASE_URL \
+    MINIO_ENDPOINT=$MINIO_ENDPOINT \
+    MINIO_BUCKET=$MINIO_BUCKET \
     PAYLOAD_SECRET=$PAYLOAD_SECRET \
     NEXT_PUBLIC_PAYLOAD_URL=$NEXT_PUBLIC_PAYLOAD_URL \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID \
+    NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=$NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION \
     NODE_OPTIONS=--max-old-space-size=2048 \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules

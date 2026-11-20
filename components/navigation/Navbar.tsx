@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/layout/Container";
@@ -14,9 +15,10 @@ import {
   useSiteData,
 } from "@/components/site/SiteDataProvider";
 import type { SocialLink } from "@/types/site";
+import { itemKey } from "@/lib/keys";
 
 /**
- * Fixed navigation bar: outlined wordmark on the left, social rail, a single
+ * Fixed navigation bar: the logo on the left, social rail, a single
  * accent call-to-action and a hamburger that opens the full-screen menu.
  * Links live in the overlay so the bar itself stays quiet at every width.
  *
@@ -33,6 +35,9 @@ import type { SocialLink } from "@/types/site";
  */
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const site = useSiteData();
   const links: readonly { label: string; href: string }[] =
@@ -41,6 +46,12 @@ export function Navbar() {
   const bookHref = hasText(site.contact?.bookingCtaUrl)
     ? site.contact.bookingCtaUrl
     : bookingHref;
+  const bookLabel = hasText(site.contact?.bookingCtaText) ? site.contact.bookingCtaText : "Book";
+  // Site Settings → Header Logo, else the built-in file (same artwork).
+  const cmsLogo = site.brand?.logo;
+  const logo = cmsLogo?.url
+    ? { src: cmsLogo.url, width: cmsLogo.width || 1004, height: cmsLogo.height || 148 }
+    : { src: "/images/logo-dj-ganesh.png", width: 1004, height: 148 };
 
   /**
    * A link to the page already open goes nowhere, so the wordmark or a menu
@@ -58,7 +69,9 @@ export function Navbar() {
     window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
   };
 
-  // Freeze the page behind the overlay and let Escape close it.
+  // Freeze the page behind the overlay, keep Tab inside the bar and the
+  // overlay (the page under it is covered), and let Escape close it, handing
+  // focus back to the button that opened it.
   useEffect(() => {
     if (!open) return;
 
@@ -70,7 +83,28 @@ export function Navbar() {
     document.body.style.overflow = "hidden";
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = [headerRef.current, menuRef.current].flatMap((root) =>
+        root ? Array.from(root.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")) : [],
+      ).filter((el) => el.offsetParent !== null);
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const inside = focusable.includes(document.activeElement as HTMLElement);
+      if (event.shiftKey && (document.activeElement === first || !inside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !inside)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
 
@@ -82,7 +116,12 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50">
+      {/* First stop for keyboard users: past the bar, straight to the page. */}
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
+
+      <header ref={headerRef} className="fixed inset-x-0 top-0 z-50">
         <Container
           as="nav"
           aria-label="Primary"
@@ -93,17 +132,37 @@ export function Navbar() {
             href="/"
             aria-label={`${siteConfig.name} — home`}
             onClick={(event) => toTopIfCurrent(event, "/")}
-            className="group inline-flex items-center px-4 py-2 transition-opacity duration-200 hover:opacity-80 md:px-6 md:py-2.5"
+            className="group inline-flex shrink-0 items-center px-0 py-2 transition-opacity min-[480px]:px-4 duration-200 hover:opacity-80 md:px-6 md:py-2.5"
           >
-            <span className="font-display text-[13px] font-bold uppercase leading-none tracking-[0.28em] md:text-[15px]">
-              DJ<span className="text-accent">&nbsp;Ganesh</span>
-            </span>
+            {/* The client's mark: white on transparent, cropped tight, so its
+                height alone sets the size. */}
+            <Image
+              src={logo.src}
+              alt=""
+              width={logo.width}
+              height={logo.height}
+              /* The largest thing on screen as the page opens, so it is
+                 fetched first (`preload` replaces Next 16's deprecated
+                 `priority`). Served as the original PNG, not re-encoded:
+                 the optimiser's compression smeared the thin white strokes
+                 at this size, and the full file is only 21 KB, so every
+                 screen density scales down a crisp source. */
+              preload
+              fetchPriority="high"
+              unoptimized
+              /* Larger on phones (26px; 22px under 360px wide) so the owl
+                 mark and letters read; the PNG is 148px tall, so even a 3x
+                 screen draws it from more pixels than it shows. */
+              className="h-[22px] w-auto shrink-0 min-[360px]:h-[26px] min-[480px]:h-[30px] md:h-8"
+            />
           </Link>
 
-          <div className="flex items-center gap-sm">
+          {/* Tighter on the narrowest phones so the full-size logo, BOOK and
+              the menu all fit on one line. */}
+          <div className="flex items-center gap-xs min-[480px]:gap-sm">
             <ul className="hidden items-center gap-xs sm:flex">
-              {socials.map((social) => (
-                <li key={social.label}>
+              {socials.map((social, index) => (
+                <li key={itemKey(social, index)}>
                   <a
                     href={social.href}
                     target="_blank"
@@ -117,11 +176,11 @@ export function Navbar() {
               ))}
             </ul>
 
-            <Link href={bookHref} className="btn-primary btn--sm">
+            <Link href={bookHref} className="btn-primary btn--sm max-[479px]:px-sm">
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden
-                className="h-4 w-4"
+                className="hidden h-4 w-4 min-[480px]:block"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.8}
@@ -129,16 +188,17 @@ export function Navbar() {
                 <circle cx="12" cy="8.5" r="3.5" />
                 <path d="M4.8 19.5a7.2 7.2 0 0 1 14.4 0" strokeLinecap="round" />
               </svg>
-              <span>Book</span>
+              <span>{bookLabel}</span>
             </Link>
 
             <button
+              ref={toggleRef}
               type="button"
               onClick={() => setOpen((value) => !value)}
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="primary-menu"
-              className="ml-xs flex h-10 w-10 flex-col items-center justify-center gap-[7px]"
+              className="flex h-10 w-10 flex-col min-[480px]:ml-xs items-center justify-center gap-[7px]"
             >
               <span
                 className={`block h-[2px] w-7 bg-foreground transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -158,6 +218,7 @@ export function Navbar() {
       {/* Full-screen menu */}
       <div
         id="primary-menu"
+        ref={menuRef}
         hidden={!open}
         className="fixed inset-0 z-40 bg-background/98 pt-16 backdrop-blur-xl md:pt-20"
       >
@@ -170,7 +231,7 @@ export function Navbar() {
                   : pathname.startsWith(link.href);
 
               return (
-                <li key={link.href}>
+                <li key={itemKey(link, index)}>
                   <Link
                     href={link.href}
                     onClick={(event) => {
@@ -190,8 +251,8 @@ export function Navbar() {
 
           {/* The accounts as bare marks, right under the pages. */}
           <ul className="reveal menu__socials" style={{ "--reveal-delay": "260ms" } as React.CSSProperties}>
-            {socials.map((social) => (
-              <li key={social.label}>
+            {socials.map((social, i) => (
+              <li key={itemKey(social, i)}>
                 <a
                   href={social.href}
                   target="_blank"

@@ -1,3 +1,5 @@
+import { assetUrl } from "@/lib/asset-url";
+
 /**
  * The banner's video background.
  *
@@ -15,7 +17,7 @@
  * video without `playsInline` fullscreen rather than leaving it in the page.
  */
 export function HeroBackground({
-  videoSrc = "/videos/dj-ganesh.mp4",
+  videoSrc = assetUrl("/videos/dj-ganesh.mp4"),
   poster,
 }: {
   videoSrc?: string;

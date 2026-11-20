@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { RevealSection } from "@/components/layout/RevealSection";
 import { connectLinks, contactDesks } from "@/data/contact";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -18,9 +19,13 @@ type Social = { label: string; href: string };
 export function DirectContact({
   desks = contactDesks,
   socials = connectLinks,
+  heading = "Or get in touch directly",
+  socialHeading = "Stay connected",
 }: {
   desks?: readonly Desk[];
   socials?: readonly Social[];
+  heading?: string;
+  socialHeading?: string;
 } = {}) {
   return (
     <RevealSection
@@ -32,13 +37,13 @@ export function DirectContact({
         <div className="contact-direct__spread">
           <div>
             <h2 id="direct-title" className="reveal-scroll contact-heading" style={delay(0)}>
-              Or get in touch directly
+              {heading}
             </h2>
 
             <dl className="contact-desks">
               {desks.map((desk, index) => (
                 <div
-                  key={desk.label}
+                  key={itemKey(desk, index)}
                   className="reveal-scroll contact-desk"
                   style={delay(120 + index * 90)}
                 >
@@ -56,13 +61,13 @@ export function DirectContact({
 
           <div className="contact-connect">
             <h2 className="reveal-scroll contact-heading" style={delay(180)}>
-              Stay connected
+              {socialHeading}
             </h2>
 
             <ul className="contact-social">
               {socials.map((social, index) => (
                 <li
-                  key={social.href}
+                  key={itemKey(social, index)}
                   className="reveal-scroll"
                   style={delay(260 + index * 90)}
                 >

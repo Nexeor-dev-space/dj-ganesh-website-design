@@ -1,4 +1,5 @@
-﻿import type { GlobalConfig } from 'payload'
+import type { GlobalConfig } from 'payload'
+import { seoGroup } from '../fields/seo.ts'
 
 const ContactBooking: GlobalConfig = {
   slug: 'contact-booking',
@@ -16,11 +17,15 @@ const ContactBooking: GlobalConfig = {
       required: true,
     },
     { name: 'enquiryEmail', label: 'General Enquiry Email', type: 'email' },
-    { name: 'phone', label: 'Phone Number', type: 'text' },
+    // Not shown on the website (no phone number is published); hidden.
+    { name: 'phone', label: 'Phone Number', type: 'text', admin: { hidden: true } },
     {
       type: 'group',
       name: 'agency',
       label: 'Agency Details',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'agencyName', label: 'Agency Name', type: 'text' },
         { name: 'agencyEmail', label: 'Agency Email', type: 'email' },
@@ -50,7 +55,12 @@ const ContactBooking: GlobalConfig = {
         { name: 'url', label: 'URL', type: 'text', required: true },
       ],
     },
-    { name: 'bookingCtaText', label: 'Booking CTA Text', type: 'text', admin: { placeholder: 'e.g. Book DJ Ganesh' } },
+    {
+      name: 'bookingCtaText',
+      label: 'Header Book Button Text',
+      type: 'text',
+      admin: { placeholder: 'e.g. Book', description: 'The green button in the header. Keep it to one short word, or it crowds the header on phones.' },
+    },
     { name: 'bookingCtaUrl', label: 'Booking CTA URL', type: 'text' },
     {
       type: 'group',
@@ -85,6 +95,31 @@ const ContactBooking: GlobalConfig = {
         { name: 'heading', label: 'Heading', type: 'text' },
         { name: 'lede', label: 'Lede', type: 'textarea' },
         { name: 'submitLabel', label: 'Submit Button Label', type: 'text' },
+        {
+          name: 'eventTypes',
+          label: 'Event Types',
+          type: 'array',
+          admin: { description: 'The choices in the form\'s "Event type" list, in this order. Empty keeps the built-in list.' },
+          fields: [{ name: 'type', label: 'Event Type', type: 'text', required: true }],
+        },
+        { name: 'successTitle', label: 'Thank-you Title', type: 'text', admin: { placeholder: 'e.g. Thank you.' } },
+        { name: 'successText', label: 'Thank-you Message', type: 'textarea', admin: { placeholder: "e.g. Your enquiry has been received — we'll get back to you as soon as possible." } },
+        { name: 'againLabel', label: '"Send Another" Button', type: 'text', admin: { placeholder: 'e.g. Send another enquiry' } },
+        { name: 'errorText', label: 'Error Message', type: 'textarea', admin: { description: 'Shown if sending fails.' } },
+      ],
+    },
+    {
+      type: 'group',
+      name: 'direct',
+      label: 'Direct Contact',
+      admin: { description: 'The block under the form on /contact. The email addresses are the Booking and General Enquiry emails above.' },
+      fields: [
+        { name: 'heading', label: 'Heading', type: 'text', admin: { placeholder: 'e.g. Or get in touch directly' } },
+        { name: 'bookingLabel', label: 'Booking Email Label', type: 'text', admin: { placeholder: 'e.g. Bookings' } },
+        { name: 'bookingNote', label: 'Booking Email Note', type: 'text', admin: { placeholder: 'e.g. Events, festivals, venues and private functions' } },
+        { name: 'enquiryLabel', label: 'General Email Label', type: 'text', admin: { placeholder: 'e.g. General enquiries' } },
+        { name: 'enquiryNote', label: 'General Email Note', type: 'text', admin: { placeholder: 'e.g. Press, collaborations and everything else' } },
+        { name: 'socialHeading', label: 'Social Links Heading', type: 'text', admin: { placeholder: 'e.g. Stay connected' } },
       ],
     },
     {
@@ -119,7 +154,12 @@ const ContactBooking: GlobalConfig = {
       type: 'group',
       name: 'callBand',
       label: 'Closing Call Band',
-      admin: { description: 'The band before the footer (data/call.ts). Agencies here supplement the single Agency Details above.' },
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: {
+        hidden: true,
+        description: 'The band before the footer (data/call.ts). Agencies here supplement the single Agency Details above.',
+      },
       fields: [
         {
           name: 'heading',
@@ -137,6 +177,7 @@ const ContactBooking: GlobalConfig = {
         },
       ],
     },
+    seoGroup('the Contact page'),
   ],
 }
 

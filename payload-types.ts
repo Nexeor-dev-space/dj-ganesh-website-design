@@ -110,6 +110,7 @@ export interface Config {
     'contact-booking': ContactBooking;
     about: About;
     'music-page': MusicPage;
+    'privacy-policy': PrivacyPolicy;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -118,6 +119,7 @@ export interface Config {
     'contact-booking': ContactBookingSelect<false> | ContactBookingSelect<true>;
     about: AboutSelect<false> | AboutSelect<true>;
     'music-page': MusicPageSelect<false> | MusicPageSelect<true>;
+    'privacy-policy': PrivacyPolicySelect<false> | PrivacyPolicySelect<true>;
   };
   locale: null;
   widgets: {
@@ -181,8 +183,12 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * Optional for audio files: left blank, it is filled from the file name.
+   */
   alt: string;
   caption?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -260,7 +266,11 @@ export interface MusicRelease {
   artwork?: (number | null) | Media;
   youtubeUrl?: string | null;
   /**
-   * Optional: direct link to audio file.
+   * MP3, WAV or M4A from the Media library. Used instead of the Audio URL below.
+   */
+  audioFile?: (number | null) | Media;
+  /**
+   * Optional: path or direct link to an audio file. Used only when no Audio File is picked.
    */
   audioUrl?: string | null;
   releaseDate?: string | null;
@@ -298,18 +308,27 @@ export interface PerformanceHistory {
   createdAt: string;
 }
 /**
- * Gallery albums with multiple images per album.
+ * The album with Album / Category "Journey" is the photo section under the bio on the About page (published albums only). Empty: the built-in photos.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
  */
 export interface Gallery {
   id: number;
+  /**
+   * For the "Journey" album, the heading of the About page photo section.
+   */
   title: string;
+  /**
+   * Type "Journey" for the About page photo section. Any other value is not shown on the website.
+   */
   album: string;
   images?:
     | {
         image: number | Media;
+        /**
+         * The line under the photo, e.g. "Club 77 · London". The alt text comes from the photo in Media.
+         */
         caption?: string | null;
         id?: string | null;
       }[]
@@ -383,6 +402,16 @@ export interface ExperiencesService {
   shortDescription: string;
   detailedDescription?: string | null;
   image?: (number | null) | Media;
+  /**
+   * Optional small photos shown on the card, each with the venue name under it.
+   */
+  venuePhotos?:
+    | {
+        image: number | Media;
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   features?:
     | {
         feature: string;
@@ -390,6 +419,9 @@ export interface ExperiencesService {
       }[]
     | null;
   ctaText?: string | null;
+  /**
+   * Where the card button goes. Empty: the booking form.
+   */
   ctaUrl?: string | null;
   order?: number | null;
   publishedStatus?: boolean | null;
@@ -409,11 +441,32 @@ export interface ContactSubmission {
   email: string;
   phone?: string | null;
   /**
+   * Venue, company or event host.
+   */
+  organisation?: string | null;
+  /**
    * e.g. Wedding, Festival, Corporate Event.
    */
   eventType?: string | null;
+  /**
+   * Scheduled date of the event.
+   */
+  eventDate?: string | null;
+  /**
+   * City, Country or Venue location.
+   */
+  location?: string | null;
+  /**
+   * Estimated guest count or venue capacity.
+   */
+  audience?: string | null;
+  /**
+   * Budget indication or fee range.
+   */
+  budget?: string | null;
   message: string;
   status?: ('new' | 'read' | 'responded') | null;
+  honeypot?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -553,6 +606,7 @@ export interface UsersSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -628,6 +682,7 @@ export interface MusicReleasesSelect<T extends boolean = true> {
   artist?: T;
   artwork?: T;
   youtubeUrl?: T;
+  audioFile?: T;
   audioUrl?: T;
   releaseDate?: T;
   description?: T;
@@ -716,6 +771,13 @@ export interface ExperiencesServicesSelect<T extends boolean = true> {
   shortDescription?: T;
   detailedDescription?: T;
   image?: T;
+  venuePhotos?:
+    | T
+    | {
+        image?: T;
+        name?: T;
+        id?: T;
+      };
   features?:
     | T
     | {
@@ -738,9 +800,15 @@ export interface ContactSubmissionsSelect<T extends boolean = true> {
   name?: T;
   email?: T;
   phone?: T;
+  organisation?: T;
   eventType?: T;
+  eventDate?: T;
+  location?: T;
+  audience?: T;
+  budget?: T;
   message?: T;
   status?: T;
+  honeypot?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -792,7 +860,13 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: number;
+  /**
+   * The big name at the foot of every page.
+   */
   siteName: string;
+  /**
+   * The logo in the header on every page. A wide, transparent PNG works best. Empty: the built-in logo.
+   */
   logo?: (number | null) | Media;
   favicon?: (number | null) | Media;
   seo?: {
@@ -842,6 +916,10 @@ export interface SiteSetting {
  */
 export interface Navigation {
   id: number;
+  /**
+   * The small heading over the moving names in the full-screen menu.
+   */
+  menuMarqueeLabel?: string | null;
   items?:
     | {
         label: string;
@@ -872,17 +950,22 @@ export interface HomePage {
     heroImage?: (number | null) | Media;
     heroCtaText?: string | null;
     heroCtaUrl?: string | null;
+    heroSecondaryCtaText?: string | null;
+    heroSecondaryCtaUrl?: string | null;
     /**
      * Full-bleed hero background video (video/* accepted). Falls back to /videos/dj-ganesh.mp4.
      */
     heroVideo?: (number | null) | Media;
     /**
-     * Optional still shown before the video loads.
+     * Shown on phones that don't autoplay video (e.g. iPhone Low Power Mode, data saver), and while the video loads. Use a still frame from the hero video.
      */
     heroVideoPoster?: (number | null) | Media;
   };
   artistIntro?: {
     introTitle?: string | null;
+    /**
+     * The homepage "My Story" text. First paragraph: the story; second paragraph (after an empty line): the closing line in white. Empty: the built-in text. The heading and photo come from the About page (Story → Heading, Portrait).
+     */
     introBio?: string | null;
     introImage?: (number | null) | Media;
   };
@@ -896,8 +979,43 @@ export interface HomePage {
         }[]
       | null;
   };
+  /**
+   * The globe section. Every text field is optional: empty keeps the built-in words.
+   */
   globalReach?: {
+    /**
+     * The small green line above the heading.
+     */
+    label?: string | null;
     heading?: string | null;
+    /**
+     * Shown after "Hover" on computers and "Tap" on phones.
+     */
+    hint?: string | null;
+    citiesLabel?: string | null;
+    /**
+     * The word next to the home city in the list.
+     */
+    hubLabel?: string | null;
+    countriesLine?: string | null;
+    /**
+     * Opens an email to the Booking Email in Contact / Booking Settings.
+     */
+    enquiryLine?: string | null;
+    /**
+     * The small card that opens when a city is chosen.
+     */
+    showCard?: {
+      /**
+       * The show's year is added automatically.
+       */
+      nextShowLabel?: string | null;
+      ticketsLabel?: string | null;
+      openDateLabel?: string | null;
+      noShowText?: string | null;
+      noShowLede?: string | null;
+      enquireLabel?: string | null;
+    };
     /**
      * Cities shown as pins on the Global Reach globe. Add one row per city.
      */
@@ -989,8 +1107,178 @@ export interface HomePage {
         }[]
       | null;
   };
-  galleryStrip?: {
+  /**
+   * The two numbered artist lists after Stages. Empty fields keep the built-in text; an empty list keeps the built-in names.
+   */
+  sharedStages?: {
     label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    internationalLabel?: string | null;
+    internationalArtists?:
+      | {
+          name: string;
+          /**
+           * Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.
+           */
+          photo?: (number | null) | Media;
+          /**
+           * Where the tile crops the photo: horizontal % then vertical %. Lower vertical % keeps more of the top (the face).
+           */
+          focus?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    indianLabel?: string | null;
+    indianArtists?:
+      | {
+          name: string;
+          /**
+           * Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.
+           */
+          photo?: (number | null) | Media;
+          /**
+           * Where the tile crops the photo: horizontal % then vertical %. Lower vertical % keeps more of the top (the face).
+           */
+          focus?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Optional line under the artist rows. Empty: no line.
+     */
+    closing?: string | null;
+  };
+  /**
+   * The intro sentence under the Global Reach heading and the closing line beside "Not on the list?". Empty fields keep the built-in text. (Stored as internationalShows: it began as a separate band, now removed; its other fields are hidden and unused.)
+   */
+  internationalShows?: {
+    label?: string | null;
+    heading?: string | null;
+    lede?: string | null;
+    cities?:
+      | {
+          city: string;
+          country?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    closing?: string | null;
+  };
+  /**
+   * The invitation-card section before Testimonials: business families and celebrity weddings. Empty fields keep the built-in text; an empty list keeps the built-in names.
+   */
+  privateClientele?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    privateLabel?: string | null;
+    /**
+     * One short word; phones show this so the filters fit on one line.
+     */
+    privateShortLabel?: string | null;
+    privateEntries?:
+      | {
+          primary: string;
+          secondary?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    privateClosing?: string | null;
+    weddingsLabel?: string | null;
+    /**
+     * One short word; phones show this so the filters fit on one line.
+     */
+    weddingsShortLabel?: string | null;
+    weddingEntries?:
+      | {
+          primary: string;
+          secondary?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    stats?:
+      | {
+          value: number;
+          suffix?: string | null;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
+  };
+  /**
+   * The long-form sets band after Music. Empty fields fall back to the built-in copy.
+   */
+  nonstop?: {
+    label?: string | null;
+    heading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    lede?: string | null;
+    sets?:
+      | {
+          title: string;
+          tag?: string | null;
+          length?: string | null;
+          image?: (number | null) | Media;
+          url?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    spotifyUrl?: string | null;
+    spotifyLabel?: string | null;
+    podcastUrl?: string | null;
+    podcastLabel?: string | null;
+  };
+  galleryStrip?: {
+    /**
+     * The heading above the photographs, under the shows.
+     */
+    label?: string | null;
+    /**
+     * The video above the photos. Falls back to /videos/recent-big-shows.mp4.
+     */
+    reelVideo?: (number | null) | Media;
+    reelPoster?: (number | null) | Media;
+    /**
+     * The big heading above the reel and the shows.
+     */
+    reelLabel?: string | null;
+    bigShows?:
+      | {
+          show: string;
+          id?: string | null;
+        }[]
+      | null;
+    reelEyebrow?: string | null;
+    /**
+     * The numbered setlist beside the reel. Empty: the built-in seven shows.
+     */
+    liveShows?:
+      | {
+          headliner: string;
+          detail?: string | null;
+          place?: string | null;
+          date?: string | null;
+          kind?: string | null;
+          id?: string | null;
+        }[]
+      | null;
     items?:
       | {
           image?: (number | null) | Media;
@@ -1014,10 +1302,12 @@ export interface HomePage {
       | null;
   };
   /**
-   * The homepage booking band (data/booking.ts). The primary CTA remains in Booking CTA above.
+   * The homepage booking band. Empty fields keep the built-in copy.
    */
   bookingSection?: {
     label?: string | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
     heading?:
       | {
           line: string;
@@ -1051,14 +1341,29 @@ export interface HomePage {
         }[]
       | null;
   };
+  /**
+   * The heading and line above the wall of quotes. Empty fields keep the built-in text.
+   */
   testimonialsSection?: {
-    label?: string | null;
+    /**
+     * Usually one line, e.g. "Wall of Love".
+     */
     heading?:
       | {
           line: string;
           id?: string | null;
         }[]
       | null;
+    /**
+     * Up to 6 photos for the moving wall behind the quotes. Empty: the built-in photos.
+     */
+    wallPhotos?:
+      | {
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    label?: string | null;
   };
   /**
    * The offerings themselves are managed in the Experiences / Services collection.
@@ -1072,6 +1377,23 @@ export interface HomePage {
         }[]
       | null;
     ctaHref?: string | null;
+  };
+  /**
+   * How the homepage appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1100,6 +1422,9 @@ export interface ContactBooking {
         id?: string | null;
       }[]
     | null;
+  /**
+   * The green button in the header. Keep it to one short word, or it crowds the header on phones.
+   */
   bookingCtaText?: string | null;
   bookingCtaUrl?: string | null;
   whatsapp?: {
@@ -1124,6 +1449,33 @@ export interface ContactBooking {
     heading?: string | null;
     lede?: string | null;
     submitLabel?: string | null;
+    /**
+     * The choices in the form's "Event type" list, in this order. Empty keeps the built-in list.
+     */
+    eventTypes?:
+      | {
+          type: string;
+          id?: string | null;
+        }[]
+      | null;
+    successTitle?: string | null;
+    successText?: string | null;
+    againLabel?: string | null;
+    /**
+     * Shown if sending fails.
+     */
+    errorText?: string | null;
+  };
+  /**
+   * The block under the form on /contact. The email addresses are the Booking and General Enquiry emails above.
+   */
+  direct?: {
+    heading?: string | null;
+    bookingLabel?: string | null;
+    bookingNote?: string | null;
+    enquiryLabel?: string | null;
+    enquiryNote?: string | null;
+    socialHeading?: string | null;
   };
   bookingInfoBlock?: {
     heading?: string | null;
@@ -1159,6 +1511,23 @@ export interface ContactBooking {
         }[]
       | null;
   };
+  /**
+   * How the Contact page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1172,6 +1541,9 @@ export interface About {
   id: number;
   labels?: {
     intro?: string | null;
+    /**
+     * The big heading at the top of the About page. Two words show on two lines.
+     */
     story?: string | null;
     identity?: string | null;
     experience?: string | null;
@@ -1179,7 +1551,7 @@ export interface About {
   };
   story?: {
     /**
-     * e.g. "The" / "BollyAfro" / "Pioneer".
+     * The heading of the homepage "My Story" block: three lines, the middle one in green, e.g. "Wedding &" / "BollyAfro" / "Pioneer".
      */
     heading?:
       | {
@@ -1215,6 +1587,9 @@ export interface About {
     decks?: (number | null) | Media;
   };
   portrait?: (number | null) | Media;
+  /**
+   * Shown on the homepage (My Story) and the About page. Add, remove or reorder the figures here.
+   */
   careerStats?: {
     stats?:
       | {
@@ -1244,6 +1619,23 @@ export interface About {
     label?: string | null;
     href?: string | null;
   };
+  /**
+   * How the About page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1261,6 +1653,26 @@ export interface MusicPage {
     intro?: string | null;
     archive?: string | null;
     continue?: string | null;
+    /**
+     * The heading at the foot of the Music page, e.g. "The rest of the" / "sound is on the channel."
+     */
+    continueHeading?:
+      | {
+          line: string;
+          id?: string | null;
+        }[]
+      | null;
+    youtubeButton?: string | null;
+    spotifyButton?: string | null;
+  };
+  /**
+   * Words on the record player, on the homepage and the Music page. Empty keeps the built-in words.
+   */
+  player?: {
+    youtubeLabel?: string | null;
+    spotifyLabel?: string | null;
+    playlistHeading?: string | null;
+    archiveLinkLabel?: string | null;
   };
   homeSection?: {
     sectionLabel?: string | null;
@@ -1270,6 +1682,61 @@ export interface MusicPage {
      * The "Listen on Spotify" link under the home page music player and at the foot of the Music page.
      */
     spotifyUrl?: string | null;
+  };
+  /**
+   * How the Music page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The /privacy page, linked from the footer and the booking form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy".
+ */
+export interface PrivacyPolicy {
+  id: number;
+  title?: string | null;
+  updated?: string | null;
+  intro?: string | null;
+  sections?:
+    | {
+        heading: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How the Privacy Policy page appears in Google and when shared on WhatsApp, Facebook, LinkedIn or X. Empty fields keep the built-in values.
+   */
+  seo?: {
+    /**
+     * Shown as the Google result title and the browser tab. Up to about 60 characters.
+     */
+    title?: string | null;
+    /**
+     * The line under the title in Google and in link previews. About 150 characters.
+     */
+    description?: string | null;
+    /**
+     * The picture in link previews. Best at 1200 × 630.
+     */
+    image?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1333,6 +1800,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "navigation_select".
  */
 export interface NavigationSelect<T extends boolean = true> {
+  menuMarqueeLabel?: T;
   items?:
     | T
     | {
@@ -1360,6 +1828,8 @@ export interface HomePageSelect<T extends boolean = true> {
         heroImage?: T;
         heroCtaText?: T;
         heroCtaUrl?: T;
+        heroSecondaryCtaText?: T;
+        heroSecondaryCtaUrl?: T;
         heroVideo?: T;
         heroVideoPoster?: T;
       };
@@ -1385,7 +1855,23 @@ export interface HomePageSelect<T extends boolean = true> {
   globalReach?:
     | T
     | {
+        label?: T;
         heading?: T;
+        hint?: T;
+        citiesLabel?: T;
+        hubLabel?: T;
+        countriesLine?: T;
+        enquiryLine?: T;
+        showCard?:
+          | T
+          | {
+              nextShowLabel?: T;
+              ticketsLabel?: T;
+              openDateLabel?: T;
+              noShowText?: T;
+              noShowLede?: T;
+              enquireLabel?: T;
+            };
         locations?:
           | T
           | {
@@ -1465,10 +1951,143 @@ export interface HomePageSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  sharedStages?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        internationalLabel?: T;
+        internationalArtists?:
+          | T
+          | {
+              name?: T;
+              photo?: T;
+              focus?: T;
+              id?: T;
+            };
+        indianLabel?: T;
+        indianArtists?:
+          | T
+          | {
+              name?: T;
+              photo?: T;
+              focus?: T;
+              id?: T;
+            };
+        closing?: T;
+      };
+  internationalShows?:
+    | T
+    | {
+        label?: T;
+        heading?: T;
+        lede?: T;
+        cities?:
+          | T
+          | {
+              city?: T;
+              country?: T;
+              id?: T;
+            };
+        closing?: T;
+      };
+  privateClientele?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        privateLabel?: T;
+        privateShortLabel?: T;
+        privateEntries?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              id?: T;
+            };
+        privateClosing?: T;
+        weddingsLabel?: T;
+        weddingsShortLabel?: T;
+        weddingEntries?:
+          | T
+          | {
+              primary?: T;
+              secondary?: T;
+              id?: T;
+            };
+        stats?:
+          | T
+          | {
+              value?: T;
+              suffix?: T;
+              label?: T;
+              id?: T;
+            };
+        ctaLabel?: T;
+        ctaHref?: T;
+      };
+  nonstop?:
+    | T
+    | {
+        label?: T;
+        heading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        lede?: T;
+        sets?:
+          | T
+          | {
+              title?: T;
+              tag?: T;
+              length?: T;
+              image?: T;
+              url?: T;
+              id?: T;
+            };
+        spotifyUrl?: T;
+        spotifyLabel?: T;
+        podcastUrl?: T;
+        podcastLabel?: T;
+      };
   galleryStrip?:
     | T
     | {
         label?: T;
+        reelVideo?: T;
+        reelPoster?: T;
+        reelLabel?: T;
+        bigShows?:
+          | T
+          | {
+              show?: T;
+              id?: T;
+            };
+        reelEyebrow?: T;
+        liveShows?:
+          | T
+          | {
+              headliner?: T;
+              detail?: T;
+              place?: T;
+              date?: T;
+              kind?: T;
+              id?: T;
+            };
         items?:
           | T
           | {
@@ -1497,6 +2116,8 @@ export interface HomePageSelect<T extends boolean = true> {
     | T
     | {
         label?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
         heading?:
           | T
           | {
@@ -1535,13 +2156,19 @@ export interface HomePageSelect<T extends boolean = true> {
   testimonialsSection?:
     | T
     | {
-        label?: T;
         heading?:
           | T
           | {
               line?: T;
               id?: T;
             };
+        wallPhotos?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+        label?: T;
       };
   experienceSection?:
     | T
@@ -1554,6 +2181,13 @@ export interface HomePageSelect<T extends boolean = true> {
               id?: T;
             };
         ctaHref?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1609,6 +2243,26 @@ export interface ContactBookingSelect<T extends boolean = true> {
         heading?: T;
         lede?: T;
         submitLabel?: T;
+        eventTypes?:
+          | T
+          | {
+              type?: T;
+              id?: T;
+            };
+        successTitle?: T;
+        successText?: T;
+        againLabel?: T;
+        errorText?: T;
+      };
+  direct?:
+    | T
+    | {
+        heading?: T;
+        bookingLabel?: T;
+        bookingNote?: T;
+        enquiryLabel?: T;
+        enquiryNote?: T;
+        socialHeading?: T;
       };
   bookingInfoBlock?:
     | T
@@ -1646,6 +2300,13 @@ export interface ContactBookingSelect<T extends boolean = true> {
               name?: T;
               id?: T;
             };
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1729,6 +2390,13 @@ export interface AboutSelect<T extends boolean = true> {
         label?: T;
         href?: T;
       };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1746,6 +2414,22 @@ export interface MusicPageSelect<T extends boolean = true> {
         intro?: T;
         archive?: T;
         continue?: T;
+        continueHeading?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        youtubeButton?: T;
+        spotifyButton?: T;
+      };
+  player?:
+    | T
+    | {
+        youtubeLabel?: T;
+        spotifyLabel?: T;
+        playlistHeading?: T;
+        archiveLinkLabel?: T;
       };
   homeSection?:
     | T
@@ -1754,6 +2438,39 @@ export interface MusicPageSelect<T extends boolean = true> {
         heading?: T;
         allReleasesUrl?: T;
         spotifyUrl?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy_select".
+ */
+export interface PrivacyPolicySelect<T extends boolean = true> {
+  title?: T;
+  updated?: T;
+  intro?: T;
+  sections?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;

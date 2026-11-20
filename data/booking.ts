@@ -40,7 +40,7 @@ export const bookingHeading = ["Ready to", "Book?"] as const;
  * it already uses rather than introducing a second.
  */
 export const bookingLede =
-  "For bookings and inquiries, reach out through BMT Agency, Black Hat Talent, or VStar Entertainment.";
+  "For bookings and inquiries, reach out through Black Hat Talent or VStar Entertainment, or contact Ganesh directly by email or WhatsApp.";
 
 /** The five occasions the source names, in its order. */
 export const bookingScope = [
@@ -76,12 +76,6 @@ export const bookingLinks: readonly BookingLink[] = [
     label: "YouTube",
     value: "@DJGANESH_DJG",
     href: "https://www.youtube.com/@DJGANESH_DJG",
-    external: true,
-  },
-  {
-    label: "Agency",
-    value: "BMT Agency",
-    href: "https://www.bmtagency.in",
     external: true,
   },
 ];

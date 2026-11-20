@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Container } from "@/components/layout/Container";
 import { FitText } from "@/components/hero/FitText";
@@ -7,6 +9,7 @@ import { FooterNavigation } from "@/components/footer/FooterNavigation";
 import { footerCopyright } from "@/data/footer";
 import { siteConfig } from "@/lib/site";
 import { hasText, useSiteData } from "@/components/site/SiteDataProvider";
+import { gaId, openCookieSettings } from "@/lib/analytics";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -24,8 +27,11 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
 export function Footer() {
   const footerRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
-  const { footer } = useSiteData();
-  const copyright = hasText(footer?.copyright) ? footer.copyright : footerCopyright;
+  const { footer, brand } = useSiteData();
+  const brandName = hasText(brand?.name) ? brand.name : siteConfig.name;
+  // The Nexeor credit is fixed below; drop it if it is still typed into the CMS line.
+  const copyright = (hasText(footer?.copyright) ? footer.copyright : footerCopyright)
+    .replace(/\s*\|?\s*Powered by Nexeor\s*$/i, "");
 
   useEffect(() => {
     const footer = footerRef.current;
@@ -63,12 +69,12 @@ export function Footer() {
         <h2
           className="footer-name reveal-scroll text-accent"
           style={delay(140)}
-          aria-label={siteConfig.name}
+          aria-label={brandName}
         >
           {/* Fitted to the container exactly as the banner lockup is, so the
               two read as the same mark rather than two sizes of one. */}
           <span aria-hidden className="block">
-            <FitText className="grain-text">DJ Ganesh</FitText>
+            <FitText className="grain-text">{brandName}</FitText>
           </span>
         </h2>
 
@@ -80,7 +86,37 @@ export function Footer() {
         </div>
 
         <div className="reveal-scroll footer-bar" style={delay(380)}>
-          <p className="footer-bar__credit">{copyright}</p>
+          <p className="footer-bar__credit">
+            {copyright}
+            <span aria-hidden className="footer-bar__sep">
+              |
+            </span>
+            <a
+              href="https://nexeor.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-bar__privacy"
+            >
+              Powered by Nexeor
+            </a>
+            <span aria-hidden className="footer-bar__sep">
+              ·
+            </span>
+            <Link href="/privacy" className="footer-bar__privacy">
+              Privacy Policy
+            </Link>
+            {/* Only when analytics is set up: reopens the cookie question. */}
+            {gaId ? (
+              <>
+                <span aria-hidden className="footer-bar__sep">
+                  ·
+                </span>
+                <button type="button" onClick={openCookieSettings} className="footer-bar__privacy">
+                  Cookie settings
+                </button>
+              </>
+            ) : null}
+          </p>
 
           <button type="button" onClick={backToTop} className="btn-tertiary footer-link">
             Back to top

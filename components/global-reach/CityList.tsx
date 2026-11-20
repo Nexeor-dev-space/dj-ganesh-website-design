@@ -2,6 +2,7 @@
 
 import { tourCities as defaultCities, tourShows as defaultShows } from "@/lib/tour";
 import type { TourCity, TourShow } from "@/types/tour";
+import { itemKey } from "@/lib/keys";
 
 type CityListProps = {
   cities?: readonly TourCity[];
@@ -11,6 +12,7 @@ type CityListProps = {
   pinnedCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
+  hubLabel?: string;
 };
 
 /**
@@ -34,6 +36,7 @@ export function CityList({
   pinnedCity,
   onHover,
   onSelect,
+  hubLabel = "Home",
 }: CityListProps) {
   const findShow = (name: string) => {
     const key = name.trim().toLowerCase();
@@ -41,11 +44,11 @@ export function CityList({
   };
   return (
     <ul className="city-run">
-      {tourCities.map((city) => {
+      {tourCities.map((city, index) => {
         const show = findShow(city.name);
 
         return (
-          <li key={city.name}>
+          <li key={itemKey(city, index)}>
             <button
               type="button"
               className="city-run__city"
@@ -77,7 +80,7 @@ export function CityList({
             >
               <span className="city-run__dot" aria-hidden />
               {city.name}
-              {city.hub ? <span className="city-run__hub">Home</span> : null}
+              {city.hub ? <span className="city-run__hub">{hubLabel}</span> : null}
             </button>
           </li>
         );

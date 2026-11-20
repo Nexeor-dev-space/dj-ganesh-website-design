@@ -2,6 +2,7 @@
 
 import { tourShows as defaultShows } from "@/lib/tour";
 import type { TourShow } from "@/types/tour";
+import { itemKey } from "@/lib/keys";
 
 type UpNextProps = {
   shows?: readonly TourShow[];
@@ -10,6 +11,7 @@ type UpNextProps = {
   pinnedCity: string | null;
   onHover: (city: string | null) => void;
   onSelect: (city: string) => void;
+  label?: string;
 };
 
 /**
@@ -28,14 +30,15 @@ export function UpNext({
   pinnedCity,
   onHover,
   onSelect,
+  label = "Up Next",
 }: UpNextProps) {
   return (
     <div className="up-next">
-      <h3 className="up-next__label">Up Next</h3>
+      <h3 className="up-next__label">{label}</h3>
 
       <ul className="up-next__row">
-        {tourShows.map((show) => (
-          <li key={`${show.city}-${show.day}`}>
+        {tourShows.map((show, index) => (
+          <li key={itemKey(show, index)}>
             <button
               type="button"
               className="up-next__pill"

@@ -6,6 +6,7 @@ import { useSectionVisible } from "@/components/about-page/useSectionVisible";
 import { aboutParagraphs } from "@/data/about-page";
 import { careerStats } from "@/lib/about";
 import type { CareerStat } from "@/types/about";
+import { itemKey } from "@/lib/keys";
 
 const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties;
 
@@ -23,12 +24,18 @@ const grouped = new Intl.NumberFormat("en-US");
 type ArtistStoryProps = {
   paragraphs?: readonly string[];
   stats?: readonly CareerStat[];
+  /** The page heading, e.g. "The Story". */
+  heading?: string;
 };
 
 export function ArtistStory({
   paragraphs = aboutParagraphs,
   stats = careerStats,
+  heading = "The Story",
 }: ArtistStoryProps = {}) {
+  // Set on two lines: the first word, then the rest.
+  const [firstWord, ...restWords] = heading.trim().split(/\s+/);
+  const rest = restWords.join(" ");
   const [ref, visible] = useSectionVisible<HTMLElement>();
 
   return (
@@ -41,23 +48,27 @@ export function ArtistStory({
       <Container className="relative z-10">
         <div className="about-story__spread">
           {/* No eyebrow: it only said "The Story" over a heading that says
-              the same. */}
+              the same. The page's main heading. */}
           <div>
-            <h2
+            <h1
               id="about-story-title"
               className="reveal-scroll section-title"
               style={delay(0)}
             >
-              The
-              <br />
-              Story
-            </h2>
+              {firstWord}
+              {rest ? (
+                <>
+                  <br />
+                  {rest}
+                </>
+              ) : null}
+            </h1>
           </div>
 
           <div className="about-story__text">
             {paragraphs.map((paragraph, index) => (
               <p
-                key={paragraph}
+                key={itemKey(paragraph, index)}
                 className={`reveal-scroll about-story__paragraph ${
                   index === paragraphs.length - 1
                     ? "about-story__paragraph--close"
@@ -74,7 +85,7 @@ export function ArtistStory({
         <dl className="about-figures">
           {stats.map((stat, index) => (
             <div
-              key={stat.label}
+              key={itemKey(stat, index)}
               className="reveal-scroll about-figure"
               style={delay(420 + index * 70)}
             >

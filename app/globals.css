@@ -15,7 +15,11 @@
   --border: rgba(255, 255, 255, 0.12);
 
   /* The single signature accent — electric, atmospheric, used sparingly. */
-  --accent: #ffd500;
+  /* Neon green. Near-black text reads on it at ~15:1, so filled buttons keep
+     their dark labels; white would only reach ~1.4:1. */
+  --accent: #39ff14;
+  /* The deeper shade a button sweeps to on hover. */
+  --accent-hover: #25ee00;
 
   /* Layout */
   --container-max-width: 1440px;
@@ -103,6 +107,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -144,6 +149,17 @@
     /* `clip` prevents accidental horizontal scroll without breaking sticky. */
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
+    /* One colour scheme, in every mode: "only" forbids a browser's own dark
+       mode from re-tinting the page, so #39ff14 stays #39ff14 on phones too. */
+    color-scheme: only dark;
+  }
+
+  /* Samsung Internet leaves alone pages that answer the dark-mode query
+     themselves, so the answer is given here: the same colours as always. */
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: only dark;
+    }
   }
 
   body {
@@ -185,6 +201,33 @@
   :focus-visible {
     outline: 2px solid var(--foreground);
     outline-offset: 2px;
+  }
+
+  /* The skip link's target takes focus only so Tab continues from the page;
+     a ring round the whole page would say nothing. */
+  #main-content:focus {
+    outline: none;
+  }
+
+  /* Off-screen until a keyboard user tabs to it, then over the bar. */
+  .skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 9999px;
+    background: var(--foreground);
+    color: var(--background);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus-visible {
+    transform: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -492,21 +535,6 @@
     text-transform: uppercase;
     color: var(--foreground);
     text-wrap: balance;
-  }
-
-  .hero__sub {
-    margin: var(--space-md) 0 0;
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  @media (width >= 768px) {
-    .hero__sub {
-      font-size: 12px;
-    }
   }
 
   /* Stacked on a phone so the button is a full-width target, side by side as
@@ -851,9 +879,15 @@
     min-height: 100%;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-xl);
-    padding-block: var(--space-xl) var(--space-lg);
+    /* Centred as one group: spreading the three blocks to the top and bottom
+       left big empty bands around the social icons on tall phones. */
+    justify-content: center;
+    /* Every size in the menu is the smaller of its designed value and a
+       share of the screen's height (svh: the height with the browser's bars
+       showing), so tall screens look exactly as designed and short ones —
+       laptops at 720–768px tall — shrink until it all fits, unscrolled. */
+    gap: min(var(--space-xl), 4.5svh);
+    padding-block: min(var(--space-xl), 4svh) min(var(--space-lg), 3svh);
     text-align: center;
     /* The name band runs 100vw, a scrollbar's width wider than this box
        whenever it scrolls; clip that, and keep the scroll itself (a short
@@ -868,7 +902,7 @@
 
   @media (width >= 768px) {
     .menu {
-      padding-block: var(--space-2xl);
+      padding-block: min(var(--space-2xl), 5svh);
     }
   }
 
@@ -876,7 +910,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
+    gap: min(var(--space-sm), 1.8svh);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -885,7 +919,7 @@
   .menu__link {
     display: inline-block;
     font-family: var(--font-consul), var(--font-display);
-    font-size: clamp(34px, 7vw, 64px);
+    font-size: min(clamp(34px, 7vw, 64px), 7svh);
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -930,7 +964,7 @@
   }
 
   .menu-marquee__label {
-    margin: 0 0 var(--space-md);
+    margin: 0 0 min(var(--space-md), 2.2svh);
     padding-inline: var(--container-padding);
     text-wrap: balance;
     font-size: 12px;
@@ -948,7 +982,7 @@
   }
 
   .menu-row + .menu-row {
-    margin-top: var(--space-sm);
+    margin-top: min(var(--space-sm), 1.4svh);
   }
 
   .menu-marquee:hover .menu-row {
@@ -975,7 +1009,7 @@
     gap: clamp(16px, 2vw, 28px);
     padding-right: clamp(16px, 2vw, 28px);
     font-family: var(--font-display);
-    font-size: clamp(18px, 2.6vw, 30px);
+    font-size: min(clamp(18px, 2.6vw, 30px), 3.4svh);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -989,6 +1023,14 @@
   }
 
   /* The same diamond the homepage bands use between names. */
+  /* Phones on their side: too short for the name strip at any size, so the
+     menu keeps just the pages and the accounts. */
+  @media (height < 500px) {
+    .menu-marquee {
+      display: none;
+    }
+  }
+
   .menu-row__mark {
     font-size: 0.5em;
     line-height: 1;
@@ -1086,6 +1128,17 @@
     margin-top: var(--rhythm-eyebrow);
   }
 
+  /* The international intro (the site's lede voice), between the heading
+     and the hover hint. */
+  .shows__intro {
+    max-width: 52ch;
+    margin-top: var(--rhythm-heading);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
   .shows__sub {
     margin-top: var(--rhythm-heading);
     font-size: 12px;
@@ -1136,7 +1189,9 @@
     position: relative;
     /* Tall enough to be the dominant object on the page without pushing the
        strips below it off a laptop screen. */
-    height: clamp(320px, 78vw, 420px);
+    /* Also capped by the screen's height on phones, so the globe, the city
+       card and the full city list fit one screen after a tap. */
+    height: clamp(260px, min(78vw, 40svh), 420px);
   }
 
   @media (min-width: 640px) {
@@ -1151,7 +1206,47 @@
     }
 
     .shows__globe {
-      height: clamp(460px, 54vw, 660px);
+      height: clamp(460px, 54vw, 600px);
+    }
+  }
+
+  /* Wide screens: the globe holds the left half, the cities and the next
+     dates sit beside it as its key. */
+  .shows__side {
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .shows__layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-2xl);
+      align-items: center;
+      margin-top: var(--space-xl);
+    }
+
+    .shows__stage {
+      margin-top: 0;
+    }
+
+    /* About 520px on a 1440px screen. */
+    .shows__globe {
+      height: clamp(400px, 36vw, 540px);
+    }
+  }
+
+  .shows__side-label {
+    margin-top: var(--space-xl);
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    color: var(--accent);
+  }
+
+  @media (min-width: 1024px) {
+    .shows__side-label {
+      margin-top: 0;
     }
   }
 
@@ -1262,6 +1357,35 @@
     color: var(--muted-foreground);
   }
 
+  /* Phones: the card sits in flow between the globe and the city list, so
+     it is kept small enough for globe, card and list to share one screen. */
+  @media (width < 768px) {
+    .show-info {
+      margin-top: var(--space-sm);
+      padding: 12px var(--space-sm);
+    }
+
+    .show-info__label {
+      font-size: 11px;
+    }
+
+    .show-info__city {
+      margin-top: 6px;
+      font-size: 17px;
+    }
+
+    .show-info__date,
+    .show-info__venue {
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    .show-info .show-info__cta {
+      margin-top: var(--space-xs);
+      min-height: 32px;
+    }
+  }
+
   /* ---- The nine cities ---------------------------------------------------
 
      One run, centred, with the globe's own marker repeated as a dot ahead of
@@ -1273,7 +1397,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 2px var(--space-md);
-    margin-top: var(--space-xl);
+    margin-top: var(--space-xs);
   }
 
   .city-run__city {
@@ -1335,7 +1459,6 @@
   @media (min-width: 768px) {
     .city-run {
       gap: 4px var(--space-xl);
-      margin-top: var(--space-2xl);
     }
 
     .city-run__city {
@@ -1343,18 +1466,28 @@
     }
   }
 
+  /* Beside the globe: two short columns, read down. */
+  @media (min-width: 1024px) {
+    .city-run {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      grid-template-rows: repeat(5, auto);
+      grid-auto-flow: column;
+      gap: 0 var(--space-2xl);
+    }
+  }
+
   /* ---- Up next -----------------------------------------------------------
 
-     The four announced dates. Pills, not cards: they drive the globe, and the
-     ticket link is made once, in the panel beside the marker.               */
+     The announced dates as one card, a row per show. The rows drive the
+     globe; the ticket link is made once, in the panel beside the marker.    */
 
   .up-next {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--space-md);
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-xl);
+    padding: var(--space-md) var(--space-md) var(--space-xs);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.015);
   }
 
   .up-next__label {
@@ -1366,40 +1499,40 @@
   }
 
   .up-next__row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 10px;
+    margin-top: var(--space-xs);
+  }
+
+  .up-next__row > li + li {
+    border-top: 1px solid var(--border);
   }
 
   .up-next__pill {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 8px 18px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
+    gap: var(--space-md);
+    width: 100%;
+    min-height: 48px;
+    padding: 10px var(--space-xs);
     text-align: left;
     transition:
-      border-color 300ms var(--ease-out),
       background 300ms var(--ease-out),
-      transform 300ms var(--ease-out);
+      box-shadow 300ms var(--ease-out);
   }
 
   .up-next__pill:hover,
   .up-next__pill[data-active="true"] {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
     background: color-mix(in srgb, var(--accent) 7%, transparent);
-    transform: translateY(-2px);
   }
 
+  /* Pinned: an accent rule down its left edge marks the row that stays. */
   .up-next__pill[data-pinned="true"] {
-    border-color: var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   .up-next__date {
+    flex: none;
+    min-width: 4.6em;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -1413,6 +1546,9 @@
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.14em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
     color: rgba(255, 255, 255, 0.65);
   }
@@ -1422,17 +1558,10 @@
     opacity: 0.4;
   }
 
-  /* The room is the least of the three, and the first thing to go when the
-     row runs out of width. */
+  /* The room is the least of the three: on a narrow row it is the part
+     that trails off. */
   .up-next__venue {
     color: rgba(255, 255, 255, 0.65);
-  }
-
-  @media (max-width: 479px) {
-    .up-next__venue,
-    .up-next__sep {
-      display: none;
-    }
   }
 
   .up-next__pill:hover .up-next__where,
@@ -1467,11 +1596,6 @@
     animation: none;
   }
 
-  .up-next__pill:hover,
-  .up-next__pill[data-active="true"] {
-    transform: none;
-  }
-
   .city-run__city[data-active="true"] .city-run__dot {
     transform: none;
   }
@@ -1501,7 +1625,7 @@
   .artwork-glow {
     background: radial-gradient(
       120% 90% at 50% 100%,
-      rgba(255, 213, 0, 0.16) 0%,
+      rgba(57, 255, 20, 0.16) 0%,
       transparent 62%
     );
   }
@@ -1625,12 +1749,12 @@
   .release-card:hover,
   .release-card:focus-within {
     transform: translateY(-6px);
-    border-color: rgba(255, 213, 0, 0.28);
+    border-color: rgba(57, 255, 20, 0.28);
     box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
   .release-card[data-current] {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(57, 255, 20, 0.4);
   }
 
   /* The artwork is the control: one button, the whole frame. */
@@ -1809,7 +1933,8 @@
     opacity: 0.4;
     filter: grayscale(0.4) brightness(0.55);
     transform: translate(-50%, -50%)
-      translateX(calc(var(--offset) * var(--sleeve) * var(--spread))) scale(0.6);
+      translateX(calc(var(--offset) * var(--sleeve) * var(--spread) + var(--drag, 0px)))
+      scale(0.6);
     transition:
       transform 650ms var(--ease-in-out),
       opacity 650ms var(--ease-in-out),
@@ -1824,7 +1949,17 @@
     z-index: 3;
     opacity: 1;
     filter: none;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) translateX(var(--drag, 0px)) scale(1);
+  }
+
+  /* Swipe: horizontal drags belong to the rack, vertical ones to the page;
+     while a finger is down the sleeves track it with no easing lag. */
+  .vinyl__stage {
+    touch-action: pan-y;
+  }
+
+  .vinyl__stage[data-dragging] .vinyl__item {
+    transition-duration: 0ms, 650ms, 650ms;
   }
 
   /* Anything two or more away is off the rack: hidden while it wraps round. */
@@ -1879,7 +2014,7 @@
 
   .vinyl__item[data-active] .vinyl__sleeve:hover,
   .vinyl__item[data-active] .vinyl__sleeve:focus-visible {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(57, 255, 20, 0.4);
   }
 
   .vinyl__item[data-active] .vinyl__sleeve:hover .vinyl__art,
@@ -1964,7 +2099,7 @@
     inset: 33.5%;
     overflow: hidden;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(255, 213, 0, 0.45);
+    box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.45);
   }
 
   .vinyl__label-art {
@@ -2153,6 +2288,193 @@
     margin-top: 0;
   }
 
+  /* ---- Nonstop Sets ------------------------------------------------------- */
+
+  .nonstop__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .nonstop__title {
+    margin-top: var(--rhythm-eyebrow);
+  }
+
+  .nonstop__lede {
+    max-width: 52ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .nonstop__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-md);
+    margin: var(--rhythm-block) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width >= 640px) {
+    .nonstop__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 1024px) {
+    .nonstop__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .nonstop-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.018);
+    transition:
+      border-color 400ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+
+  /* Only a card with a video reacts: a placeholder is not a link. */
+  a.nonstop-card:hover,
+  a.nonstop-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .nonstop-card__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #050505;
+  }
+
+  .nonstop-card__art {
+    object-fit: cover;
+    filter: brightness(0.66);
+    transition: filter 420ms var(--ease-out);
+  }
+
+  a.nonstop-card:hover .nonstop-card__art,
+  a.nonstop-card:focus-visible .nonstop-card__art {
+    filter: brightness(0.86);
+  }
+
+  .nonstop-card__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    background-color: rgba(5, 5, 5, 0.42);
+    color: #ffffff;
+  }
+
+  .nonstop-card__play svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  a.nonstop-card:hover .nonstop-card__play {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .nonstop-card__length {
+    position: absolute;
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    padding: 3px 8px;
+    border-radius: 2px;
+    background-color: rgba(5, 5, 5, 0.72);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .nonstop-card__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+  }
+
+  .nonstop-card__info .release-card__tag {
+    margin: 0;
+  }
+
+  .nonstop-card__name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.94);
+  }
+
+  .nonstop__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-xl);
+    margin-top: var(--rhythm-body);
+  }
+
+  /* ---- Venue photos on the Club Nights card ------------------------------ */
+
+  .exp-card__venues {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xs);
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .exp-card__venue {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .exp-card__venue-frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: var(--surface);
+  }
+
+  .exp-card__venue-img {
+    object-fit: cover;
+    filter: brightness(0.8);
+  }
+
+  .exp-card__venue-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted-foreground);
+  }
+
   /* ---- Playlist (on /music) ---------------------------------------------- */
 
   .playlist {
@@ -2201,7 +2523,7 @@
   }
 
   .playlist__row[data-current] {
-    border-color: rgba(255, 213, 0, 0.4);
+    border-color: rgba(57, 255, 20, 0.4);
   }
 
   .playlist__thumb {
@@ -2488,7 +2810,9 @@
        the reset's figure margins. */
     margin-block: 0;
     margin-inline: calc(-1 * var(--edge));
-    aspect-ratio: 4 / 5;
+    /* The photo's own 5:4 on phones, so its dark ceiling and floor never
+       read as empty bands above and below the subject. */
+    aspect-ratio: 5 / 4;
     overflow: hidden;
     background-color: var(--surface);
   }
@@ -2537,13 +2861,30 @@
 
   /* Three lines, big enough to carry the left half on their own. Sized on
      the same ×0.8 Consul scale as `.section-title`. */
+  /* The heading sizes against its own column, not the screen. */
+  .story-copy {
+    container-type: inline-size;
+  }
+
   .story-title {
     font-family: var(--font-consul), var(--font-display);
     font-weight: 400;
-    font-size: clamp(35px, 7.2vw, 84px);
+    /* Capped by the column, so "Wedding &" (about 6.65em wide) always holds
+       one line — between 1024 and 1366px the column is narrower than the
+       screen-based size would need. */
+    font-size: min(clamp(35px, 7.2vw, 84px), 14cqi);
     line-height: 0.88;
     letter-spacing: -0.045em;
     text-transform: uppercase;
+    /* The face's "&" stands taller than its capitals; room for it to clear
+       the eyebrow above (the 0.14em the layout keeps). The title-hover sheen
+       paints the letters with a text-clipped background, which only reaches
+       as far as the box — on a 0.88 line the "&" rises past it and its top
+       was cut off on hover. So the box reaches further up and out (padding)
+       and the layout is pulled back the same amount (negative margin):
+       nothing moves, the sheen covers every glyph. */
+    padding: 0.4em 0.12em 0.12em 0;
+    margin: -0.26em -0.12em -0.12em 0;
   }
 
   /* The strands, as a rule with the three names hung off it. */
@@ -2620,16 +2961,16 @@
   /* The career figures as a ruled band rather than four cards. Two abreast on
      a phone, where four columns would crush "Years behind the decks" into a
      stack of single words. */
+  /* One figure per row on a phone; side by side from tablets, one column per
+     figure however many the CMS holds (three now that the years-behind-the-
+     decks figure is gone), so a missing one never leaves a gap. */
+  /* One column per figure on every screen, so a phone shows them side by
+     side instead of stacked with the right side empty. */
   .story-facts {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     margin: 0;
-  }
-
-  @media (width >= 768px) {
-    .story-facts {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
   }
 
   /* Reversed, because the label comes first in the markup: a screen reader
@@ -2638,31 +2979,25 @@
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
-    padding: var(--space-lg) var(--space-md) var(--space-lg) 0;
+    padding: var(--space-lg) var(--space-sm) var(--space-lg) 0;
     border-top: 1px solid var(--border);
   }
 
-  /* Hairlines between, not around: the band reads as one ruled row. Every
-     card rules off its neighbour on a phone except the ones opening a row. */
+  @media (width >= 768px) {
+    .story-fact {
+      padding-right: var(--space-md);
+    }
+  }
+
+  /* Hairlines between, not around: the band reads as one ruled row. */
   .story-fact + .story-fact {
-    padding-left: var(--space-md);
+    padding-left: var(--space-sm);
     border-left: 1px solid var(--border);
   }
 
-  .story-fact:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
   @media (width >= 768px) {
-    .story-fact:nth-child(odd) {
+    .story-fact + .story-fact {
       padding-left: var(--space-md);
-      border-left: 1px solid var(--border);
-    }
-
-    .story-fact:first-child {
-      padding-left: 0;
-      border-left: 0;
     }
   }
 
@@ -2671,7 +3006,7 @@
     align-items: baseline;
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(30px, 4.6vw, 52px);
+    font-size: clamp(24px, 4.6vw, 52px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -2682,7 +3017,7 @@
 
   .story-fact__suffix {
     font-size: 0.62em;
-    color: rgba(255, 213, 0, 0.55);
+    color: rgba(57, 255, 20, 0.55);
   }
 
   .story-fact__label {
@@ -2695,9 +3030,19 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
-  @media (width >= 768px) {
+  /* On a phone each figure gets about a third of the screen; slightly smaller,
+     tighter-tracked labels keep "Countries" inside its column. */
+  @media (width < 768px) {
     .story-fact__label {
-      font-size: 12px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+
+  /* The narrowest phones (320–380px) need a touch less tracking again. */
+  @media (width < 380px) {
+    .story-fact__label {
+      letter-spacing: 0.05em;
     }
   }
 
@@ -2708,7 +3053,7 @@
     pointer-events: none;
     background: radial-gradient(
       46% 46% at 74% 42%,
-      rgba(255, 213, 0, 0.05) 0%,
+      rgba(57, 255, 20, 0.05) 0%,
       transparent 70%
     );
   }
@@ -2870,7 +3215,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 42% at 72% 12%,
-      rgba(255, 213, 0, 0.045) 0%,
+      rgba(57, 255, 20, 0.045) 0%,
       transparent 68%
     );
   }
@@ -3079,7 +3424,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 44% at 50% 38%,
-      rgba(255, 213, 0, 0.045) 0%,
+      rgba(57, 255, 20, 0.045) 0%,
       transparent 72%
     );
   }
@@ -3118,7 +3463,10 @@
     content: attr(data-text);
     content: attr(data-text) / "";
     position: absolute;
-    inset: 0;
+    /* Runs past the right edge: tight letter-spacing lets the last glyph's
+       ink overhang its box, and the mask would otherwise clip it, leaving a
+       white sliver of the letter beneath showing. */
+    inset: 0 -0.2em 0 0;
     color: var(--accent);
     -webkit-mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
     mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
@@ -3392,6 +3740,177 @@
     color: var(--foreground);
   }
 
+  /* The reel beside the major live shows as a numbered setlist: stacked on a
+     phone; side by side from 1024px, where the reel is stretched to the
+     list's own height so it starts on the first row's line and ends on the
+     last. Its column is the narrower one, which keeps the frame portrait. */
+  .gallery__feature {
+    display: grid;
+    gap: var(--space-lg);
+    margin: 0 0 var(--rhythm-block);
+  }
+
+  /* Portrait on a phone (the reel is shot on one), capped so it does not fill
+     the whole screen before the list. */
+  .gallery__video-frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: min(100%, 520px);
+    overflow: hidden;
+    background-color: #060606;
+    border: 1px solid var(--border);
+  }
+
+  @media (width >= 1024px) {
+    .gallery__feature {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      gap: clamp(32px, 4vw, 64px);
+      align-items: stretch;
+    }
+
+    /* No aspect ratio of its own here: the video is absolutely placed, so
+       the row's height is the list's, and the frame fills it. */
+    .gallery__video-frame {
+      aspect-ratio: auto;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .gallery__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gallery__shows-eyebrow {
+    margin: 0 0 var(--rhythm-eyebrow);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* "Gallery", now a sub-heading between the setlist and the photographs. */
+  .gallery__grid-title {
+    margin: var(--space-xl) 0 var(--space-md);
+    font-family: var(--font-consul), var(--font-display);
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+  }
+
+  .gallery__setlist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .gallery__set {
+    position: relative;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: var(--space-sm);
+    padding-block: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* An accent rule draws along the row's own hairline under the pointer. */
+  .gallery__set::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 -1px;
+    height: 1px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .gallery__set:hover::after {
+    transform: scaleX(1);
+  }
+
+  .gallery__set-index {
+    padding-top: 4px;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.35);
+    transition: color 300ms var(--ease-out);
+  }
+
+  .gallery__set:hover .gallery__set-index {
+    color: var(--accent);
+  }
+
+  .gallery__set-body {
+    min-width: 0;
+  }
+
+  .gallery__set-head {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(19px, 1.9vw, 27px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    transition:
+      color 250ms var(--ease-out),
+      transform 450ms var(--ease-out);
+  }
+
+  .gallery__set:hover .gallery__set-head {
+    color: var(--accent);
+    transform: translateX(6px);
+  }
+
+  .gallery__set-detail {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .gallery__set-facts {
+    color: var(--muted-foreground);
+  }
+
+  .gallery__set-kind {
+    align-self: start;
+    padding: 4px 10px;
+    border: 1px solid rgba(57, 255, 20, 0.4);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--accent);
+  }
+
+  /* On a phone the tag would squeeze the name; it moves under the detail. */
+  @media (width < 480px) {
+    .gallery__set {
+      grid-template-columns: 28px minmax(0, 1fr);
+    }
+
+    .gallery__set-kind {
+      grid-column: 2;
+      justify-self: start;
+    }
+  }
+
   /* A hairline between tiles rather than a gutter, so the six read as one
      sheet. Two columns on a phone, as the client's own grid does; the covers
      carry their titles in the artwork and stay readable at half width. */
@@ -3410,9 +3929,10 @@
     }
   }
 
+  /* The photographs' own 5:4, so nothing important is cropped. */
   .gallery__item {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 5 / 4;
     overflow: hidden;
     background-color: #060606;
   }
@@ -3663,7 +4183,7 @@
     pointer-events: none;
     background: radial-gradient(
       54% 48% at 50% 58%,
-      rgba(255, 213, 0, 0.04) 0%,
+      rgba(57, 255, 20, 0.04) 0%,
       transparent 72%
     );
   }
@@ -3774,8 +4294,8 @@
      travelling sideways, and a card that rises as it passes reads as the run
      jolting rather than as the card answering the pointer. */
   .reaction-card:hover {
-    border-color: rgba(255, 213, 0, 0.4);
-    background-color: rgba(255, 213, 0, 0.03);
+    border-color: rgba(57, 255, 20, 0.4);
+    background-color: rgba(57, 255, 20, 0.03);
   }
 
   .reaction-card__head {
@@ -3806,7 +4326,7 @@
   }
 
   .reaction-card:hover .reaction-card__mark {
-    color: rgba(255, 213, 0, 0.32);
+    color: rgba(57, 255, 20, 0.32);
   }
 
   .reaction-card__quote {
@@ -3906,7 +4426,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 46% at 74% 62%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(57, 255, 20, 0.06) 0%,
       transparent 70%
     );
   }
@@ -3972,15 +4492,21 @@
     }
   }
 
-  .booking-scope li + li::before {
-    content: "·";
-    margin-right: var(--space-md);
-    color: rgba(255, 255, 255, 0.4);
+  /* Phones: two tidy columns, no separators, so no dot ever starts a line.
+     From tablets the list runs on one line with dots between. */
+  @media (width < 768px) {
+    .booking-scope {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm) var(--space-md);
+    }
   }
 
   @media (width >= 768px) {
     .booking-scope li + li::before {
+      content: "·";
       margin-right: var(--space-md);
+      color: rgba(255, 255, 255, 0.4);
     }
   }
 
@@ -4065,6 +4591,42 @@
   .booking-links__link:hover {
     color: var(--accent);
   }
+
+  /* Small phones: the pass and its button give the label room to stay on
+     one line ("Book DJ Ganesh →", not one word per line), and each channel
+     stacks its name over its value, so an address or handle runs the full
+     width instead of breaking mid-word beside the label. */
+  @media (width < 480px) {
+    .booking-pass {
+      padding: var(--space-md) var(--space-sm);
+    }
+
+    .booking-pass .btn-primary {
+      padding-inline: var(--space-md);
+      white-space: nowrap;
+    }
+
+    .booking-links {
+      margin-top: var(--space-xl);
+    }
+
+    .booking-links__row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding-block: var(--space-sm) 0;
+    }
+
+    .booking-links__row dd {
+      text-align: left;
+    }
+
+    .booking-links__link {
+      min-height: 40px;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4106,7 +4668,8 @@
   .footer-columns {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2xl) var(--space-lg);
+    /* 40px between the groups: enough to separate them, not a blank band. */
+    gap: 40px var(--space-lg);
   }
 
   /* Four columns only from `lg`. At `md` a quarter of the width is 144px,
@@ -4116,6 +4679,14 @@
     .footer-columns {
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: var(--space-xl);
+    }
+  }
+
+  /* The column with the booking address spans both phone columns, so the
+     address stays on one line. */
+  @media (width < 1024px) {
+    .footer-column--wide {
+      grid-column: 1 / -1;
     }
   }
 
@@ -4135,7 +4706,7 @@
   }
 
   .footer-column__list {
-    margin: var(--space-lg) 0 0;
+    margin: var(--space-sm) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -4146,10 +4717,13 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
-    min-height: 40px;
+    min-height: 36px;
+    max-width: 100%;
     font-size: 14px;
     font-weight: 300;
     line-height: 1.5;
+    /* Last resort for a long CMS label on a narrow screen: wrap, never clip. */
+    overflow-wrap: break-word;
     color: rgba(255, 255, 255, 0.68);
     transition: color 240ms var(--ease-out);
   }
@@ -4163,7 +4737,7 @@
   /* Comfortable to hit with a thumb. */
   @media (pointer: coarse) {
     .footer-column__link {
-      min-height: 44px;
+      min-height: 40px;
     }
   }
 
@@ -4208,6 +4782,188 @@
     font-weight: 300;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.65);
+  }
+
+  .footer-bar__sep {
+    margin-inline: var(--space-xs);
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .footer-bar__privacy,
+  .enquiry-consent__link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    transition:
+      color 200ms var(--ease-out),
+      text-decoration-color 200ms var(--ease-out);
+  }
+
+  .footer-bar__privacy:hover,
+  .footer-bar__privacy:focus-visible,
+  .enquiry-consent__link:hover,
+  .enquiry-consent__link:focus-visible,
+  .cookie-banner__link:hover,
+  .cookie-banner__link:focus-visible {
+    color: var(--accent);
+    text-decoration-color: currentColor;
+  }
+
+  /* "Cookie settings" is a button, set exactly like the Privacy link. */
+  button.footer-bar__privacy {
+    font: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+  }
+
+  /* ---- The cookie question ------------------------------------------------
+
+     A small bar at the foot of the screen: the full width of a phone, a
+     card in the bottom-left corner from tablets up, clear of the WhatsApp
+     button on the right. Above the page and the dock (z 30), below the
+     navigation's full-screen menu (z 40).                                  */
+  .cookie-banner {
+    position: fixed;
+    inset-inline: var(--space-sm);
+    bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+    z-index: 35;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: rgba(8, 8, 8, 0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    animation: cookie-banner-in 420ms var(--ease-out) both;
+  }
+
+  @media (width >= 768px) {
+    .cookie-banner {
+      right: auto;
+      left: max(var(--space-md), env(safe-area-inset-left));
+      bottom: max(var(--space-md), env(safe-area-inset-bottom));
+      width: min(440px, calc(100vw - 2 * var(--space-md)));
+    }
+  }
+
+  @keyframes cookie-banner-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  .cookie-banner__text {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .cookie-banner__link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255, 255, 255, 0.35);
+    transition:
+      color 200ms var(--ease-out),
+      text-decoration-color 200ms var(--ease-out);
+  }
+
+  .cookie-banner__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-banner {
+      animation: none;
+    }
+  }
+
+  /* The line above the booking form's button. */
+  .enquiry-consent {
+    margin: var(--space-xs) 0 0;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Privacy policy (/privacy) ----------------------------------------- */
+
+  .policy {
+    padding-block: clamp(112px, 14vh, 160px) clamp(36px, 4vw, 56px);
+    background-color: var(--background);
+  }
+
+  .policy__label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .policy__title {
+    margin-top: var(--rhythm-eyebrow);
+  }
+
+  .policy__intro {
+    max-width: 60ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  .policy__sections {
+    display: grid;
+    gap: 0;
+    max-width: 760px;
+    margin-top: var(--rhythm-block);
+    border-top: 1px solid var(--border);
+  }
+
+  .policy__section {
+    display: grid;
+    gap: var(--space-xs);
+    padding-block: var(--space-md);
+    border-bottom: 1px solid var(--border);
+  }
+
+  @media (width >= 768px) {
+    .policy__intro {
+      font-size: 17px;
+    }
+
+    .policy__section {
+      grid-template-columns: 200px minmax(0, 1fr);
+      gap: var(--space-xl);
+    }
+  }
+
+  .policy__heading {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--foreground);
+  }
+
+  .policy__body {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
   }
 
 }
@@ -4347,11 +5103,13 @@
   .stage-row__item {
     display: flex;
     align-items: center;
-    gap: clamp(16px, 2.2vw, 40px);
-    padding-right: clamp(16px, 2.2vw, 40px);
+    gap: clamp(12px, 1.6vw, 24px);
+    padding-right: clamp(12px, 1.6vw, 24px);
     white-space: nowrap;
     font-family: var(--font-display);
-    font-size: clamp(30px, 5.4vw, 76px);
+    /* About half its old size: a moving strip under "The Rooms", not a
+       second heading competing with it. */
+    font-size: clamp(20px, 2.7vw, 38px);
     font-weight: 700;
     line-height: 1.08;
     letter-spacing: -0.02em;
@@ -4566,17 +5324,18 @@
 
   /* ---- Opening frame ------------------------------------------------------ */
 
+  /* A photo strip under the fixed navigation (64px, 80px from tablets);
+     the page's words start with The Story below it. */
   .about-hero {
-    /* Clears the fixed navigation, then holds the name well down the frame. */
-    padding-top: clamp(120px, 18vh, 200px);
-    padding-bottom: clamp(28px, 4vh, 48px);
+    margin-top: 64px;
+    height: clamp(180px, 30vh, 280px);
     background-color: var(--background);
   }
 
-  @media (width >= 1024px) {
+  @media (width >= 768px) {
     .about-hero {
-      padding-top: clamp(180px, 22vh, 260px);
-      padding-bottom: clamp(40px, 5vh, 64px);
+      margin-top: 80px;
+      height: clamp(240px, 36vh, 420px);
     }
   }
 
@@ -4587,84 +5346,23 @@
     overflow: hidden;
   }
 
+  /* Light enough for the crowd and the phone lights to come through; the
+     fade below darkens only where the type sits. */
   .about-hero__image {
-    filter: contrast(1.05) brightness(0.62);
+    filter: brightness(0.85);
   }
 
   /* Holds the picture down far enough for the type to read on it, without
      flattening it to black. */
+  /* Dark behind the type, clear elsewhere: the title and lines sit on the
+     left, so the shade runs off to the right, and the foot of the frame
+     blends into the page. On a phone the type spans the width, so the shade
+     is even across it instead. */
+  /* No type sits on the strip now: just a soft blend into the page below. */
   .about-hero__fade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      rgba(5, 5, 5, 0.82) 0%,
-      rgba(5, 5, 5, 0.58) 38%,
-      rgba(5, 5, 5, 0.86) 78%,
-      var(--background) 100%
-    );
-  }
-
-  .about-hero__name {
-    margin: var(--rhythm-eyebrow) 0 0;
-    font-family: var(--font-laura), var(--font-display);
-    font-weight: 400;
-    font-size: clamp(46px, 12vw, 150px);
-    line-height: 0.86;
-    letter-spacing: -0.045em;
-    text-transform: uppercase;
-  }
-
-  .about-hero__statement {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 18ch;
-    font-family: var(--font-display);
-    font-size: clamp(22px, 3.4vw, 44px);
-    font-weight: 700;
-    line-height: 1.14;
-    letter-spacing: -0.03em;
-    color: rgba(255, 255, 255, 0.94);
-    text-wrap: balance;
-  }
-
-  .about-hero__meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-sm) var(--space-xl);
-    margin-top: var(--space-xl);
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-  }
-
-  @media (width >= 768px) {
-    .about-hero__meta {
-      font-size: 12px;
-    }
-  }
-
-  .about-hero__strands {
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  .about-hero__since {
-    color: rgba(255, 255, 255, 0.65);
-  }
-
-  .about-hero__lede {
-    margin: var(--space-lg) 0 0;
-    max-width: 46ch;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--muted-foreground);
-  }
-
-  @media (width >= 768px) {
-    .about-hero__lede {
-      font-size: 17px;
-    }
+    background: linear-gradient(to bottom, transparent 55%, var(--background) 100%);
   }
 
   /* ---- The story ---------------------------------------------------------- */
@@ -4686,10 +5384,17 @@
     max-width: 54ch;
   }
 
+  /* The homepage bio's size and colour: 15px, 17px from tablets. */
   .about-story__paragraph {
-    font-size: clamp(17px, 1.9vw, 22px);
-    line-height: 1.62;
-    color: rgba(255, 255, 255, 0.66);
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .about-story__paragraph {
+      font-size: 17px;
+    }
   }
 
   .about-story__paragraph + .about-story__paragraph {
@@ -4703,10 +5408,14 @@
   /* The closing line is the one that carries the present tense. */
 
   /* The career in figures, ruled across the foot of the spread. */
+  /* Three across on every screen, compact on phones, so the band never
+     leaves the right side empty. */
   .about-figures {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-lg) var(--space-md);
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--space-lg) var(--space-sm);
     margin: var(--space-3xl) 0 0;
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border);
@@ -4714,7 +5423,9 @@
 
   @media (width >= 768px) {
     .about-figures {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
       gap: var(--space-xl);
       margin-top: var(--space-4xl);
     }
@@ -4722,7 +5433,7 @@
 
   .about-figure__value {
     font-family: var(--font-display);
-    font-size: clamp(30px, 4vw, 52px);
+    font-size: clamp(26px, 4vw, 52px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.04em;
@@ -4742,6 +5453,14 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
+  /* As .story-fact__label: a third of a phone screen each. */
+  @media (width < 768px) {
+    .about-figure__label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+  }
+
   /* ---- Two frames and the sound ------------------------------------------- */
 
   .about-visual__spread {
@@ -4750,8 +5469,11 @@
   }
 
   @media (width >= 1024px) {
+    /* The photos take about a third of the row (they used to take over
+       half), so the portrait sits at a size its detail holds up at and the
+       words get the room. */
     .about-visual__spread {
-      grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+      grid-template-columns: minmax(0, 36fr) minmax(0, 64fr);
       gap: var(--space-3xl);
       align-items: center;
     }
@@ -4817,15 +5539,86 @@
     color: rgba(255, 255, 255, 0.4);
   }
 
-  .about-visual__line {
-    margin: var(--rhythm-heading) 0 0;
-    max-width: 34ch;
-    font-size: 15px;
-    line-height: 1.7;
+  /* ---- The journey in photographs ----------------------------------------- */
+
+  /* The homepage gallery's sheet: a hairline between frames, not a gutter.
+     Two across on phones and tablets, four on desktop. Dense, so a CMS album
+     that leaves a gap fills it with the next portrait. */
+  .journey__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: 3px;
+    margin: var(--rhythm-block) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width >= 1024px) {
+    .journey__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Two columns wide, so a landscape stands as tall as a portrait beside it. */
+  .journey__item--landscape {
+    grid-column: span 2;
+  }
+
+  .journey__figure {
+    margin: 0;
+  }
+
+  .journey__frame {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: #060606;
+  }
+
+  .journey__item--landscape .journey__frame {
+    aspect-ratio: 8 / 5;
+  }
+
+  /* In colour, held a shade down until asked for, then full and a step closer. */
+  .journey__img {
+    object-fit: cover;
+    filter: brightness(0.82);
+    transition:
+      filter 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+  }
+
+  .journey__item:hover .journey__img {
+    filter: none;
+    transform: scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .journey__img {
+      transition: filter 500ms var(--ease-out);
+    }
+
+    .journey__item:hover .journey__img {
+      transform: none;
+    }
+  }
+
+  .journey__caption {
+    padding: 10px 2px 14px;
+    font-size: 11px;
+    font-weight: 300;
+    line-height: 1.4;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
     color: var(--muted-foreground);
   }
 
-
+  @media (width >= 768px) {
+    .journey__caption {
+      font-size: 12px;
+    }
+  }
 
   /* ---- Hand-off to booking ------------------------------------------------ */
 
@@ -4906,7 +5699,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 52% at 22% 34%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(57, 255, 20, 0.06) 0%,
       transparent 70%
     );
   }
@@ -5065,7 +5858,9 @@
   /* Carries the foot of the page: the transport docks over this section, so
      the padding below is what keeps the link clear of it. */
   .music-continue {
-    padding-block: clamp(28px, 2.8vw, 48px) clamp(150px, 16vh, 220px);
+    /* Closes like the other pages' last sections; the room the docked
+       transport needs is held by the footer instead (see .music-dock). */
+    padding-block: clamp(28px, 2.8vw, 48px) clamp(36px, 4vw, 56px);
     background-color: var(--background);
   }
 
@@ -5102,6 +5897,12 @@
     opacity: 1;
     transform: none;
     pointer-events: auto;
+  }
+
+  /* While the transport is docked, the page's foot makes room for it, so it
+     never sits over the footer's last line. */
+  body:has(.music-dock[data-open="true"]) .footer {
+    padding-bottom: clamp(150px, 16vh, 220px);
   }
 
   .music-dock__panel {
@@ -5203,7 +6004,7 @@
   .btn-sweep,
   .btn-primary,
   .btn-secondary {
-    --sweep-bg: var(--accent);
+    --sweep-bg: var(--accent-hover);
     --sweep-ink: #050505;
     --sweep-drift: 4px;
 
@@ -5318,6 +6119,19 @@
     cursor: pointer;
   }
 
+  /* Small phones: the 48px sides left a full-width button too little room,
+     so labels like "Send booking request" broke onto two lines. Tighter
+     sides and tracking keep a label on one line; a label that still cannot
+     fit wraps between words, balanced, never mid-word. */
+  @media (width < 480px) {
+    .btn-primary,
+    .btn-secondary {
+      padding-inline: var(--space-md);
+      letter-spacing: 0.18em;
+      text-wrap: balance;
+    }
+  }
+
   .btn-primary {
     border-color: var(--accent);
     background-color: var(--accent);
@@ -5337,7 +6151,7 @@
   .btn-primary:focus-visible,
   .btn-secondary:hover,
   .btn-secondary:focus-visible {
-    box-shadow: 0 14px 40px rgba(255, 213, 0, 0.22);
+    box-shadow: 0 14px 40px rgba(57, 255, 20, 0.22);
   }
 
   /* A glyph on its own small disc — the play mark, a platform badge. It
@@ -5362,6 +6176,13 @@
   .btn__mark svg {
     width: 11px;
     height: 11px;
+  }
+
+  .btn__glyph {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
   }
 
   /* A brand logo is its own mark: no accent disc behind the red badge. */
@@ -5395,6 +6216,52 @@
   .btn-primary:focus-visible .btn__mark {
     background-color: var(--accent);
     color: #050505;
+  }
+
+  /* Painted rather than only coloured. Samsung Internet's dark mode repaints
+     plain colours — the green darkened, the black labels turned white — and
+     websites can't switch it off. The same colours drawn as gradients, with
+     the labels' ink clipped to the letters, are left as they are, so the
+     buttons look the same in dark mode as in light. Nothing changes on
+     screen anywhere else. */
+  .btn-primary {
+    background-image: linear-gradient(var(--accent), var(--accent));
+  }
+
+  .btn-primary > span:not(.btn__mark) {
+    background-image: linear-gradient(currentColor, currentColor);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* The play disc: one layer for the glyph (clipped to it), one for the
+     disc, so each keeps its own colour. */
+  .btn__mark {
+    --mark-fill: var(--accent);
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(var(--mark-fill), var(--mark-fill));
+    -webkit-background-clip: text, border-box;
+    background-clip: text, border-box;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .btn-secondary:hover .btn__mark,
+  .btn-secondary:focus-visible .btn__mark,
+  .btn-primary .btn__mark {
+    --mark-fill: #050505;
+  }
+
+  .btn-primary:hover .btn__mark,
+  .btn-primary:focus-visible .btn__mark {
+    --mark-fill: var(--accent);
+  }
+
+  .btn__mark:has(> svg),
+  .btn-secondary:hover .btn__mark:has(> svg),
+  .btn-secondary:focus-visible .btn__mark:has(> svg) {
+    --mark-fill: transparent;
   }
 
   /* The ruled link: small tracked caps over a hairline, and on approach the
@@ -5535,8 +6402,9 @@
     margin-top: var(--rhythm-body);
   }
 
+  /* The consent line sits between the message field and the button. */
   .enquiry-submit {
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-md);
   }
 
   .enquiry-done__again {
@@ -5701,7 +6569,7 @@
   /* Clears the fixed navigation, and holds more air beneath it than any
      section on the home page: this is a page that opens on a statement. */
   .contact-hero {
-    padding-top: clamp(140px, 20vw, 260px);
+    padding-top: clamp(104px, 9vw, 140px);
     padding-bottom: clamp(28px, 4vw, 56px);
     background-color: var(--background);
   }
@@ -5712,7 +6580,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 48% at 22% 34%,
-      rgba(255, 213, 0, 0.07) 0%,
+      rgba(57, 255, 20, 0.07) 0%,
       transparent 70%
     );
   }
@@ -5792,7 +6660,7 @@
     pointer-events: none;
     background: radial-gradient(
       48% 44% at 78% 18%,
-      rgba(255, 213, 0, 0.05) 0%,
+      rgba(57, 255, 20, 0.05) 0%,
       transparent 70%
     );
   }
@@ -5864,8 +6732,9 @@
     color: var(--accent);
   }
 
+  /* 0.55 keeps it quieter than the label but at ~6:1 on the form ground (AA). */
   .enquiry-field__optional {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.55);
   }
 
   /* Editorial rather than boxed: a rule under the text, nothing around it. */
@@ -5911,11 +6780,15 @@
     border-color: rgba(255, 138, 128, 0.75);
   }
 
+  /* Starts at three lines and grows with the message (sized in script) up
+     to about twelve, then scrolls inside so the page never jumps. */
   .enquiry-input--area {
-    min-height: 148px;
+    min-height: calc(3 * 1.7em + var(--space-sm));
+    max-height: calc(12 * 1.7em + var(--space-sm));
     padding-top: var(--space-sm);
     line-height: 1.7;
-    resize: vertical;
+    resize: none;
+    overflow-y: auto;
   }
 
   /* The date control's own icon is a browser part; this keeps it legible on a
@@ -5977,9 +6850,9 @@
   /* ---- Sent -------------------------------------------------------------- */
 
   .enquiry-done {
-    border: 1px solid rgba(255, 213, 0, 0.3);
+    border: 1px solid rgba(57, 255, 20, 0.3);
     padding: clamp(28px, 5vw, 56px);
-    background-color: rgba(255, 213, 0, 0.04);
+    background-color: rgba(57, 255, 20, 0.04);
   }
 
   .enquiry-done:focus-visible {
@@ -6158,7 +7031,7 @@
     pointer-events: none;
     background: radial-gradient(
       50% 46% at 68% 60%,
-      rgba(255, 213, 0, 0.06) 0%,
+      rgba(57, 255, 20, 0.06) 0%,
       transparent 70%
     );
   }
@@ -6194,6 +7067,926 @@
   }
 
   .contact-social__link:hover .contact-social__arrow {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  404 — Out of the Mix (app/global-not-found.tsx)                           */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .ootm {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    overflow: hidden;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* ---- The stage --------------------------------------------------------- */
+
+  .ootm__stage {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Haze: two soft accent clouds drifting slowly against each other. */
+  .ootm__haze {
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(40% 32% at 30% 70%, rgba(57, 255, 20, 0.12), transparent 70%),
+      radial-gradient(36% 28% at 72% 60%, rgba(255, 255, 255, 0.05), transparent 70%);
+    filter: blur(20px);
+    animation: ootm-haze 26s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes ootm-haze {
+    to {
+      transform: translate3d(4%, -3%, 0) scale(1.08);
+    }
+  }
+
+  /* A spotlight cone from above, sweeping slowly across the back wall. */
+  .ootm__spot {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    width: 70vmax;
+    height: 140vmax;
+    margin-left: -35vmax;
+    background: conic-gradient(
+      from 168deg at 50% 0%,
+      transparent 0deg,
+      rgba(255, 255, 255, 0.07) 10deg,
+      rgba(57, 255, 20, 0.09) 12deg,
+      rgba(255, 255, 255, 0.07) 14deg,
+      transparent 24deg
+    );
+    filter: blur(14px);
+    transform-origin: 50% 0%;
+    animation: ootm-spot 16s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes ootm-spot {
+    from {
+      transform: rotate(-26deg);
+    }
+    to {
+      transform: rotate(26deg);
+    }
+  }
+
+  /* The occasional pulse: a low glow behind the 404 that breathes in time
+     with nothing in particular, like light from a beat off-stage. */
+  .ootm__pulse {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: min(90vw, 900px);
+    aspect-ratio: 2 / 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(57, 255, 20, 0.22), transparent);
+    opacity: 0;
+    animation: ootm-pulse 6s ease-out infinite;
+  }
+
+  @keyframes ootm-pulse {
+    0%,
+    70% {
+      opacity: 0;
+    }
+    76% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* ---- Bar --------------------------------------------------------------- */
+
+  .ootm__bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding-inline: var(--container-padding);
+  }
+
+  @media (width >= 768px) {
+    .ootm__bar {
+      height: 80px;
+    }
+  }
+
+  .ootm__logo {
+    display: inline-flex;
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .ootm__logo:hover {
+    opacity: 0.8;
+  }
+
+  /* ---- Body -------------------------------------------------------------- */
+
+  .ootm__body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md) var(--container-padding) var(--space-xl);
+    text-align: center;
+    transition: opacity 320ms var(--ease-out);
+  }
+
+  /* Held back until the site's faces have loaded (see global-not-found.tsx),
+     so a refresh never shows the words in a stand-in font first. */
+  .ootm-fonts-wait .ootm__body {
+    opacity: 0;
+  }
+
+  /* The oversized 404, in the banner's face. A copy in the accent rides over
+     it, revealed by a mask that sweeps slowly across: a light passing over
+     the letters, not a colour change. Mask, not a clipped gradient, so a
+     phone's forced dark mode cannot darken it. */
+  .ootm__code {
+    position: relative;
+    margin: 0;
+    font-family: var(--font-consul), var(--font-display);
+    font-weight: 400;
+    /* As large as the screen allows: by width on phones (wider than the
+       column, almost edge to edge), by height on short laptops, so the
+       button and links never fall below the fold. */
+    font-size: clamp(120px, min(46vw, 38svh), 380px);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: var(--foreground);
+    animation: ootm-drift 9s var(--ease-in-out) infinite alternate;
+  }
+
+  .ootm__code::after {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    position: absolute;
+    inset: 0 -0.2em 0 0;
+    color: var(--accent);
+    -webkit-mask-image: linear-gradient(100deg, transparent 35%, #000 50%, transparent 65%);
+    mask-image: linear-gradient(100deg, transparent 35%, #000 50%, transparent 65%);
+    -webkit-mask-size: 300% 100%;
+    mask-size: 300% 100%;
+    animation: ootm-sweep 7s var(--ease-in-out) infinite;
+  }
+
+  @keyframes ootm-sweep {
+    from {
+      -webkit-mask-position: 100% 0;
+      mask-position: 100% 0;
+    }
+    to {
+      -webkit-mask-position: 0% 0;
+      mask-position: 0% 0;
+    }
+  }
+
+  /* Barely-there movement, like a signal wavering. */
+  @keyframes ootm-drift {
+    from {
+      transform: translateY(0) skewX(0deg);
+    }
+    to {
+      transform: translateY(-6px) skewX(-1.5deg);
+    }
+  }
+
+  .ootm__wave {
+    display: block;
+    width: min(100%, 980px);
+    height: clamp(56px, 10vw, 110px);
+    margin-top: calc(-1 * clamp(16px, 3vw, 40px));
+  }
+
+  .ootm__title {
+    margin: var(--space-md) 0 0;
+    font-family: var(--font-consul), var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 6vw, 64px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .ootm__line {
+    max-width: 44ch;
+    margin: var(--rhythm-heading) 0 0;
+    font-size: 15px;
+    line-height: 1.625;
+    color: var(--muted-foreground);
+  }
+
+  @media (width >= 768px) {
+    .ootm__line {
+      font-size: 17px;
+    }
+  }
+
+  .ootm__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--rhythm-body);
+  }
+
+  .ootm__links {
+    display: flex;
+    gap: var(--space-xl);
+  }
+
+  @media (width >= 640px) {
+    .ootm__actions {
+      flex-direction: row;
+      gap: var(--space-xl);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ootm__haze,
+  .ootm__spot,
+  .ootm__pulse,
+  .ootm__code,
+  .ootm__code::after {
+    animation: none;
+  }
+
+  .ootm__code::after {
+    -webkit-mask-position: 50% 0;
+    mask-position: 50% 0;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Private Clientele — the business families and the celebrity weddings as   */
+/*  a rail of invitation cards, before Testimonials.                          */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .clientele__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* The site's intro voice (as .nonstop__lede): 15px, light, loose. */
+  .clientele__lede {
+    max-width: 42ch;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .clientele__bar {
+    margin-top: var(--rhythm-block);
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .clientele__chips {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--space-xs);
+  }
+
+  .clientele__chip-short {
+    display: none;
+  }
+
+  /* Phones: one-word pills, a touch smaller, so all three sit on one line. */
+  @media (width < 640px) {
+    .clientele__chip-full {
+      display: none;
+    }
+
+    .clientele__chip-short {
+      display: inline;
+    }
+
+    .clientele__chip {
+      min-height: 40px;
+      padding-inline: 14px;
+      letter-spacing: 0.16em;
+    }
+  }
+
+  .clientele__chip {
+    white-space: nowrap;
+    min-height: 44px;
+    padding-inline: var(--space-sm);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .clientele__chip:hover {
+    border-color: var(--foreground);
+    color: var(--foreground);
+  }
+
+  .clientele__chip[aria-pressed="true"] {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--background);
+  }
+
+  .clientele__arrows {
+    display: flex;
+    gap: var(--space-xs);
+  }
+
+  /* Phones swipe the rail; the arrows are for pointers. */
+  @media (width < 768px) {
+    .clientele__arrows {
+      display: none;
+    }
+  }
+
+  .clientele__arrow {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .clientele__arrow:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Bleeds to the viewport edge but snaps cards to the container gutter. */
+  .clientele__rail {
+    position: relative;
+    z-index: 10;
+    margin-top: var(--space-lg);
+    display: flex;
+    gap: 16px;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    padding: 12px var(--edge) 28px;
+    scrollbar-width: none;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .clientele__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .clientele__rail:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: -1px;
+  }
+
+  .clientele__rail[data-dragging="true"] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+
+  .clientele__slot {
+    /* ~62% of a phone's width, so the next card peeks in; 240px on desktop. */
+    flex: 0 0 min(62vw, 240px);
+    scroll-snap-align: start;
+    perspective: 900px;
+    animation: clientele-deal 700ms var(--ease-out) backwards;
+    animation-delay: calc(var(--i) * 50ms);
+  }
+
+  @keyframes clientele-deal {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0);
+    }
+  }
+
+  .clientele__card {
+    --rx: 0deg;
+    --ry: 0deg;
+    --mx: 50%;
+    --my: 0%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    min-height: 320px;
+    padding: 22px 18px;
+    text-align: center;
+    border: 1px solid var(--border-strong);
+    outline: 1px solid var(--border);
+    outline-offset: -10px;
+    background: linear-gradient(180deg, #0d0d0d, #070707);
+    overflow: hidden;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition:
+      transform 300ms var(--ease-out),
+      border-color 300ms var(--ease-out);
+  }
+
+  .clientele__card:hover {
+    border-color: rgba(57, 255, 20, 0.55);
+  }
+
+  .clientele__sheen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(420px circle at var(--mx) var(--my), rgba(57, 255, 20, 0.16), transparent 45%);
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+    pointer-events: none;
+  }
+
+  .clientele__card:hover .clientele__sheen {
+    opacity: 1;
+  }
+
+  .clientele__tag {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .clientele__mono {
+    margin-top: 26px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-consul), var(--font-display);
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .clientele__star {
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .clientele__name {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .clientele__amp {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--muted-foreground);
+  }
+
+  .clientele__rule {
+    margin-block: 16px 12px;
+    width: 32px;
+    height: 1px;
+    background-color: var(--border-strong);
+    transition:
+      width 500ms var(--ease-out),
+      background-color 300ms var(--ease-out);
+  }
+
+  .clientele__card:hover .clientele__rule {
+    width: 72px;
+    background-color: var(--accent);
+  }
+
+  .clientele__secondary {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.16em;
+    line-height: 1.6;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* "And many more…": the intro's voice, not the testimonials' serif. */
+  .clientele__closing {
+    margin-top: var(--space-xs);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  /* The figures use the About band's story-fact type; only the gap above
+     is this section's own. */
+  .clientele__stats {
+    margin-top: var(--space-xl);
+  }
+
+  .clientele__cta {
+    margin-top: var(--rhythm-body);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clientele__slot {
+    animation: none;
+  }
+
+  .clientele__card {
+    transform: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Shared Stages — the artists as two grids of portrait tiles, after Stages. */
+/*  Entry: rise + curtain + typed name. Hover: photo zoom, name lifts with a  */
+/*  green rule, the other tiles dim. Hover is pointer-only; reduced motion    */
+/*  switches everything off.                                                  */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .shared-stages__label {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .shared-stages__lede {
+    max-width: 42ch;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  .shared-stages__block {
+    margin-top: var(--rhythm-block);
+  }
+
+  .shared-stages__block + .shared-stages__block {
+    margin-top: var(--space-xl);
+  }
+
+  /* Group title on the left, the row's arrow buttons on the right. */
+  .shared-stages__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-bottom: 14px;
+  }
+
+  .shared-stages__group {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Phones swipe; the arrows are for tablet and desktop. Same round buttons
+     as the Private Clientele rail. */
+  .shared-stages__arrows {
+    display: none;
+    gap: var(--space-xs);
+  }
+
+  @media (width >= 640px) {
+    .shared-stages__arrows {
+      display: flex;
+    }
+  }
+
+  .shared-stages__arrow {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .shared-stages__arrow:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .shared-stages__arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  /* Each group is one side-scrolling row at every size: about 1.5 portraits
+     on a phone, 2.5 on a tablet, 4.5 on a desktop, so the next one always
+     peeks in. Phones run the row to both screen edges; from tablets it
+     starts in line with the page text and runs off the right edge only.
+     The row's content box stays the width of the page column either way,
+     so a card's width is a share of that column. Cards snap one by one. */
+  .shared-stages__grid {
+    --peek-gap: var(--space-sm);
+    --cards: 1.5;
+    --gaps: 1;
+    margin: 0 calc(-1 * var(--container-padding));
+    padding: 0 var(--container-padding);
+    scroll-padding-inline: var(--container-padding);
+    list-style: none;
+    display: flex;
+    gap: var(--peek-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  @media (width >= 640px) {
+    .shared-stages__grid {
+      --cards: 2.5;
+      --gaps: 2;
+      margin: 0 calc(-1 * var(--edge)) 0 0;
+      padding: 0 var(--edge) 0 0;
+      scroll-padding-inline: 0;
+      cursor: grab;
+    }
+  }
+
+  @media (width >= 1024px) {
+    .shared-stages__grid {
+      --peek-gap: var(--space-md);
+      --cards: 4.5;
+      --gaps: 4;
+    }
+  }
+
+  .shared-stages__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shared-stages__grid:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* While dragged with a mouse: no snapping (it returns on release and
+     settles the nearest card), no text selection. */
+  .shared-stages__grid[data-dragging="true"] {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+  }
+
+  .shared-stages__grid > .shared-stages__tile {
+    /* --gaps whole gaps sit in the column beside the whole cards. */
+    flex: 0 0 calc((100% - var(--gaps) * var(--peek-gap)) / var(--cards));
+    scroll-snap-align: start;
+  }
+
+  .shared-stages__progress {
+    display: block;
+    height: 2px;
+    margin-top: var(--space-md);
+    background-color: var(--border);
+    overflow: hidden;
+  }
+
+  .shared-stages__progress-bar {
+    display: block;
+    height: 100%;
+    background-color: var(--accent);
+    transform: scaleX(var(--p, 0.4));
+    transform-origin: left;
+    transition: transform 150ms linear;
+  }
+
+  .shared-stages__tile {
+    display: grid;
+    gap: 12px;
+    transition: opacity 350ms var(--ease-out);
+  }
+
+  /* Portrait 4:5; each photo is placed by its own focus point. */
+  .shared-stages__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background-color: #0b0b0b;
+    border: 1px solid var(--border);
+    transition: border-color 300ms var(--ease-out);
+  }
+
+  .shared-stages__zoom {
+    position: absolute;
+    inset: 0;
+    transition: transform 900ms var(--ease-out);
+  }
+
+  .shared-stages__img {
+    object-fit: cover;
+  }
+
+  .shared-stages__empty {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #1a1a1a, #0b0b0b);
+  }
+
+  /* The shutter that lifts off each photo on entry. */
+  .shared-stages__curtain {
+    position: absolute;
+    inset: 0;
+    background-color: var(--background);
+    transform: scaleY(0);
+    transform-origin: top;
+    pointer-events: none;
+  }
+
+  .shared-stages__name {
+    position: relative;
+    justify-self: start;
+    padding-bottom: 6px;
+    font-family: var(--font-display);
+    font-size: clamp(15px, 1.3vw, 18px);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    transition:
+      color 250ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+
+  .shared-stages__name::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  /* A whole word stays on one line; lines break only at the spaces. */
+  .shared-stages__word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .shared-stages__char {
+    display: inline-block;
+  }
+
+  /* ---- Entry: per tile, as it scrolls into view ------------------------
+     The grid is armed by script (data-armed) and each tile gets data-shown
+     plus its row stagger (--d) when it enters, so nothing hides without
+     JavaScript and nothing plays off screen. */
+
+  [data-armed="true"] .shared-stages__tile:not([data-shown]),
+  [data-armed="true"] .shared-stages__tile:not([data-shown]) .shared-stages__char {
+    opacity: 0;
+  }
+
+  [data-armed="true"] .shared-stages__tile:not([data-shown]) .shared-stages__curtain {
+    transform: scaleY(1);
+  }
+
+  .shared-stages__tile[data-shown] {
+    animation: shared-rise 700ms var(--ease-out) backwards;
+    animation-delay: var(--d, 0ms);
+  }
+
+  .shared-stages__tile[data-shown] .shared-stages__curtain {
+    animation: shared-curtain 900ms var(--ease-in-out) backwards;
+    animation-delay: calc(var(--d, 0ms) + 80ms);
+  }
+
+  .shared-stages__tile[data-shown] .shared-stages__char {
+    animation: shared-char 300ms var(--ease-out) backwards;
+    animation-delay: calc(var(--d, 0ms) + 500ms + var(--c) * 28ms);
+  }
+
+  @keyframes shared-rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  @keyframes shared-curtain {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes shared-char {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .shared-stages__closing {
+    margin-top: var(--space-md);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Hover (pointer devices only) ------------------------------------- */
+
+  @media (hover: hover) {
+    .shared-stages__tile:hover .shared-stages__zoom {
+      transform: scale(1.06);
+    }
+
+    .shared-stages__tile:hover .shared-stages__frame {
+      border-color: rgba(57, 255, 20, 0.55);
+    }
+
+    .shared-stages__tile:hover .shared-stages__name {
+      color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .shared-stages__tile:hover .shared-stages__name::after {
+      transform: scaleX(1);
+    }
+
+    .shared-stages__grid:has(.shared-stages__tile:hover) .shared-stages__tile:not(:hover) {
+      opacity: 0.4;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shared-stages__tile,
+  .shared-stages__frame,
+  .shared-stages__zoom,
+  .shared-stages__name,
+  .shared-stages__name::after {
+    transition: none;
+  }
+
+  .shared-stages__tile,
+  .shared-stages__char {
+    opacity: 1;
+    animation: none !important;
+  }
+
+  .shared-stages__curtain {
+    transform: scaleY(0) !important;
+    animation: none !important;
+  }
+
+  .shared-stages__tile:hover .shared-stages__zoom {
     transform: none;
   }
 }

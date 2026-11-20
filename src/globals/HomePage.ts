@@ -1,4 +1,6 @@
 import type { GlobalConfig } from 'payload'
+import { imageOnly, videoOnly } from '../collections/Media.ts'
+import { seoGroup } from '../fields/seo.ts'
 
 const HomePage: GlobalConfig = {
   slug: 'home-page',
@@ -15,15 +17,18 @@ const HomePage: GlobalConfig = {
       label: 'Hero Section',
       fields: [
         { name: 'heroHeading', label: 'Heading', type: 'text' },
-        { name: 'heroSubheading', label: 'Sub-Heading', type: 'text' },
-        { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media' },
+        { name: 'heroSubheading', label: 'Line Above the Name', type: 'text', admin: { placeholder: 'e.g. Wedding DJ & BollyAfro Pioneer' } },
+        { name: 'heroImage', label: 'Background Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly, admin: { hidden: true } },
         { name: 'heroCtaText', label: 'CTA Button Text', type: 'text' },
         { name: 'heroCtaUrl', label: 'CTA Button URL', type: 'text' },
+        { name: 'heroSecondaryCtaText', label: 'Second Button Text', type: 'text', admin: { placeholder: 'e.g. Listen to Music' } },
+        { name: 'heroSecondaryCtaUrl', label: 'Second Button URL', type: 'text', admin: { placeholder: 'e.g. #music' } },
         {
           name: 'heroVideo',
           label: 'Background Video',
           type: 'upload',
           relationTo: 'media',
+          filterOptions: videoOnly,
           admin: { description: 'Full-bleed hero background video (video/* accepted). Falls back to /videos/dj-ganesh.mp4.' },
         },
         {
@@ -31,24 +36,38 @@ const HomePage: GlobalConfig = {
           label: 'Video Poster',
           type: 'upload',
           relationTo: 'media',
-          admin: { description: 'Optional still shown before the video loads.' },
+          filterOptions: imageOnly,
+          admin: { description: "Shown on phones that don't autoplay video (e.g. iPhone Low Power Mode, data saver), and while the video loads. Use a still frame from the hero video." },
         },
       ],
     },
     {
       type: 'group',
       name: 'artistIntro',
-      label: 'Artist Introduction',
+      label: 'Artist Introduction (My Story)',
       fields: [
-        { name: 'introTitle', label: 'Title', type: 'text' },
-        { name: 'introBio', label: 'Bio / Description', type: 'textarea' },
-        { name: 'introImage', label: 'Artist Image', type: 'upload', relationTo: 'media' },
+        // The heading and photo of this block are edited on the About page
+        // (Story → Heading, Portrait); hidden here so one thing has one field.
+        { name: 'introTitle', label: 'Title', type: 'text', admin: { hidden: true } },
+        {
+          name: 'introBio',
+          label: 'Story Text',
+          type: 'textarea',
+          admin: {
+            description:
+              'The homepage "My Story" text. First paragraph: the story; second paragraph (after an empty line): the closing line in white. Empty: the built-in text. The heading and photo come from the About page (Story → Heading, Portrait).',
+          },
+        },
+        { name: 'introImage', label: 'Artist Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly, admin: { hidden: true } },
       ],
     },
     {
       type: 'group',
       name: 'statistics',
       label: 'Statistics',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         {
           name: 'stats',
@@ -65,9 +84,35 @@ const HomePage: GlobalConfig = {
     {
       type: 'group',
       name: 'globalReach',
-      label: 'Global Reach',
+      label: 'Shows (Global Reach)',
+      admin: { description: 'The globe section. Every text field is optional: empty keeps the built-in words.' },
       fields: [
-        { name: 'heading', label: 'Section Heading', type: 'text' },
+        { name: 'label', label: 'Tour Label', type: 'text', admin: { placeholder: 'e.g. Global World Tour 2026', description: 'The small green line above the heading.' } },
+        { name: 'heading', label: 'Section Heading', type: 'text', admin: { placeholder: 'e.g. Shows' } },
+        {
+          name: 'hint',
+          label: 'Instruction Line',
+          type: 'text',
+          admin: { placeholder: 'e.g. a city for the next show, date and tickets', description: 'Shown after "Hover" on computers and "Tap" on phones.' },
+        },
+        { name: 'citiesLabel', label: 'City List Label', type: 'text', admin: { placeholder: 'e.g. Cities' } },
+        { name: 'hubLabel', label: 'Home City Badge', type: 'text', admin: { placeholder: 'e.g. Home', description: 'The word next to the home city in the list.' } },
+        { name: 'countriesLine', label: 'Countries Line', type: 'text', admin: { placeholder: 'e.g. 50+ Countries Toured' } },
+        { name: 'enquiryLine', label: 'Enquiry Link Text', type: 'text', admin: { placeholder: 'e.g. Not on the list? Bring DJ Ganesh to your city', description: 'Opens an email to the Booking Email in Contact / Booking Settings.' } },
+        {
+          type: 'group',
+          name: 'showCard',
+          label: 'City Pop-up',
+          admin: { description: 'The small card that opens when a city is chosen.' },
+          fields: [
+            { name: 'nextShowLabel', label: 'Label (show announced)', type: 'text', admin: { placeholder: 'e.g. Next show', description: 'The show\'s year is added automatically.' } },
+            { name: 'ticketsLabel', label: 'Tickets Button', type: 'text', admin: { placeholder: 'e.g. Get Tickets' } },
+            { name: 'openDateLabel', label: 'Label (no show yet)', type: 'text', admin: { placeholder: 'e.g. Open date' } },
+            { name: 'noShowText', label: 'No Show Text', type: 'text', admin: { placeholder: 'e.g. No show announced' } },
+            { name: 'noShowLede', label: 'No Show Line', type: 'text', admin: { placeholder: 'e.g. Bring DJ Ganesh to your city' } },
+            { name: 'enquireLabel', label: 'Enquire Button', type: 'text', admin: { placeholder: 'e.g. Enquire to Book' } },
+          ],
+        },
         {
           name: 'locations',
           label: 'Tour Locations',
@@ -90,7 +135,7 @@ const HomePage: GlobalConfig = {
       name: 'featuredShows',
       label: 'Featured Shows',
       fields: [
-        { name: 'heading', label: 'Section Heading', type: 'text' },
+        { name: 'heading', label: '"Up Next" Card Title', type: 'text', admin: { placeholder: 'e.g. Up Next' } },
         {
           name: 'shows',
           label: 'Featured Shows',
@@ -105,7 +150,8 @@ const HomePage: GlobalConfig = {
       name: 'featuredMusic',
       label: 'Featured Music',
       fields: [
-        { name: 'heading', label: 'Section Heading', type: 'text' },
+        // Not shown: the band's heading is edited in Music Page → Home Section.
+        { name: 'heading', label: 'Section Heading', type: 'text', admin: { hidden: true } },
         {
           name: 'tracks',
           label: 'Featured Tracks',
@@ -119,6 +165,9 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'bookingCta',
       label: 'Booking CTA',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'heading', label: 'Heading', type: 'text' },
         { name: 'subheading', label: 'Sub-Heading', type: 'text' },
@@ -130,6 +179,9 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'statementPlate',
       label: 'Statement Plate',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. The Statement' } },
         {
@@ -186,16 +238,270 @@ const HomePage: GlobalConfig = {
     },
     {
       type: 'group',
+      name: 'sharedStages',
+      label: 'Shared Stages',
+      admin: {
+        description:
+          'The two numbered artist lists after Stages. Empty fields keep the built-in text; an empty list keeps the built-in names.',
+      },
+      fields: [
+        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Shared Stages' } },
+        {
+          name: 'heading',
+          label: 'Heading Lines',
+          type: 'array',
+          fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
+        },
+        { name: 'lede', label: 'Intro', type: 'textarea' },
+        { name: 'internationalLabel', label: 'First List Title', type: 'text', admin: { placeholder: 'e.g. International' } },
+        {
+          name: 'internationalArtists',
+          label: 'First List (International)',
+          type: 'array',
+          fields: [
+            { name: 'name', label: 'Artist', type: 'text', required: true },
+            {
+              name: 'photo',
+              label: 'Photo',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: imageOnly,
+              admin: { description: 'Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.' },
+            },
+            {
+              name: 'focus',
+              label: 'Crop Focus',
+              type: 'text',
+              admin: {
+                placeholder: 'e.g. 50% 25%',
+                description: 'Where the tile crops the photo: horizontal % then vertical %. Lower vertical % keeps more of the top (the face).',
+              },
+            },
+          ],
+        },
+        { name: 'indianLabel', label: 'Second List Title', type: 'text', admin: { placeholder: 'e.g. Indian' } },
+        {
+          name: 'indianArtists',
+          label: 'Second List (Indian)',
+          type: 'array',
+          fields: [
+            { name: 'name', label: 'Artist', type: 'text', required: true },
+            {
+              name: 'photo',
+              label: 'Photo',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: imageOnly,
+              admin: { description: 'Portrait, ideally 4:5 and at least 1000px wide. Empty: the built-in photo for this name.' },
+            },
+            {
+              name: 'focus',
+              label: 'Crop Focus',
+              type: 'text',
+              admin: {
+                placeholder: 'e.g. 50% 25%',
+                description: 'Where the tile crops the photo: horizontal % then vertical %. Lower vertical % keeps more of the top (the face).',
+              },
+            },
+          ],
+        },
+        { name: 'closing', label: 'Closing Line', type: 'text', admin: { placeholder: 'e.g. And many more.', description: 'Optional line under the artist rows. Empty: no line.' } },
+      ],
+    },
+    {
+      type: 'group',
+      name: 'internationalShows',
+      label: 'Global Reach — International Intro',
+      admin: {
+        description:
+          'The intro sentence under the Global Reach heading and the closing line beside "Not on the list?". Empty fields keep the built-in text. (Stored as internationalShows: it began as a separate band, now removed; its other fields are hidden and unused.)',
+      },
+      fields: [
+        { name: 'label', label: 'Label', type: 'text', admin: { hidden: true } },
+        { name: 'heading', label: 'Heading', type: 'text', admin: { hidden: true } },
+        { name: 'lede', label: 'Intro', type: 'textarea' },
+        {
+          name: 'cities',
+          label: 'Cities',
+          type: 'array',
+          // The cities are the globe's own (Global Reach → Locations).
+          admin: { hidden: true },
+          fields: [
+            { name: 'city', label: 'City', type: 'text', required: true, admin: { placeholder: 'e.g. London' } },
+            { name: 'country', label: 'Country', type: 'text', admin: { placeholder: 'e.g. United Kingdom' } },
+          ],
+        },
+        { name: 'closing', label: 'Closing Line', type: 'text', admin: { placeholder: 'e.g. And many more international destinations.' } },
+      ],
+    },
+    {
+      type: 'group',
+      name: 'privateClientele',
+      label: 'Private Clientele',
+      admin: {
+        description:
+          'The invitation-card section before Testimonials: business families and celebrity weddings. Empty fields keep the built-in text; an empty list keeps the built-in names.',
+      },
+      fields: [
+        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Private Clientele' } },
+        {
+          name: 'heading',
+          label: 'Heading Lines',
+          type: 'array',
+          fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
+        },
+        { name: 'lede', label: 'Intro', type: 'textarea' },
+        {
+          name: 'privateLabel',
+          label: 'Families Tab Name',
+          type: 'text',
+          admin: { placeholder: 'e.g. Private Celebrations' },
+        },
+        {
+          name: 'privateShortLabel',
+          label: 'Families Tab Name (phones)',
+          type: 'text',
+          admin: { placeholder: 'e.g. Private', description: 'One short word; phones show this so the filters fit on one line.' },
+        },
+        {
+          name: 'privateEntries',
+          label: 'Families & Private Celebrations',
+          type: 'array',
+          fields: [
+            { name: 'primary', label: 'Names', type: 'text', required: true, admin: { placeholder: 'e.g. Anant Ambani & Radhika Merchant' } },
+            { name: 'secondary', label: 'Family / Company', type: 'text', admin: { placeholder: 'e.g. Ambani Family' } },
+          ],
+        },
+        {
+          name: 'privateClosing',
+          label: 'Families Closing Line',
+          type: 'text',
+          admin: { placeholder: 'e.g. And many more distinguished business families…' },
+        },
+        {
+          name: 'weddingsLabel',
+          label: 'Weddings Tab Name',
+          type: 'text',
+          admin: { placeholder: 'e.g. Celebrity Weddings' },
+        },
+        {
+          name: 'weddingsShortLabel',
+          label: 'Weddings Tab Name (phones)',
+          type: 'text',
+          admin: { placeholder: 'e.g. Weddings', description: 'One short word; phones show this so the filters fit on one line.' },
+        },
+        {
+          name: 'weddingEntries',
+          label: 'Celebrity Weddings',
+          type: 'array',
+          fields: [
+            { name: 'primary', label: 'Couple', type: 'text', required: true, admin: { placeholder: 'e.g. Sidharth Malhotra & Kiara Advani' } },
+            { name: 'secondary', label: 'Card Footer', type: 'text', admin: { placeholder: 'e.g. Wedding' } },
+          ],
+        },
+        {
+          name: 'stats',
+          label: 'Counting Figures',
+          type: 'array',
+          maxRows: 4,
+          fields: [
+            { name: 'value', label: 'Number', type: 'number', required: true },
+            { name: 'suffix', label: 'Suffix', type: 'text', admin: { placeholder: 'e.g. +' } },
+            { name: 'label', label: 'Label', type: 'text', required: true },
+          ],
+        },
+        { name: 'ctaLabel', label: 'Link Text', type: 'text', admin: { placeholder: 'e.g. Plan a private celebration' } },
+        { name: 'ctaHref', label: 'Link', type: 'text', admin: { placeholder: 'e.g. /contact#booking' } },
+      ],
+    },
+    {
+      type: 'group',
+      name: 'nonstop',
+      label: 'Nonstop Sets',
+      admin: { description: 'The long-form sets band after Music. Empty fields fall back to the built-in copy.' },
+      fields: [
+        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Nonstop Sets' } },
+        {
+          name: 'heading',
+          label: 'Heading Lines',
+          type: 'array',
+          fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
+        },
+        { name: 'lede', label: 'Intro', type: 'textarea' },
+        {
+          name: 'sets',
+          label: 'Sets',
+          type: 'array',
+          fields: [
+            { name: 'title', label: 'Title', type: 'text', required: true },
+            { name: 'tag', label: 'Tag', type: 'text', admin: { placeholder: 'e.g. BollyAfro' } },
+            { name: 'length', label: 'Length', type: 'text', admin: { placeholder: 'e.g. 60 min' } },
+            { name: 'image', label: 'Thumbnail', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
+            { name: 'url', label: 'YouTube URL', type: 'text' },
+          ],
+        },
+        { name: 'spotifyUrl', label: 'Spotify URL', type: 'text' },
+        { name: 'spotifyLabel', label: 'Spotify Button Text', type: 'text', admin: { placeholder: 'e.g. Listen on Spotify' } },
+        { name: 'podcastUrl', label: 'Apple Podcasts URL', type: 'text' },
+        { name: 'podcastLabel', label: 'Podcasts Button Text', type: 'text', admin: { placeholder: 'e.g. Apple Podcasts archive' } },
+      ],
+    },
+    {
+      type: 'group',
       name: 'galleryStrip',
       label: 'Gallery Strip',
       fields: [
-        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Gallery' } },
+        { name: 'label', label: 'Photos Heading', type: 'text', admin: { placeholder: 'e.g. Gallery', description: 'The heading above the photographs, under the shows.' } },
+        {
+          name: 'reelVideo',
+          label: 'Reel Video',
+          type: 'upload',
+          relationTo: 'media',
+          filterOptions: videoOnly,
+          admin: { description: 'The video above the photos. Falls back to /videos/recent-big-shows.mp4.' },
+        },
+        { name: 'reelPoster', label: 'Reel Poster', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
+        {
+          name: 'reelLabel',
+          label: 'Section Heading',
+          type: 'text',
+          admin: { placeholder: 'e.g. Major Live Shows', description: 'The big heading above the reel and the shows.' },
+        },
+        {
+          name: 'bigShows',
+          label: 'Shows Listed Beside the Reel (old)',
+          type: 'array',
+          // Replaced by "Major Live Shows" below; hidden, stored values kept.
+          admin: { hidden: true },
+          fields: [{ name: 'show', label: 'Show', type: 'text', required: true }],
+        },
+        {
+          name: 'reelEyebrow',
+          label: 'Line Above the Heading',
+          type: 'text',
+          admin: { placeholder: 'e.g. Stadium · Festival · Arena' },
+        },
+        {
+          name: 'liveShows',
+          label: 'Major Live Shows',
+          type: 'array',
+          admin: {
+            description: 'The numbered setlist beside the reel. Empty: the built-in seven shows.',
+          },
+          fields: [
+            { name: 'headliner', label: 'Headliner', type: 'text', required: true, admin: { placeholder: 'e.g. Marshmello' } },
+            { name: 'detail', label: 'Detail', type: 'text', admin: { placeholder: 'e.g. India Tour' } },
+            { name: 'place', label: 'Place', type: 'text', admin: { placeholder: 'e.g. Mumbai' } },
+            { name: 'date', label: 'Date', type: 'text', admin: { placeholder: 'e.g. March 2024' } },
+            { name: 'kind', label: 'Tag', type: 'text', admin: { placeholder: 'e.g. Stadium, Festival, Tour, Arena, Club' } },
+          ],
+        },
         {
           name: 'items',
           label: 'Items',
           type: 'array',
           fields: [
-            { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+            { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
             { name: 'alt', label: 'Alt Text', type: 'text' },
             { name: 'href', label: 'Link', type: 'text' },
           ],
@@ -206,6 +512,9 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'follow',
       label: 'Follow Section',
+      // Not shown on the website; hidden so nobody edits copy that never
+      // appears. Stored values are kept.
+      admin: { hidden: true },
       fields: [
         { name: 'heading', label: 'Heading', type: 'text', admin: { placeholder: 'e.g. Follow' } },
         {
@@ -226,9 +535,11 @@ const HomePage: GlobalConfig = {
       type: 'group',
       name: 'bookingSection',
       label: 'Booking Section',
-      admin: { description: 'The homepage booking band (data/booking.ts). The primary CTA remains in Booking CTA above.' },
+      admin: { description: 'The homepage booking band. Empty fields keep the built-in copy.' },
       fields: [
         { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Booking' } },
+        { name: 'ctaLabel', label: 'Main Button Text', type: 'text', admin: { placeholder: 'e.g. Book DJ Ganesh' } },
+        { name: 'ctaHref', label: 'Main Button Link', type: 'text', admin: { placeholder: 'e.g. /contact#booking' } },
         {
           name: 'heading',
           label: 'Heading Lines',
@@ -273,15 +584,26 @@ const HomePage: GlobalConfig = {
     {
       type: 'group',
       name: 'testimonialsSection',
-      label: 'Testimonials Section Chrome',
+      label: 'Testimonials Section',
+      admin: { description: 'The heading and line above the wall of quotes. Empty fields keep the built-in text.' },
       fields: [
-        { name: 'label', label: 'Label', type: 'text', admin: { placeholder: 'e.g. Testimonials' } },
         {
           name: 'heading',
-          label: 'Heading Lines',
+          label: 'Heading',
           type: 'array',
+          admin: { description: 'Usually one line, e.g. "Wall of Love".' },
           fields: [{ name: 'line', label: 'Line', type: 'text', required: true }],
         },
+        {
+          name: 'wallPhotos',
+          label: 'Photo Wall',
+          type: 'array',
+          maxRows: 6,
+          admin: { description: 'Up to 6 photos for the moving wall behind the quotes. Empty: the built-in photos.' },
+          fields: [{ name: 'image', label: 'Photo', type: 'upload', relationTo: 'media', filterOptions: imageOnly, required: true }],
+        },
+        // Stored as `label`; shown on the site as the line under the heading.
+        { name: 'label', label: 'Subtitle', type: 'text', admin: { placeholder: 'e.g. 5000+ events · half a million dancers · one dance floor at a time' } },
       ],
     },
     {
@@ -300,6 +622,7 @@ const HomePage: GlobalConfig = {
         { name: 'ctaHref', label: 'CTA Link', type: 'text' },
       ],
     },
+    seoGroup('the homepage'),
   ],
 }
 

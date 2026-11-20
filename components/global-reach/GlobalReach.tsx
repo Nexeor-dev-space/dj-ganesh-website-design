@@ -2,16 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { CityList } from "@/components/global-reach/CityList";
+import { destinationsClosing as defaultClosing, destinationsLede as defaultIntro } from "@/data/destinations";
 import { Container } from "@/components/layout/Container";
 import { ShowInfo } from "@/components/global-reach/ShowInfo";
 import { TourGlobe, type GlobeAnchor } from "@/components/global-reach/TourGlobe";
 import { UpNext } from "@/components/global-reach/UpNext";
 import {
-  bookingEmail,
-  countriesToured,
+  bookingEmail as defaultEmail,
+  showsCopy,
   tourCities as defaultCities,
   tourName as defaultTourName,
   tourShows as defaultShows,
+  type ShowsCopy,
 } from "@/lib/tour";
 import type { TourCity, TourShow } from "@/types/tour";
 
@@ -23,8 +25,8 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * The tour as a globe rather than a list. A lineup of dates answers "when",
  * but this section's real subject is reach — nine cities across five regions
  * — and a sphere says that in one glance where a column of rows cannot. So
- * the globe is the section: everything else is caption, set centred beneath
- * it, and no part of it repeats what the globe already shows.
+ * the globe is the section: on a wide screen it holds the left half, with
+ * the cities and the next dates beside it as its key.
  *
  * The section owns the one piece of shared state, which city is active. A
  * pointer hover previews a city while it lasts; a click or a tap pins one,
@@ -34,7 +36,7 @@ const delay = (ms: number) => ({ "--reveal-delay": `${ms}ms` }) as CSSProperties
  * its own focus. The hover clears on a short delay rather than at once, so
  * the pointer can cross the gap from a marker to its panel without the panel
  * vanishing on the way. Everything the globe can do is reachable from the
- * two strips underneath it.
+ * list and the card beside it.
  */
 
 /** How long a hover survives after the pointer leaves, in ms. */
@@ -44,11 +46,23 @@ export function GlobalReach({
   tourName = defaultTourName,
   tourCities = defaultCities,
   tourShows = defaultShows,
+  copy: copyOverrides,
+  enquiryEmail = defaultEmail,
+  intro = defaultIntro,
+  closing = defaultClosing,
 }: {
   tourName?: string;
   tourCities?: readonly TourCity[];
   tourShows?: readonly TourShow[];
+  /** Any of the section's words; the rest keep their defaults. */
+  copy?: Partial<ShowsCopy>;
+  enquiryEmail?: string;
+  /** The international intro under the heading (CMS: International Intro). */
+  intro?: string;
+  /** Closing line beside the enquiry in the foot. */
+  closing?: string;
 } = {}) {
+  const copy: ShowsCopy = { ...showsCopy, ...copyOverrides };
   // Memoised: the globe restarts if its route identity changes.
   const tourRoute = useMemo(() => tourShows.map((show) => show.city), [tourShows]);
   const sectionRef = useRef<HTMLElement>(null);
@@ -113,6 +127,30 @@ export function GlobalReach({
 
   const clearCity = useCallback(() => selectCity(null), [selectCity]);
 
+  /**
+   * A city picked from the list below the globe. On a phone the globe can be
+   * scrolled out of sight by then, and its turn to the city is the point of
+   * the tap, so the page glides back until the whole sphere sits under the
+   * navigation. Already fully in view, nothing moves.
+   */
+  const globeRef = useRef<HTMLDivElement>(null);
+  const selectFromList = useCallback(
+    (city: string) => {
+      selectCity(city);
+      const globe = globeRef.current;
+      if (!globe || window.matchMedia("(min-width: 768px)").matches) return;
+      const nav = document.querySelector("header")?.getBoundingClientRect().bottom ?? 64;
+      const box = globe.getBoundingClientRect();
+      if (box.top >= nav && box.bottom <= window.innerHeight) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({
+        top: window.scrollY + box.top - nav - 8,
+        behavior: reduce ? "auto" : "smooth",
+      });
+    },
+    [selectCity],
+  );
+
   useEffect(() => {
     if (!pinnedCity) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -139,8 +177,14 @@ export function GlobalReach({
         </p>
 
         <h2 id="shows-title" className="reveal-scroll section-title shows__title" style={delay(90)}>
-          Shows
+          {copy.heading}
         </h2>
+
+        {intro ? (
+          <p className="reveal-scroll shows__intro" style={delay(130)}>
+            {intro}
+          </p>
+        ) : null}
 
         {/* The instruction has to be true on the device reading it: a phone
             has no hover, and telling it to hover is an instruction it cannot
@@ -154,52 +198,64 @@ export function GlobalReach({
           <span className="shows__pointer" data-pointer="coarse">
             Tap
           </span>{" "}
-          a city for the next show, date and tickets
+          {copy.hint}
         </p>
 
-        <div className="reveal-scroll shows__stage" style={delay(260)}>
-          <div className="shows__globe">
-            <TourGlobe
-              cities={tourCities}
-              route={tourRoute}
-              activeCity={activeCity}
-              onHoverCity={hoverCity}
-              onSelectCity={selectCity}
-              onAnchorChange={setAnchor}
-            />
+        {/* The globe on the left, and beside it the cities and the dates
+            that drive it. On phones and tablets the three stack in that
+            order. */}
+        <div className="shows__layout">
+          <div className="reveal-scroll shows__stage" style={delay(260)}>
+            <div ref={globeRef} className="shows__globe">
+              <TourGlobe
+                cities={tourCities}
+                route={tourRoute}
+                activeCity={activeCity}
+                onHoverCity={hoverCity}
+                onSelectCity={selectCity}
+                onAnchorChange={setAnchor}
+              />
+            </div>
+
+            {activeCity ? (
+              <ShowInfo
+                city={activeCity}
+                anchor={anchor}
+                shows={tourShows}
+                pinned={pinnedCity === activeCity}
+                onHover={hoverCity}
+                onClose={clearCity}
+                copy={copy}
+                enquiryEmail={enquiryEmail}
+              />
+            ) : null}
           </div>
 
-          {activeCity ? (
-            <ShowInfo
-              city={activeCity}
-              anchor={anchor}
-              shows={tourShows}
-              pinned={pinnedCity === activeCity}
-              onHover={hoverCity}
-              onClose={clearCity}
-            />
-          ) : null}
-        </div>
+          <div className="shows__side">
+            <div className="reveal-scroll" style={delay(360)}>
+              <h3 className="shows__side-label">{copy.citiesLabel}</h3>
+              <CityList
+                cities={tourCities}
+                shows={tourShows}
+                activeCity={activeCity}
+                pinnedCity={pinnedCity}
+                onHover={hoverCity}
+                onSelect={selectFromList}
+                hubLabel={copy.hubLabel}
+              />
+            </div>
 
-        <div className="reveal-scroll" style={delay(360)}>
-          <CityList
-            cities={tourCities}
-            shows={tourShows}
-            activeCity={activeCity}
-            pinnedCity={pinnedCity}
-            onHover={hoverCity}
-            onSelect={selectCity}
-          />
-        </div>
-
-        <div className="reveal-scroll" style={delay(450)}>
-          <UpNext
-            shows={tourShows}
-            activeCity={activeCity}
-            pinnedCity={pinnedCity}
-            onHover={hoverCity}
-            onSelect={selectCity}
-          />
+            <div className="reveal-scroll" style={delay(450)}>
+              <UpNext
+                shows={tourShows}
+                activeCity={activeCity}
+                pinnedCity={pinnedCity}
+                onHover={hoverCity}
+                onSelect={selectFromList}
+                label={copy.upNextLabel}
+              />
+            </div>
+          </div>
         </div>
 
         {/* The one verified figure the section carries, and the way in for a
@@ -207,18 +263,26 @@ export function GlobalReach({
             display number it read as a scoreboard. */}
         <p className="reveal-scroll shows__foot" style={delay(530)}>
           <span>
-            {countriesToured.value} {countriesToured.label}
+            {copy.countriesLine}
           </span>
           <span aria-hidden className="shows__foot-sep">
             ·
           </span>
+          {closing ? (
+            <>
+              <span>{closing}</span>
+              <span aria-hidden className="shows__foot-sep">
+                ·
+              </span>
+            </>
+          ) : null}
           <a
-            href={`mailto:${bookingEmail}?subject=${encodeURIComponent(
+            href={`mailto:${enquiryEmail}?subject=${encodeURIComponent(
               `Booking enquiry — ${tourName}`,
             )}`}
             className="btn-tertiary shows__enquiry"
           >
-            Not on the list? Bring DJ Ganesh to your city
+            {copy.enquiryLine}
             <span aria-hidden className="btn__arrow">
               &rarr;
             </span>

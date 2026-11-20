@@ -1,9 +1,13 @@
 import type { CollectionConfig } from 'payload'
+import { imageOnly } from './Media.ts'
 
 const PerformanceHistory: CollectionConfig = {
   slug: 'performance-history',
   labels: { singular: 'Performance', plural: 'Performance History' },
   admin: {
+    // Not shown on the website (the homepage gallery is edited in Home Page →
+    // Gallery Strip); hidden from the menu, saved entries kept.
+    hidden: true,
     group: 'Collections',
     useAsTitle: 'venue',
     defaultColumns: ['venue', 'city', 'country', 'year', 'category', 'order'],
@@ -21,7 +25,7 @@ const PerformanceHistory: CollectionConfig = {
       ],
     },
     { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media' },
+    { name: 'image', label: 'Image', type: 'upload', relationTo: 'media', filterOptions: imageOnly },
     {
       name: 'category',
       label: 'Category / Geography',

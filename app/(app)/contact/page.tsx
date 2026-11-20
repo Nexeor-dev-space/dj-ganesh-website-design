@@ -19,8 +19,11 @@ import {
   enquiryMeta,
 } from "@/data/contact";
 import { getContactBooking } from "@/lib/cms/queries";
+import { cmsPageMetadata } from "@/lib/seo";
 
 const str = (v: string | null | undefined, fb: string) => (v && v.trim() ? v : fb);
+/** The CMS value, or undefined so the component's built-in words apply. */
+const opt = (v: string | null | undefined) => (v && v.trim() ? v : undefined);
 const lines = (
   v: { line: string }[] | null | undefined,
   fb: readonly string[],
@@ -35,11 +38,17 @@ const platformLabel: Record<string, string> = {
   twitter: "X",
 };
 
-export const metadata: Metadata = {
-  title: "Contact / Booking | DJ Ganesh",
-  description:
-    "Book DJ Ganesh for events, festivals, venues, private functions and collaborations — send a booking enquiry or get in touch directly.",
-};
+/** Page title, description and share image: the CMS "SEO & Link Previews"
+ *  fields first, these built-in values otherwise. */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getContactBooking();
+  return cmsPageMetadata(page?.seo, {
+    title: "Contact / Booking | DJ Ganesh",
+    description:
+      "Book DJ Ganesh for events, festivals, venues, private functions and collaborations — send a booking enquiry or get in touch directly.",
+    path: "/contact",
+  });
+}
 
 export default async function ContactPage() {
   const cms = await getContactBooking();
@@ -60,17 +69,20 @@ export default async function ContactPage() {
   };
   const desks = [
     {
-      ...contactDesks[0],
+      label: str(cms?.direct?.bookingLabel, contactDesks[0].label),
+      note: str(cms?.direct?.bookingNote, contactDesks[0].note),
       address: str(cms?.bookingEmail, contactDesks[0].address),
     },
     {
-      ...contactDesks[1],
+      label: str(cms?.direct?.enquiryLabel, contactDesks[1].label),
+      note: str(cms?.direct?.enquiryNote, contactDesks[1].note),
       address: str(cms?.enquiryEmail, contactDesks[1].address),
     },
   ];
+  const cmsEventTypes = (cms?.enquiry?.eventTypes ?? []).map((row) => row.type?.trim()).filter(Boolean) as string[];
   const cmsSocials = (cms?.socialLinks ?? [])
     .filter((x) => platformLabel[x.platform] && x.url)
-    .map((x) => ({ label: platformLabel[x.platform], href: x.url }));
+    .map((x) => ({ id: x.id, label: platformLabel[x.platform], href: x.url }));
   // The CMS socialLinks model has no "email" platform, but the original
   // "Stay connected" list ends with an Email tile (connectLinks). Keep it by
   // appending any code links (e.g. Email) not representable as a social platform,
@@ -83,7 +95,7 @@ export default async function ContactPage() {
     <>
       <Navbar />
 
-      <main className="contact-page">
+      <main id="main-content" tabIndex={-1} className="contact-page">
         <ContactHero meta={meta} />
 
         <RevealSection
@@ -117,13 +129,25 @@ export default async function ContactPage() {
                 className="reveal-scroll contact-enquiry__form"
                 style={{ "--reveal-delay": "200ms" } as React.CSSProperties}
               >
-                <BookingForm submitLabel={enquiry.submitLabel} />
+                <BookingForm
+                  submitLabel={enquiry.submitLabel}
+                  eventTypes={cmsEventTypes.length ? cmsEventTypes : undefined}
+                  successTitle={opt(cms?.enquiry?.successTitle)}
+                  successText={opt(cms?.enquiry?.successText)}
+                  againLabel={opt(cms?.enquiry?.againLabel)}
+                  errorText={opt(cms?.enquiry?.errorText)}
+                />
               </div>
             </div>
           </Container>
         </RevealSection>
 
-        <DirectContact desks={desks} socials={socials} />
+        <DirectContact
+          desks={desks}
+          socials={socials}
+          heading={opt(cms?.direct?.heading)}
+          socialHeading={opt(cms?.direct?.socialHeading)}
+        />
         <FinalCta info={info} />
       </main>
 

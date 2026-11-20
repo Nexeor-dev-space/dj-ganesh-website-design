@@ -61,13 +61,6 @@ export const milestones: readonly Milestone[] = [
     lede: "Mumbai to Goa to Dubai to London. BollyAfro goes international.",
     more: "Four countries and counting, from Bastian Mumbai to London's SeventySeven.",
   },
-  {
-    id: "origin",
-    year: "1998",
-    title: "Where It All Started",
-    lede: "TGIF Bangalore. Club Prive Mumbai. 28 years on the decks.",
-    more: "From Thursday nights at TGIF Bangalore to Club Prive Mumbai, and everything since.",
-  },
 ];
 
 /** Small editorial counter beside the heading. */

@@ -153,7 +153,7 @@ export function AudioController({
   return (
     <AudioEngineContext.Provider value={engine}>
       {children}
-      {src && <audio ref={audioRef} src={src} preload="none" loop />}
+      {src && <audio ref={audioRef} crossOrigin="anonymous" src={src} preload="none" loop />}
     </AudioEngineContext.Provider>
   );
 }

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Stage } from "@/types/stages";
+import { itemKey } from "@/lib/keys";
 
 type StageMarqueeProps = {
   stages: readonly Stage[];
@@ -27,9 +28,9 @@ export function StageMarquee({
 }: StageMarqueeProps) {
   const group = (
     <ul className="stage-row__group">
-      {stages.map((stage) => (
+      {stages.map((stage, index) => (
         <li
-          key={stage.name}
+          key={itemKey(stage, index)}
           className="stage-row__item"
           data-featured={stage.featured ? "true" : undefined}
         >

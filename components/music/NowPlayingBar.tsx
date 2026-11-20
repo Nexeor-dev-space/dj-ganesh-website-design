@@ -88,8 +88,8 @@ export function NowPlayingBar() {
                 <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" />
               </svg>
             ) : (
-              <svg viewBox="0 0 24 24" className="h-4 w-4 translate-x-[1px]" fill="currentColor" aria-hidden>
-                <path d="M8 5v14l11-7z" />
+              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+                <path d="M8.33 5v14l11-7z" />
               </svg>
             )}
           </button>
