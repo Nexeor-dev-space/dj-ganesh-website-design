@@ -176,15 +176,19 @@ export function GlobalReach({
           {tourName}
         </p>
 
-        <h2 id="shows-title" className="reveal-scroll section-title shows__title" style={delay(90)}>
-          {copy.heading}
-        </h2>
+        {/* Heading left, intro right and bottom-aligned from md, the same
+            row Shared Stages uses; stacked on phones. */}
+        <div className="mt-eyebrow flex flex-col gap-heading md:flex-row md:items-end md:justify-between md:gap-2xl">
+          <h2 id="shows-title" className="reveal-scroll section-title" style={delay(90)}>
+            {copy.heading}
+          </h2>
 
-        {intro ? (
-          <p className="reveal-scroll shows__intro" style={delay(130)}>
-            {intro}
-          </p>
-        ) : null}
+          {intro ? (
+            <p className="reveal-scroll shows__intro" style={delay(130)}>
+              {intro}
+            </p>
+          ) : null}
+        </div>
 
         {/* The instruction has to be true on the device reading it: a phone
             has no hover, and telling it to hover is an instruction it cannot

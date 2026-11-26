@@ -27,14 +27,22 @@
   --container-padding-tablet: 24px;
   --container-padding-desktop: clamp(20px, 2.4vw, 40px);
 
-  /* The live container gutter, and the distance from the container's content
-     edge out to the viewport edge. A panel inside the container bleeds by
-     `--edge` rather than guessing at the gutter. Kept in step with
-     `.container-page` at the same breakpoints. */
+  /* The content boundaries. `--container-padding` is the live base gutter
+     (the one source `.container-page` reads); the start side adds
+     `--content-inset-start`, so every page's content starts in line with
+     the left edge of the header logo, and ends in line with the right edge
+     of the header's menu button.
+       --gutter-start / --gutter-end  the container's inline padding
+       --edge-start / --edge-end      content edge out to the viewport edge,
+                                      for panels and rows that bleed past
+                                      the container (or sit outside it) */
   --container-padding: var(--container-padding-mobile);
-  --edge: calc(
-    max(0px, (100vw - var(--container-max-width)) / 2) + var(--container-padding)
-  );
+  --content-inset-start: 0px;
+  --gutter-start: calc(var(--container-padding) + var(--content-inset-start));
+  --gutter-end: var(--container-padding);
+  --edge-outside: max(0px, (100vw - var(--container-max-width)) / 2);
+  --edge-start: calc(var(--edge-outside) + var(--gutter-start));
+  --edge-end: calc(var(--edge-outside) + var(--gutter-end));
 
   /* Spacing scale — 8 / 16 / 24 / 32 / 48 / 64 / 96 / 120 / 160 */
   --space-xs: 8px;
@@ -77,9 +85,15 @@
   --overlay-strong: rgba(5, 5, 5, 0.72);
 }
 
-/* `--container-padding` follows `.container-page` across its two breakpoints.
-   Declared here rather than beside those rules because an unlayered custom
-   property wins over a layered one, so a layered override would never apply. */
+/* The gutter tokens across their breakpoints. Declared here rather than
+   beside the layered rules because an unlayered custom property wins over a
+   layered one, so a layered override would never apply. */
+@media (width >= 480px) {
+  :root {
+    --content-inset-start: 16px;
+  }
+}
+
 @media (width >= 640px) {
   :root {
     --container-padding: var(--container-padding-tablet);
@@ -89,6 +103,7 @@
 @media (width >= 768px) {
   :root {
     --rhythm-block: 48px;
+    --content-inset-start: 24px;
   }
 }
 
@@ -251,19 +266,7 @@
     width: 100%;
     max-width: var(--container-max-width);
     margin-inline: auto;
-    padding-inline: var(--container-padding-mobile);
-  }
-
-  @media (width >= 640px) {
-    .container-page {
-      padding-inline: var(--container-padding-tablet);
-    }
-  }
-
-  @media (width >= 1024px) {
-    .container-page {
-      padding-inline: var(--container-padding-desktop);
-    }
+    padding-inline: var(--gutter-start) var(--gutter-end);
   }
 }
 
@@ -940,7 +943,7 @@
      with the accounts' marks between the names. */
   .menu-marquee {
     width: 100vw;
-    margin-inline: calc(-1 * var(--container-padding));
+    margin-inline: calc(-1 * var(--gutter-start)) calc(-1 * var(--gutter-end));
     overflow: hidden;
   }
 
@@ -965,7 +968,7 @@
 
   .menu-marquee__label {
     margin: 0 0 min(var(--space-md), 2.2svh);
-    padding-inline: var(--container-padding);
+    padding-inline: var(--gutter-start) var(--gutter-end);
     text-wrap: balance;
     font-size: 12px;
     font-weight: 300;
@@ -1122,17 +1125,11 @@
     color: var(--accent);
   }
 
-  /* Set from the shared section face — this is the same heading the rest of
-     the page uses, only centred. */
-  .shows__title {
-    margin-top: var(--rhythm-eyebrow);
-  }
-
-  /* The international intro (the site's lede voice), between the heading
-     and the hover hint. */
+  /* The international intro (the site's lede voice). It sits beside the
+     heading from md (the row in the markup, as in Shared Stages), so it
+     takes the same measure as the Shared Stages lede. */
   .shows__intro {
-    max-width: 52ch;
-    margin-top: var(--rhythm-heading);
+    max-width: 42ch;
     font-size: 15px;
     font-weight: 300;
     line-height: 1.7;
@@ -2786,8 +2783,8 @@
 /* -------------------------------------------------------------------------- */
 
 @layer components {
-  /* The spread: story on the left, the stage frame on the right running off
-     the edge of the screen. The frame sticks while the story scrolls past it,
+  /* The spread: story on the left, the stage frame on the right, both inside
+     the page's content boundaries. The frame sticks while the story scrolls past it,
      so the photograph holds the section the way a stage light holds a room. */
   .story-spread {
     display: grid;
@@ -2802,14 +2799,13 @@
     }
   }
 
-  /* Bleeds to the viewport edge: full width on phones, off the right only
-     once the story sits beside it. */
+  /* Held to the content box at every width: the column's full width on
+     phones, the right-hand column once the story sits beside it. */
   .story-frame {
     position: relative;
-    /* Own margin rather than a utility, so the bleed cannot be overridden by
-       the reset's figure margins. */
-    margin-block: 0;
-    margin-inline: calc(-1 * var(--edge));
+    /* Own margin rather than a utility, so the reset's figure margins cannot
+       push it past the content boundaries. */
+    margin: 0;
     /* The photo's own 5:4 on phones, so its dark ceiling and floor never
        read as empty bands above and below the subject. */
     aspect-ratio: 5 / 4;
@@ -2828,7 +2824,6 @@
       position: sticky;
       /* Clears the fixed navigation. */
       top: 104px;
-      margin-left: 0;
       aspect-ratio: auto;
       height: min(76vh, 720px);
     }
@@ -2975,35 +2970,42 @@
 
   /* Reversed, because the label comes first in the markup: a screen reader
      hears "Gigs played, 5000+", while the eye still gets the figure on top. */
-  .story-fact {
+  /* Every figure band (these, Private Clientele's, the About page's) centres
+     each figure in its equal column, with the same inset on both sides, so
+     the row is balanced rather than heavy on the left. */
+  .story-fact,
+  .about-figure {
+    /* Small on a phone, where a third of the screen has to hold a label. */
+    --figure-inset: var(--space-xs);
     display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    padding: var(--space-lg) var(--space-sm) var(--space-lg) 0;
-    border-top: 1px solid var(--border);
+    align-items: center;
+    text-align: center;
+    padding-inline: var(--figure-inset);
   }
 
   @media (width >= 768px) {
-    .story-fact {
-      padding-right: var(--space-md);
+    .story-fact,
+    .about-figure {
+      --figure-inset: var(--space-md);
     }
+  }
+
+  .story-fact {
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    padding-block: var(--space-lg);
+    border-top: 1px solid var(--border);
   }
 
   /* Hairlines between, not around: the band reads as one ruled row. */
   .story-fact + .story-fact {
-    padding-left: var(--space-sm);
     border-left: 1px solid var(--border);
-  }
-
-  @media (width >= 768px) {
-    .story-fact + .story-fact {
-      padding-left: var(--space-md);
-    }
   }
 
   .story-fact__value {
     display: flex;
     align-items: baseline;
+    justify-content: center;
     margin: 0;
     font-family: var(--font-display);
     font-size: clamp(24px, 4.6vw, 52px);
@@ -3013,6 +3015,25 @@
     color: var(--accent);
     /* Digits share a width, so a counting figure cannot jitter the layout. */
     font-variant-numeric: tabular-nums;
+  }
+
+  /* The counting figure and an invisible copy of its final value share one
+     cell, so the cell is always the final width: centred, the number cannot
+     slide sideways as it counts up. The live digits sit at the right edge,
+     next to the suffix, as a counter's would. */
+  .story-fact__number {
+    display: inline-grid;
+    justify-items: end;
+  }
+
+  .story-fact__number > *,
+  .story-fact__number::after {
+    grid-area: 1 / 1;
+  }
+
+  .story-fact__number::after {
+    content: attr(data-final);
+    visibility: hidden;
   }
 
   .story-fact__suffix {
@@ -3077,25 +3098,13 @@
 
   .trusted__label {
     margin: 0 0 var(--space-lg);
-    padding-inline: var(--container-padding-mobile);
+    /* The band runs full width; its label keeps to the page's boundaries. */
+    padding-inline: var(--edge-start) var(--edge-end);
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
     color: var(--accent);
-  }
-
-  @media (width >= 640px) {
-    .trusted__label {
-      padding-inline: var(--container-padding-tablet);
-    }
-  }
-
-  @media (width >= 1024px) {
-    .trusted__label {
-      padding-inline: var(--container-padding-desktop);
-      font-size: 12px;
-    }
   }
 
   /* The names dissolve at both ends instead of stopping at the viewport edge,
@@ -4386,7 +4395,7 @@
     .reaction-run__viewport {
       -webkit-mask-image: none;
       mask-image: none;
-      padding-inline: var(--container-padding);
+      padding-inline: var(--edge-start) var(--edge-end);
     }
 
     /* Stopped, the second copy is a duplicate on screen rather than the far
@@ -5061,11 +5070,16 @@
   /* Three rows now that nothing shares the band with them: the wall of names
      is the image this section used to hold a photograph for. */
   .stages-band {
+    /* Full-bleed switch: `0px` runs the venue rows edge to edge. Set it to
+       `var(--edge-start) var(--edge-end)` to hold them inside the page's
+       content boundaries instead. */
+    --stages-band-inset: 0px;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: clamp(2px, 0.5vw, 8px);
     margin-top: var(--rhythm-block);
+    padding-inline: var(--stages-band-inset);
   }
 
   .stage-row {
@@ -5429,6 +5443,10 @@
       gap: var(--space-xl);
       margin-top: var(--space-4xl);
     }
+  }
+
+  .about-figure {
+    flex-direction: column;
   }
 
   .about-figure__value {
@@ -5884,7 +5902,7 @@
     inset-inline: 0;
     bottom: 0;
     z-index: 30;
-    padding: 0 var(--container-padding) max(var(--space-md), env(safe-area-inset-bottom));
+    padding: 0 var(--edge-end) max(var(--space-md), env(safe-area-inset-bottom)) var(--edge-start);
     pointer-events: none;
     opacity: 0;
     transform: translateY(110%);
@@ -7176,7 +7194,7 @@
     display: flex;
     align-items: center;
     height: 64px;
-    padding-inline: var(--container-padding);
+    padding-inline: var(--gutter-start) var(--gutter-end);
   }
 
   @media (width >= 768px) {
@@ -7204,7 +7222,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--space-md) var(--container-padding) var(--space-xl);
+    padding: var(--space-md) var(--gutter-end) var(--space-xl) var(--gutter-start);
     text-align: center;
     transition: opacity 320ms var(--ease-out);
   }
@@ -7459,8 +7477,8 @@
     list-style: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--edge);
-    padding: 12px var(--edge) 28px;
+    scroll-padding-inline: var(--edge-start) var(--edge-end);
+    padding: 12px var(--edge-end) 28px var(--edge-start);
     scrollbar-width: none;
     cursor: grab;
     user-select: none;
@@ -7728,9 +7746,9 @@
     --peek-gap: var(--space-sm);
     --cards: 1.5;
     --gaps: 1;
-    margin: 0 calc(-1 * var(--container-padding));
-    padding: 0 var(--container-padding);
-    scroll-padding-inline: var(--container-padding);
+    margin: 0 calc(-1 * var(--gutter-end)) 0 calc(-1 * var(--gutter-start));
+    padding: 0 var(--gutter-end) 0 var(--gutter-start);
+    scroll-padding-inline: var(--gutter-start) var(--gutter-end);
     list-style: none;
     display: flex;
     gap: var(--peek-gap);
@@ -7744,8 +7762,8 @@
     .shared-stages__grid {
       --cards: 2.5;
       --gaps: 2;
-      margin: 0 calc(-1 * var(--edge)) 0 0;
-      padding: 0 var(--edge) 0 0;
+      margin: 0 calc(-1 * var(--edge-end)) 0 0;
+      padding: 0 var(--edge-end) 0 0;
       scroll-padding-inline: 0;
       cursor: grab;
     }

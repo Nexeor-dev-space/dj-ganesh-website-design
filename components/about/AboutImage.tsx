@@ -4,8 +4,9 @@ import { aboutPortrait as defaultPortrait } from "@/lib/about";
 /**
  * The stage frame.
  *
- * Full width on phones and off the right edge of the screen from `lg`, where
- * it also sticks: the photograph holds still while the story scrolls past it.
+ * The column's full width on phones and the right-hand column from `lg`,
+ * inside the page's content boundaries, where it also sticks: the photograph
+ * holds still while the story scrolls past it.
  *
  * The same treatment as the banner and the footer — graded to black and white
  * and grained. The file on disk is never altered.

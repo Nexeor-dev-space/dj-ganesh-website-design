@@ -10,10 +10,7 @@ import { Footer } from "@/components/footer/Footer";
 import { GallerySection } from "@/components/gallery/GallerySection";
 import { GlobalReach } from "@/components/global-reach/GlobalReach";
 import { Hero } from "@/components/hero/Hero";
-import { StagesSection } from "@/components/stages/StagesSection";
 import { MusicSection } from "@/components/music/MusicSection";
-import { NonstopSets } from "@/components/nonstop/NonstopSets";
-import { nonstopSets as codeNonstop } from "@/data/nonstop";
 import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
 import { TrustedBy } from "@/components/trusted/TrustedBy";
 import { PrivateClientele } from "@/components/guest-list/PrivateClientele";
@@ -46,7 +43,6 @@ import { galleryFeature as codeFeature, galleryItems as codeGallery } from "@/da
 import { aboutPortrait as codePortrait, aboutStory as codeStory } from "@/lib/about";
 import { tourShows as codeShows } from "@/lib/tour";
 import type { Track } from "@/types/music";
-import type { Stage } from "@/types/stages";
 import type { TourCity, TourShow } from "@/types/tour";
 import type { CareerStat } from "@/types/about";
 import type { MusicRelease, UpcomingShow } from "@/payload-types";
@@ -169,19 +165,6 @@ export default async function HomePage() {
   );
   const showSource = featuredShows.length ? featuredShows : upcoming;
   const shows = showSource.map(toTourShow).filter((s): s is TourShow => s !== null);
-
-  /* Stages: CMS is a flat list; the three marquee rows are presentation. --- */
-  const flatStages: Stage[] = (home?.stages?.stages ?? [])
-    .filter((s) => s.name)
-    .map((s) => ({ id: s.id, name: s.name, ...(s.featured ? { featured: true } : {}) }));
-  const stageRows = flatStages.length
-    ? (() => {
-        const size = Math.ceil(flatStages.length / 3);
-        return [0, 1, 2]
-          .map((i) => flatStages.slice(i * size, (i + 1) * size))
-          .filter((row) => row.length);
-      })()
-    : undefined;
 
   /* Music ----------------------------------------------------------------- */
   const featuredTracks = (home?.featuredMusic?.tracks ?? []).filter(
@@ -350,19 +333,6 @@ export default async function HomePage() {
     })(),
   };
 
-  /* Nonstop Sets ------------------------------------------------------------ */
-  const ns = home?.nonstop;
-  const nonstopSets = (ns?.sets ?? [])
-    .filter((x) => x.title)
-    .map((x, i) => ({
-      id: x.id,
-      title: x.title,
-      tag: x.tag ?? "",
-      length: x.length ?? "",
-      image: resolveMedia(x.image, codeNonstop[i % codeNonstop.length]?.image).url ?? "",
-      href: str(x.url) ?? "#",
-    }));
-
   /* Testimonials photo wall: uploaded photos, or the built-in set. -------- */
   const wallPhotos = (home?.testimonialsSection?.wallPhotos ?? [])
     .map((row) => resolveMedia(row.image))
@@ -432,16 +402,9 @@ export default async function HomePage() {
             enquireLabel: str(home?.globalReach?.showCard?.enquireLabel),
           })}
         />
-        <StagesSection
-          stagesSectionLabel={str(home?.stages?.label)}
-          stagesHeading={strings(home?.stages?.heading, "line", 2)}
-          stagesLede={str(home?.stages?.lede)}
-          stagesCtaLabel={str(home?.stages?.ctaLabel)}
-          stagesCtaHref={str(home?.stages?.ctaHref)}
-          stageRows={stageRows}
-        />
 
-        {/* The artists behind those rooms: after the venues, who shared them. */}
+        {/* The artists he has shared a bill with. The Stages band that used
+            to sit here now lives on /about, above the Journey. */}
         <SharedStages
           {...stripUndefined({
             label: str(ss?.label),
@@ -462,18 +425,6 @@ export default async function HomePage() {
             playlist: str(musicPage?.player?.playlistHeading),
           })}
           archiveLabel={str(musicPage?.player?.archiveLinkLabel)}
-        />
-
-        {/* Long-form mixes, straight after the singles. */}
-        <NonstopSets
-          label={str(ns?.label)}
-          heading={strings(ns?.heading, "line")}
-          lede={str(ns?.lede)}
-          sets={nonstopSets.length ? nonstopSets : undefined}
-          spotifyUrl={str(ns?.spotifyUrl)}
-          podcastUrl={str(ns?.podcastUrl)}
-          spotifyLabel={str(ns?.spotifyLabel)}
-          podcastLabel={str(ns?.podcastLabel)}
         />
         <TrustedBy
           trustedLabel={str(home?.trustedBy?.label)}

@@ -136,7 +136,9 @@ function ClienteleStats({ stats }: { stats: readonly ClienteleStat[] }) {
         <div key={stat.id ?? itemKey(stat.label, i)} className="story-fact">
           <dt className="story-fact__label">{stat.label}</dt>
           <dd className="story-fact__value">
-            <span data-count={stat.value}>{stat.value}</span>
+            <span className="story-fact__number" data-final={stat.value}>
+              <span data-count={stat.value}>{stat.value}</span>
+            </span>
             {stat.suffix ? <span className="story-fact__suffix">{stat.suffix}</span> : null}
           </dd>
         </div>
