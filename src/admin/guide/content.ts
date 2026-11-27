@@ -548,7 +548,7 @@ export const guide: Group[] = [
               'Fill in the **Title** and **Short Description**, and add an **Image**.',
               '**Features / Highlights**: click the **Add** button for each bullet point.',
               '**Venue Photos** are optional small photos on the card, each with a venue name.',
-              '**CTA Button Text** is the card\'s button. Leave **CTA URL** empty to send people to the booking form.',
+              '**CTA Button Text** is the words on the card\'s button. **CTA URL** is where it goes: a page on this site such as **/contact#booking**, or another website starting with **https://**. Leave it empty to send people to the booking form.',
               'Tick **Published** and click **Publish changes**.',
             ],
           },
@@ -848,6 +848,7 @@ export const guide: Group[] = [
             steps: [
               '**This field is required**: fill in the box marked in red (boxes with a green star * are required).',
               '**Must be a valid URL**: the link must be complete, starting with **https://**.',
+              '**Use a page on this site, like /contact#booking…**: the button link must start with **/** (a page on this site) or **https://** (another website).',
               'Scroll up and down the form to find every box marked in red, fix them, then click save again.',
             ],
           },
