@@ -40,9 +40,17 @@ const ExperiencesServices: CollectionConfig = {
       name: 'ctaUrl',
       label: 'CTA URL',
       type: 'text',
-      admin: { placeholder: 'e.g. /contact#booking', description: 'Where the card button goes. Empty: the booking form.' },
+      admin: {
+        placeholder: 'e.g. /contact#booking',
+        description: 'Where the card button goes: a page on this site (/contact#booking) or a full web address (https://…). Empty: the booking form.',
+      },
+      // A page on this site (/contact#booking), a section of the page
+      // (#booking) or another website (https://…). "//host" is refused: the
+      // browser would read it as another website, not a page on this one.
       validate: (value: string | null | undefined) => {
-        if (value && !/^https?:\/\/.+/.test(value)) return 'Must be a valid URL'
+        if (value && !/^(\/(?!\/)|#|https?:\/\/.+)/.test(value.trim())) {
+          return 'Use a page on this site, like /contact#booking, or a full web address starting with https://'
+        }
         return true
       },
     },

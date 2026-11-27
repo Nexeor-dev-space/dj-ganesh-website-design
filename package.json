@@ -11,6 +11,7 @@
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
     "seed": "node --experimental-strip-types --no-warnings scripts/seed.ts",
+    "guide:screenshots": "node --env-file=.env --experimental-strip-types --no-warnings scripts/admin-guide/capture.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -36,6 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "playwright-core": "^1.65.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

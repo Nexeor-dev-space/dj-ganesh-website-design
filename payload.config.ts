@@ -44,6 +44,7 @@ import PrivacyPolicy from './src/globals/PrivacyPolicy.ts'
 import { withGlobalSiteRefresh, withSiteRefresh } from './src/hooks/revalidateSite.ts'
 import { removeUploadTempFiles, startUploadTempSweep, UPLOAD_TEMP_DIR } from './src/hooks/uploadTempFiles.ts'
 import { handlePoolErrors } from './src/hooks/poolErrors.ts'
+import { withGlobalGuideLink, withGuideLink } from './src/admin/guide/withGuideLink.ts'
 
 // Email
 import { bookingEmailAdapter } from './src/email/adapter.ts'
@@ -89,6 +90,16 @@ export default buildConfig({
     user: 'users',
     components: {
       beforeDashboard: ['/src/admin/Dashboard#default'],
+      // The Admin Guide: a page at /admin/guide, linked at the top of the
+      // side menu and from the Help button on every screen (withGuideLink).
+      beforeNavLinks: ['/src/admin/guide/GuideNavLink#default'],
+      views: {
+        guide: {
+          Component: '/src/admin/guide/GuideView#default',
+          path: '/guide',
+          meta: { title: 'Admin Guide' },
+        },
+      },
     },
     meta: {
       titleSuffix: '– DJ Ganesh CMS',
@@ -109,7 +120,9 @@ export default buildConfig({
     Testimonials,
     ExperiencesServices,
     ContactSubmissions,
-  ].map(withSiteRefresh),
+  ]
+    .map(withSiteRefresh)
+    .map(withGuideLink),
 
   // Register all globals.
   globals: [
@@ -120,7 +133,9 @@ export default buildConfig({
     About,
     MusicPage,
     PrivacyPolicy,
-  ].map(withGlobalSiteRefresh),
+  ]
+    .map(withGlobalSiteRefresh)
+    .map(withGlobalGuideLink),
 
   // Generates the Media image sizes (thumbnail, card, hero) on upload.
   sharp,

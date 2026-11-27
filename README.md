@@ -89,6 +89,13 @@ npm run payload:types
 
 This rewrites `payload-types.ts`. Commit it with the schema change.
 
+### Admin Guide
+
+`/admin/guide` is a step-by-step guide for editors. It is linked at the top of the side menu, from the Dashboard, and from a **Help** button on every collection and global, which opens the guide at that screen's section.
+
+- Words: `src/admin/guide/content.ts`. Each section's `id` is the slug of the screen it explains. A new collection or global gets the Help button automatically (`withGuideLink.ts`), so give it a section with the same id.
+- Screenshots: `public/admin-guide/*.jpg`. To retake them after changing the CMS, start `npm run dev`, then in a second terminal run `npm run guide:screenshots`. Add a shot's id at the end to retake only that one, for example `npm run guide:screenshots -- home-hero`. The script uses a local Chrome or Edge (`GUIDE_BROWSER`). It creates a temporary admin user and a "Sample Enquiry", and deletes both when it finishes, so real enquiries never appear in a screenshot.
+
 ## Database seeding
 
 ```bash
@@ -354,6 +361,7 @@ dj-ganesh/assets/
 | `npm run migrate:create <name>` | Create a migration from schema changes |
 | `npm run migrate:status` | Show which migrations have run |
 | `npm run seed` | Fill the CMS from the built-in content (`scripts/seed.ts`) |
+| `npm run guide:screenshots [id…]` | Retake the Admin Guide screenshots (needs `npm run dev` running) |
 
 ## Structure
 
