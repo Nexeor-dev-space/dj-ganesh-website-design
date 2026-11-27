@@ -12,7 +12,6 @@ import { ExperienceSection } from "@/components/experience/ExperienceSection";
 import { Footer } from "@/components/footer/Footer";
 import { LegacySection } from "@/components/legacy/LegacySection";
 import { Navbar } from "@/components/navigation/Navbar";
-import { StagesSection } from "@/components/stages/StagesSection";
 import { aboutFrames } from "@/data/about-page";
 import { journeyAlbum, type JourneyPhoto } from "@/data/journey";
 import {
@@ -24,7 +23,6 @@ import {
 } from "@/lib/cms/queries";
 import { resolveMedia } from "@/lib/cms/media";
 import { toMilestone } from "@/lib/cms/mappers";
-import { stagesProps } from "@/lib/stages";
 import type { CareerStat } from "@/types/about";
 import { cmsPageMetadata } from "@/lib/seo";
 
@@ -147,10 +145,6 @@ export default async function AboutPage() {
           stats={stats.length ? stats : undefined}
           heading={str(about?.labels?.story)}
         />
-        {/* The rooms he has played, moved here from the home page: the
-            names, then the photographs. Its copy still lives on the Home
-            Page global (Stages), where the editor set it. */}
-        <StagesSection {...stagesProps(home?.stages)} />
         {/* The bio in photographs: CMS Gallery → the "Journey" album. */}
         <JourneySection heading={journey?.heading} photos={journey?.photos} />
         <ArtistVisual

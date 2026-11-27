@@ -10,6 +10,7 @@ import { Footer } from "@/components/footer/Footer";
 import { GallerySection } from "@/components/gallery/GallerySection";
 import { GlobalReach } from "@/components/global-reach/GlobalReach";
 import { Hero } from "@/components/hero/Hero";
+import { StagesSection } from "@/components/stages/StagesSection";
 import { MusicSection } from "@/components/music/MusicSection";
 import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
 import { TrustedBy } from "@/components/trusted/TrustedBy";
@@ -43,6 +44,7 @@ import { galleryFeature as codeFeature, galleryItems as codeGallery } from "@/da
 import { aboutPortrait as codePortrait, aboutStory as codeStory } from "@/lib/about";
 import { tourShows as codeShows } from "@/lib/tour";
 import type { Track } from "@/types/music";
+import type { Stage } from "@/types/stages";
 import type { TourCity, TourShow } from "@/types/tour";
 import type { CareerStat } from "@/types/about";
 import type { MusicRelease, UpcomingShow } from "@/payload-types";
@@ -165,6 +167,19 @@ export default async function HomePage() {
   );
   const showSource = featuredShows.length ? featuredShows : upcoming;
   const shows = showSource.map(toTourShow).filter((s): s is TourShow => s !== null);
+
+  /* Stages: CMS is a flat list; the three marquee rows are presentation. --- */
+  const flatStages: Stage[] = (home?.stages?.stages ?? [])
+    .filter((s) => s.name)
+    .map((s) => ({ id: s.id, name: s.name, ...(s.featured ? { featured: true } : {}) }));
+  const stageRows = flatStages.length
+    ? (() => {
+        const size = Math.ceil(flatStages.length / 3);
+        return [0, 1, 2]
+          .map((i) => flatStages.slice(i * size, (i + 1) * size))
+          .filter((row) => row.length);
+      })()
+    : undefined;
 
   /* Music ----------------------------------------------------------------- */
   const featuredTracks = (home?.featuredMusic?.tracks ?? []).filter(
@@ -402,9 +417,16 @@ export default async function HomePage() {
             enquireLabel: str(home?.globalReach?.showCard?.enquireLabel),
           })}
         />
+        <StagesSection
+          stagesSectionLabel={str(home?.stages?.label)}
+          stagesHeading={strings(home?.stages?.heading, "line", 2)}
+          stagesLede={str(home?.stages?.lede)}
+          stagesCtaLabel={str(home?.stages?.ctaLabel)}
+          stagesCtaHref={str(home?.stages?.ctaHref)}
+          stageRows={stageRows}
+        />
 
-        {/* The artists he has shared a bill with. The Stages band that used
-            to sit here now lives on /about, above the Journey. */}
+        {/* The artists behind those rooms: after the venues, who shared them. */}
         <SharedStages
           {...stripUndefined({
             label: str(ss?.label),

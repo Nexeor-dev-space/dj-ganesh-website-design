@@ -11,28 +11,18 @@ import { itemKey } from "@/lib/keys";
  *
  * Every row is a real destination: a homepage section, another page on this
  * site, or an account the client runs. The section anchors (`#music`,
- * `#about`, …) live on the homepage, except those in `ANCHOR_PAGES`, whose
- * section has moved to another page. On any other page an anchor becomes
- * `/#section` (or `/about#stages`) and opens its page at that section; on
- * its own page it scrolls rather than reloads — and holds still for anyone
- * who has asked for less motion. A route change is left to `next/link` and
- * an outbound link to the browser.
+ * `#about`, …) only exist on the homepage, so on any other page they become
+ * `/#section` and open the homepage at that section; on the homepage itself
+ * they scroll rather than reload — and hold still for anyone who has asked
+ * for less motion. A route change is left to `next/link` and an outbound
+ * link to the browser.
  *
  * One `nav`, four lists: a screen reader hears "Tours, list of 3 items", not
  * twelve links in a row with nothing to group them.
  */
-/**
- * Section anchors whose section is no longer on the homepage, and the page it
- * now lives on. Read here rather than in the data, so the built-in footer and
- * a link already saved in the CMS (`#stages`) both land on the right page.
- */
-const ANCHOR_PAGES: Readonly<Record<string, string>> = {
-  "#stages": "/about",
-};
-
 export function FooterNavigation() {
   const { footer } = useSiteData();
-  const pathname = usePathname();
+  const onHome = usePathname() === "/";
   const cmsColumns = (footer?.columns ?? [])
     .filter((c) => hasText(c.title))
     .map((c) => ({
@@ -79,15 +69,11 @@ export function FooterNavigation() {
             {column.links.map((link, linkIndex) => {
               const external = "external" in link && link.external;
               const anchor = link.href.startsWith("#");
-              const anchorPage = ANCHOR_PAGES[link.href] ?? "/";
 
               return (
                 <li key={itemKey(link, linkIndex)}>
-                  {anchor && pathname !== anchorPage ? (
-                    <Link
-                      href={`${anchorPage}${link.href}`}
-                      className="footer-column__link"
-                    >
+                  {anchor && !onHome ? (
+                    <Link href={`/${link.href}`} className="footer-column__link">
                       {link.label}
                     </Link>
                   ) : anchor ? (
