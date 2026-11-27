@@ -119,7 +119,7 @@ export function NowPlayingBar() {
         </div>
 
         <p className="shrink-0 text-[12px] font-light tabular-nums text-white/65">
-          <span className={isPlaying ? "text-accent" : undefined}>
+          <span className={isPlaying ? "ink-text" : undefined}>
             {formatTime(currentTime)}
           </span>
           <span aria-hidden className="mx-xs text-white/20">
@@ -133,7 +133,7 @@ export function NowPlayingBar() {
           target="_blank"
           rel="noreferrer noopener"
           aria-label={`Watch ${currentTrack.title} on YouTube`}
-          className="hidden shrink-0 text-[12px] font-light uppercase tracking-[0.24em] text-white/65 transition-colors duration-200 hover:text-accent lg:block"
+          className="hidden shrink-0 text-[12px] font-light uppercase tracking-[0.24em] ink-cue ink-hover text-white/65 transition-colors duration-200 lg:block"
         >
           YouTube <span aria-hidden>↗</span>
         </a>
@@ -170,11 +170,11 @@ export function NowPlayingBar() {
       >
         <span className="relative block h-px w-full bg-white/15">
           <span
-            className="absolute inset-y-0 left-0 bg-accent"
+            className="absolute inset-y-0 left-0 ink-bg"
             style={{ width: `${progress * 100}%` }}
           />
           <span
-            className="progress-thumb absolute top-1/2 h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent"
+            className="progress-thumb absolute top-1/2 h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full ink-bg"
             style={{ left: `${progress * 100}%` }}
           />
         </span>

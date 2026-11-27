@@ -25,7 +25,7 @@ type CityListProps = {
  * marker exactly as hovering one does, which is what makes tabbing through
  * the list spin the globe.
  *
- * Set loose, with a small accent dot ahead of each name, the way the client's
+ * Set loose, with a small inked dot ahead of each name, the way the client's
  * own strip reads. No borders, no cells: the globe is the picture here and
  * this row is its caption.
  */
@@ -79,7 +79,7 @@ export function CityList({
               onClick={() => onSelect(city.name)}
             >
               <span className="city-run__dot" aria-hidden />
-              {city.name}
+              <span className="city-run__name">{city.name}</span>
               {city.hub ? <span className="city-run__hub">{hubLabel}</span> : null}
             </button>
           </li>

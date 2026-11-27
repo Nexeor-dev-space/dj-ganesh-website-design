@@ -5,6 +5,8 @@ import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 type FitTextProps = {
   children: string;
   className?: string;
+  /** Classes for the span that holds the text itself (e.g. `heading-ink`). */
+  textClassName?: string;
   style?: CSSProperties;
 };
 
@@ -13,7 +15,7 @@ type FitTextProps = {
  * parent — used for the hero lockup, which is art-directed to run edge to
  * edge rather than sit at a fixed type scale.
  */
-export function FitText({ children, className, style }: FitTextProps) {
+export function FitText({ children, className, textClassName, style }: FitTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const [fontSize, setFontSize] = useState<number | null>(null);
@@ -58,6 +60,7 @@ export function FitText({ children, className, style }: FitTextProps) {
     <span ref={containerRef} className={className} style={{ ...style, display: "block", width: "100%" }}>
       <span
         ref={textRef}
+        className={textClassName}
         /* Lets a style lay a copy of the text over itself (the footer's grain). */
         data-text={children}
         style={{

@@ -16,7 +16,7 @@ import {
  *
  * The dot sits on the pointer and the ring follows a beat behind, so movement
  * has a little weight without the circle ever losing the pointer. Over
- * anything clickable the ring opens up and takes the accent, and the dot
+ * anything clickable the ring opens up and takes the ink, and the dot
  * steps back — the whole state change is two numbers eased per frame.
  *
  * Deliberately plain. It replaced a mixer-knob cursor that spun with pointer
@@ -52,6 +52,7 @@ export function CustomCursor() {
     let ringY = start.y;
     /** 0 while over ordinary ground, 1 over something clickable. */
     let accent = 0;
+    let inked = false;
     let frame = 0;
 
     const unsubscribe = subscribeToPointer(() => {
@@ -75,7 +76,13 @@ export function CustomCursor() {
       const dotScale = 1 - accent * 0.6;
 
       ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${ringScale.toFixed(3)})`;
-      ring.style.borderColor = accent > 0.5 ? "var(--accent)" : "rgba(255,255,255,0.45)";
+      // Past halfway the ring hands its white border over to a hairline of
+      // the ink (`.ink-ring`, faded in by CSS). Touched only on the change,
+      // not every frame.
+      if (accent > 0.5 !== inked) {
+        inked = !inked;
+        ring.dataset.ink = inked ? "on" : "off";
+      }
       dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%) scale(${dotScale.toFixed(3)})`;
 
       frame = requestAnimationFrame(render);
@@ -96,7 +103,7 @@ export function CustomCursor() {
     <div className="pointer-events-none fixed inset-0 z-[100] hidden lg:block" aria-hidden>
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 h-9 w-9 rounded-full border border-white/45 opacity-0 transition-[border-color] duration-200 will-change-transform"
+        className="ink-ring fixed top-0 left-0 h-9 w-9 rounded-full border border-white/45 opacity-0 transition-[border-color] duration-200 will-change-transform"
       />
       <div
         ref={dotRef}

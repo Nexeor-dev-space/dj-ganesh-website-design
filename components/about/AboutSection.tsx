@@ -100,7 +100,7 @@ export function AboutSection({
 
       <Container className="relative z-10">
         <p
-          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
+          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] ink-text"
           style={delay(0)}
         >
           {aboutSectionLabel}
@@ -121,7 +121,7 @@ export function AboutSection({
             >
               {keepAmpersand(aboutHeading[0])}
               <br />
-              <span className="text-accent">{keepAmpersand(aboutHeading[1])}</span>
+              <span className="heading-ink">{keepAmpersand(aboutHeading[1])}</span>
               <br />
               {keepAmpersand(aboutHeading[2])}
             </h2>

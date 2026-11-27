@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { fontVariables } from "../fonts";
 import { CustomCursor } from "@/components/interactions/CustomCursor";
 import { HashGuard } from "@/components/site/HashGuard";
+import { InkPaint } from "@/components/site/InkPaint";
 import { Analytics } from "@/components/site/Analytics";
 import { siteConfig, siteUrl } from "@/lib/site";
 import { shareImage } from "@/lib/seo";
@@ -127,6 +128,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={fontVariables}
     >
       <body>
+        {/* The ink as a gradient icons can be painted with. */}
+        <InkPaint />
+
         <SiteDataProvider value={siteData}>{children}</SiteDataProvider>
 
         {/* The site's own cursor — a ring and a dot, on every route. Wide

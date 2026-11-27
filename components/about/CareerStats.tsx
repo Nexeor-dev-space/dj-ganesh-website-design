@@ -93,7 +93,11 @@ export function CareerStats({
               5000+"; the band is flipped in CSS to put the figure on top. */}
           <dt className="story-fact__label">{stat.label}</dt>
           <dd className="story-fact__value">
-            <span data-count={stat.value}>{stat.value}</span>
+            {/* data-final reserves the final width, so the centred figure
+                holds still while it counts. */}
+            <span className="story-fact__number" data-final={stat.value}>
+              <span data-count={stat.value}>{stat.value}</span>
+            </span>
             {stat.suffix ? (
               <span className="story-fact__suffix">{stat.suffix}</span>
             ) : null}

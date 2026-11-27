@@ -12,8 +12,6 @@ import { GlobalReach } from "@/components/global-reach/GlobalReach";
 import { Hero } from "@/components/hero/Hero";
 import { StagesSection } from "@/components/stages/StagesSection";
 import { MusicSection } from "@/components/music/MusicSection";
-import { NonstopSets } from "@/components/nonstop/NonstopSets";
-import { nonstopSets as codeNonstop } from "@/data/nonstop";
 import { TestimonialsSection } from "@/components/testimonials/TestimonialsSection";
 import { TrustedBy } from "@/components/trusted/TrustedBy";
 import { PrivateClientele } from "@/components/guest-list/PrivateClientele";
@@ -350,19 +348,6 @@ export default async function HomePage() {
     })(),
   };
 
-  /* Nonstop Sets ------------------------------------------------------------ */
-  const ns = home?.nonstop;
-  const nonstopSets = (ns?.sets ?? [])
-    .filter((x) => x.title)
-    .map((x, i) => ({
-      id: x.id,
-      title: x.title,
-      tag: x.tag ?? "",
-      length: x.length ?? "",
-      image: resolveMedia(x.image, codeNonstop[i % codeNonstop.length]?.image).url ?? "",
-      href: str(x.url) ?? "#",
-    }));
-
   /* Testimonials photo wall: uploaded photos, or the built-in set. -------- */
   const wallPhotos = (home?.testimonialsSection?.wallPhotos ?? [])
     .map((row) => resolveMedia(row.image))
@@ -462,18 +447,6 @@ export default async function HomePage() {
             playlist: str(musicPage?.player?.playlistHeading),
           })}
           archiveLabel={str(musicPage?.player?.archiveLinkLabel)}
-        />
-
-        {/* Long-form mixes, straight after the singles. */}
-        <NonstopSets
-          label={str(ns?.label)}
-          heading={strings(ns?.heading, "line")}
-          lede={str(ns?.lede)}
-          sets={nonstopSets.length ? nonstopSets : undefined}
-          spotifyUrl={str(ns?.spotifyUrl)}
-          podcastUrl={str(ns?.podcastUrl)}
-          spotifyLabel={str(ns?.spotifyLabel)}
-          podcastLabel={str(ns?.podcastLabel)}
         />
         <TrustedBy
           trustedLabel={str(home?.trustedBy?.label)}

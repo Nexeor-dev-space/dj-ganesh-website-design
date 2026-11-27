@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { MixWaveform } from "@/components/not-found/MixWaveform";
+import { InkPaint } from "@/components/site/InkPaint";
 import { siteConfig } from "@/lib/site";
 import { fontVariables } from "./fonts";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function GlobalNotFound() {
     <html lang={siteConfig.locale} className={fontVariables} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: holdForFonts }} />
+        <InkPaint />
         <main className="ootm">
           {/* The stage: haze, a moving spotlight, and the occasional pulse. */}
           <div className="ootm__stage" aria-hidden>

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { BAND_COUNT, useAudioEngine } from "@/components/interactions/AudioController";
 import { usePrefersReducedMotion } from "@/components/interactions/environment";
+import { inkGradient, readHeadingInk } from "@/lib/heading-ink";
 
 const BAR_COUNT = 7;
 /** Resting bar height, so the row stays legible when nothing is playing. */
@@ -14,7 +15,7 @@ const WIDTH = BAR_COUNT * BAR_WIDTH + (BAR_COUNT - 1) * BAR_GAP;
 
 type AudioVisualizerProps = {
   className?: string;
-  /** Tints the bars with the signature accent while playing. */
+  /** Tints the bars with the heading ink while playing. */
   accent?: boolean;
 };
 
@@ -44,9 +45,11 @@ export function AudioVisualizer({ className, accent = true }: AudioVisualizerPro
 
     const bands = new Uint8Array(BAND_COUNT);
     const heights = new Array<number>(BAR_COUNT).fill(IDLE_HEIGHT);
+    // The ink runs down the bars, lime at the top to the deep green at the
+    // foot, across the canvas's height — so each bar shows as much of it as
+    // it is tall.
     const accentColor = accent
-      ? getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
-        "#39ff14"
+      ? inkGradient(context, readHeadingInk(), 0, 0, 0, HEIGHT)
       : "#ffffff";
 
     const paint = () => {
@@ -57,7 +60,7 @@ export function AudioVisualizer({ className, accent = true }: AudioVisualizerPro
         const x = i * (BAR_WIDTH + BAR_GAP);
         const y = (HEIGHT - barHeight) / 2;
 
-        // Louder bars pick up the accent; quiet ones stay monochrome.
+        // Louder bars pick up the ink; quiet ones stay monochrome.
         const intensity = Math.min(heights[i] * 1.4, 1);
         context.fillStyle = accent && intensity > 0.35 ? accentColor : "#ffffff";
         context.globalAlpha = 0.35 + intensity * 0.5;

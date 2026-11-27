@@ -87,7 +87,7 @@ export function BookingSection({
 
       <Container className="relative z-10">
         <p
-          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
+          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] ink-text"
           style={delay(0)}
         >
           {bookingSectionLabel}
@@ -95,20 +95,22 @@ export function BookingSection({
 
         <div className="booking-spread mt-eyebrow">
           <div className="min-w-0">
-            {/* One line at a time, so the question lands in beats; the second
-                line carries the accent. */}
+            {/* One line at a time, so the question lands in beats; the last
+                line is inked. */}
             <h2 id="booking-title" className="section-title booking-title">
               {bookingHeading.map((line, index) => (
                 <span
                   key={itemKey(line, index)}
-                  className={`reveal-scroll booking-title__line${
-                    index === bookingHeading.length - 1
-                      ? " booking-title__accent"
-                      : ""
-                  }`}
+                  className="reveal-scroll booking-title__line"
                   style={delay(80 + index * 80)}
                 >
-                  <span className="title-ink">{line}</span>
+                  <span
+                    className={`title-ink${
+                      index === bookingHeading.length - 1 ? " heading-ink" : ""
+                    }`}
+                  >
+                    {line}
+                  </span>
                 </span>
               ))}
             </h2>

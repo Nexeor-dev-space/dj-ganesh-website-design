@@ -132,7 +132,7 @@ export function Navbar() {
             href="/"
             aria-label={`${siteConfig.name} — home`}
             onClick={(event) => toTopIfCurrent(event, "/")}
-            className="group inline-flex shrink-0 items-center px-0 py-2 transition-opacity min-[480px]:px-4 duration-200 hover:opacity-80 md:px-6 md:py-2.5"
+            className="group inline-flex shrink-0 items-center py-2 transition-opacity duration-200 hover:opacity-80 md:py-2.5"
           >
             {/* The client's mark: white on transparent, cropped tight, so its
                 height alone sets the size. */}
@@ -168,7 +168,7 @@ export function Navbar() {
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label={social.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl text-white/70 transition-colors duration-200 hover:bg-white/10 hover:text-accent"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl ink-hover text-white/70 transition-colors duration-200 hover:bg-white/10"
                   >
                     <SocialIcon name={social.icon} className="h-5 w-auto" />
                   </a>

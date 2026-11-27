@@ -197,7 +197,7 @@ export function AudioPlayToggle({ className }: { className?: string }) {
       aria-label={src ? `${label} the hero mix` : "Hero mix not available yet"}
       className={[
         "group flex items-center gap-sm text-[12px] font-light uppercase tracking-[0.24em]",
-        "text-white/70 transition-colors duration-200 hover:text-accent",
+        "ink-cue ink-hover text-white/70 transition-colors duration-200",
         "disabled:cursor-not-allowed disabled:text-white/25 disabled:hover:text-white/25",
         className,
       ]
@@ -210,8 +210,8 @@ export function AudioPlayToggle({ className }: { className?: string }) {
           "block h-[5px] w-[5px] rounded-full transition-colors duration-200",
           src
             ? isPlaying
-              ? "bg-accent"
-              : "bg-white/40 group-hover:bg-accent"
+              ? "ink-bg"
+              : "bg-white/40 group-hover:ink-bg"
             : "bg-white/20",
         ].join(" ")}
       />

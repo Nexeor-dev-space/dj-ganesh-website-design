@@ -67,14 +67,16 @@ export function Footer() {
     >
       <Container className="relative z-10">
         <h2
-          className="footer-name reveal-scroll text-accent"
+          className="footer-name reveal-scroll"
           style={delay(140)}
           aria-label={brandName}
         >
           {/* Fitted to the container exactly as the banner lockup is, so the
               two read as the same mark rather than two sizes of one. */}
           <span aria-hidden className="block">
-            <FitText className="grain-text">{brandName}</FitText>
+            <FitText className="grain-text" textClassName="heading-ink">
+              {brandName}
+            </FitText>
           </span>
         </h2>
 
