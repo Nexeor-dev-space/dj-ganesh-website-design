@@ -956,6 +956,34 @@
     box-decoration-break: clone;
   }
 
+  /* The big headings take the same wash as the hero name, and so do the
+     About page's figures. A title built from separately revealed lines
+     (booking, contact) is inked on each line's inner span, since a revealed
+     line is its own paint layer. */
+  .section-title:not(.booking-title),
+  .story-title,
+  .music-hero__title,
+  .music-continue__title,
+  .contact-heading,
+  .about-outro__question,
+  .booking-title .title-ink,
+  .contact-hero__title .title-ink,
+  .gallery__grid-title,
+  .about-visual__strand,
+  .about-figure__value {
+    width: fit-content;
+    color: var(--heading-ink-solid);
+    background-image: var(--ink-wash, var(--heading-ink-gradient));
+    background-size: 100% 100%;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: var(--ink-fill, transparent);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
   /* The inked copies laid over a word are sized by their own insets. */
   .ootm__code::after,
   .shared-stages__name::before {
@@ -5929,6 +5957,13 @@
   .about-visual__slash {
     margin-inline: var(--space-sm);
     color: rgba(255, 255, 255, 0.4);
+    /* The strand around it is inked; the slash keeps its own grey. Its own
+       page-colour backing, clipped to its glyph, hides the wash behind the
+       translucent fill. */
+    -webkit-text-fill-color: currentColor;
+    background-color: var(--background);
+    -webkit-background-clip: text;
+    background-clip: text;
   }
 
   /* ---- The journey in photographs ----------------------------------------- */
