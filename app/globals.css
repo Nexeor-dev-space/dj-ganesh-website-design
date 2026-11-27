@@ -21,6 +21,21 @@
   /* The deeper shade a button sweeps to on hover. */
   --accent-hover: #25ee00;
 
+  /* Heading ink — the lime-to-deep-green wash the display headings and the
+     footer mark are painted in. Painted by `.heading-ink` only; the solid
+     stop is what it falls back to wherever a clipped gradient can't be
+     drawn (no `background-clip: text`, forced colours, print). */
+  --heading-ink-start: #d9fc6c;
+  --heading-ink-mid: #2fe066;
+  --heading-ink-end: #107f45;
+  --heading-ink-solid: var(--heading-ink-mid);
+  --heading-ink-gradient: linear-gradient(
+    90deg,
+    var(--heading-ink-start) 0%,
+    var(--heading-ink-mid) 55%,
+    var(--heading-ink-end) 100%
+  );
+
   /* Layout */
   --container-max-width: 1440px;
   --container-padding-mobile: 16px;
@@ -538,6 +553,12 @@
     text-transform: uppercase;
     color: var(--foreground);
     text-wrap: balance;
+    /* The name inside is inked (`.heading-ink`), and a text-shadow paints
+       over a text-clipped fill, dulling the letters from inside. The same
+       lift as the rest of the column, drawn around the glyphs instead. */
+    text-shadow: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7))
+      drop-shadow(0 4px 28px rgba(0, 0, 0, 0.65));
   }
 
   /* Stacked on a phone so the button is a full-width target, side by side as
@@ -655,11 +676,9 @@
     }
   }
 
-  /* Film grain over the letterforms. The letters stay solid ink in whatever
-     colour the mark is set in; the grain is a copy of the text laid over
-     them, filled with noise and overlay-blended onto that colour. Filling the letters themselves
-     with a clipped background (as this used to) let phone browsers that
-     force their own dark mode darken that fill, so the mark went dark too. */
+  /* Film grain over the letterforms. The grain is a copy of the text laid
+     over them, filled with noise and overlay-blended onto whatever ink the
+     letters carry — the footer mark's is the shared heading gradient. */
   .grain-text > span {
     position: relative;
   }
@@ -817,6 +836,54 @@
   main h1:hover .title-ink,
   main h2:hover .title-ink {
     transition: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Heading ink — the one gradient the headings are painted in                 */
+/* -------------------------------------------------------------------------- */
+
+/* A utility layer, so it outranks every section's own heading colour and the
+   title sheen above whatever their specificity. That is deliberate: the sheen
+   paints `currentColor` and turns the fill transparent, which on an inked word
+   would swap the gradient for a flat band — here the word simply keeps its
+   ink while the white words around it take the sheen.
+
+   Goes on the element that holds the text itself, never on a wrapper around a
+   line that animates in: a revealed line is its own paint layer, and a
+   text-clipped background never reaches into one. Size and position are pinned
+   because the sheen stretches the background to 260% on hover. `clone` gives
+   every line of a wrapped word the full wash rather than a slice of one. */
+@layer utilities {
+  .heading-ink {
+    color: var(--heading-ink-solid);
+    background-image: var(--heading-ink-gradient);
+    background-size: 100% 100%;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* Solid ink wherever the clip can't be drawn or shouldn't be: a transparent
+     fill without it would leave the word invisible. */
+  @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+    .heading-ink,
+    .experience-title__accent::after {
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
+    }
+  }
+
+  @media (forced-colors: active), print {
+    .heading-ink,
+    .experience-title__accent::after {
+      background-image: none;
+      -webkit-text-fill-color: currentColor;
+    }
   }
 }
 
@@ -3453,15 +3520,14 @@
     font-size: clamp(34px, 7vw, 84px);
   }
 
-  /* White into the accent across the word, so the colour arrives at the end
-     of the phrase rather than colouring the whole of it.
+  /* White into the heading ink across the word, so the colour arrives at the
+     end of the phrase rather than colouring the whole of it.
 
-     Drawn as solid white text with a solid accent copy faded in over it by a
-     mask, not as a gradient clipped to the glyphs. Phone browsers that force
-     their own dark mode (Samsung Internet, Chrome's "darken websites") treat
-     a clipped gradient as a background and darken it, which turned the word
-     black; text colours they leave light, and a mask is alpha they never
-     touch. */
+     Drawn as solid white text with an inked copy faded in over it by a mask.
+     The copy is a pseudo-element, so it can't carry `.heading-ink`; it takes
+     the same tokens directly, and that block's fallbacks name it too. The
+     white beneath is plain text colour either way, so a browser that darkens
+     the clipped copy still leaves the word readable. */
   .experience-title__accent {
     position: relative;
     display: inline-block;
@@ -3476,7 +3542,11 @@
        ink overhang its box, and the mask would otherwise clip it, leaving a
        white sliver of the letter beneath showing. */
     inset: 0 -0.2em 0 0;
-    color: var(--accent);
+    color: var(--heading-ink-solid);
+    background-image: var(--heading-ink-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     -webkit-mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
     mask-image: linear-gradient(104deg, transparent 12%, #000 78%);
     pointer-events: none;
@@ -3759,15 +3829,25 @@
     margin: 0 0 var(--rhythm-block);
   }
 
-  /* Portrait on a phone (the reel is shot on one), capped so it does not fill
-     the whole screen before the list. */
+  /* Portrait on a phone (the reel is shot on one) and edge to edge with the
+     column at every width below the desktop split; on a tablet the height
+     cap below makes it wider than tall. */
   .gallery__video-frame {
     position: relative;
     aspect-ratio: 4 / 5;
-    width: min(100%, 520px);
+    width: 100%;
     overflow: hidden;
     background-color: #060606;
     border: 1px solid var(--border);
+  }
+
+  /* On a tablet the full-width portrait frame would fill the whole screen
+     before the list, so its height is capped. The width is explicit, so the
+     cap trims the height alone and the frame keeps the column's edges. */
+  @media (width >= 640px) and (width < 1024px) {
+    .gallery__video-frame {
+      max-height: 75svh;
+    }
   }
 
   @media (width >= 1024px) {
@@ -3781,7 +3861,6 @@
        the row's height is the list's, and the frame fills it. */
     .gallery__video-frame {
       aspect-ratio: auto;
-      width: 100%;
       height: 100%;
     }
   }
@@ -4457,10 +4536,6 @@
     display: block;
   }
 
-  .booking-title__accent {
-    color: var(--accent);
-  }
-
   /* The closing line, large enough to read as the answer to the question
      above it rather than as a caption. */
   .booking-lede {
@@ -4655,6 +4730,13 @@
        black on black leaves the seam invisible otherwise. */
     border-top: 1px solid var(--border);
     background-color: var(--background);
+    /* A low green glow rising from the bottom edge, mixed from the deep
+       heading-ink stop so it stays in the same family as the mark above. */
+    background-image: linear-gradient(
+      to bottom,
+      transparent 45%,
+      color-mix(in srgb, var(--heading-ink-end) 22%, var(--background)) 100%
+    );
     padding-block: clamp(24px, 2.4vw, 42px) clamp(40px, 5vw, 72px);
   }
 
@@ -4705,7 +4787,9 @@
     font-weight: 400;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--accent);
+    /* The word itself is inked (`.heading-ink`, on the span inside), like
+       the footer mark; this is its colour where the ink falls back. */
+    color: var(--heading-ink-solid);
   }
 
   @media (width >= 768px) {
@@ -5546,10 +5630,6 @@
     letter-spacing: -0.04em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.94);
-  }
-
-  .about-visual__strand:nth-child(2) {
-    color: var(--accent);
   }
 
   .about-visual__slash {
@@ -6624,10 +6704,6 @@
 
   .contact-hero__line {
     display: block;
-  }
-
-  .contact-hero__line:last-child {
-    color: var(--accent);
   }
 
   .contact-hero__lede {

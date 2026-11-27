@@ -91,7 +91,9 @@ export function ArtistVisual({
             >
               {strands.map((strand, index) => (
                 <span key={itemKey(strand, index)} className="about-visual__strand">
-                  {strand}
+                  {/* The middle strand carries the ink; wrapped on its own so
+                      the slash after it stays a dim white. */}
+                  {index === 1 ? <span className="heading-ink">{strand}</span> : strand}
                   {index < strands.length - 1 ? (
                     <span aria-hidden className="about-visual__slash">
                       /

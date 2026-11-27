@@ -48,7 +48,8 @@ export function Hero({
         </p>
 
         <h1 id="hero-title" className="hero__title reveal" style={delay(400)}>
-          {name}
+          {/* Inline, so a name that wraps takes the full ink on each line. */}
+          <span className="heading-ink">{name}</span>
         </h1>
 
         <div className="hero__ctas reveal" style={delay(600)}>

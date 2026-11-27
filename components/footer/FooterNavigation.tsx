@@ -63,7 +63,10 @@ export function FooterNavigation() {
               : "footer-column"
           }
         >
-          <h3 className="footer-column__label">{column.label}</h3>
+          {/* Inked on the span, so the wash runs across the word, not the column. */}
+          <h3 className="footer-column__label">
+            <span className="heading-ink">{column.label}</span>
+          </h3>
 
           <ul className="footer-column__list">
             {column.links.map((link, linkIndex) => {

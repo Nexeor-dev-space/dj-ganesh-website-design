@@ -121,7 +121,7 @@ export function AboutSection({
             >
               {keepAmpersand(aboutHeading[0])}
               <br />
-              <span className="text-accent">{keepAmpersand(aboutHeading[1])}</span>
+              <span className="heading-ink">{keepAmpersand(aboutHeading[1])}</span>
               <br />
               {keepAmpersand(aboutHeading[2])}
             </h2>
