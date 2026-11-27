@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { BAND_COUNT, useMusicPlayer } from "@/components/music/MusicProvider";
 import { usePrefersReducedMotion } from "@/components/interactions/environment";
+import { inkGradient, readHeadingInk } from "@/lib/heading-ink";
 
 const BAR_COUNT = 48;
 const BAR_GAP = 2;
@@ -30,12 +31,14 @@ export function AudioVisualizer({ className }: { className?: string }) {
 
     const heights = new Array<number>(BAR_COUNT).fill(IDLE_HEIGHT);
     const bands = new Uint8Array(BAND_COUNT);
-    const styles = getComputedStyle(document.documentElement);
-    const accent = styles.getPropertyValue("--accent").trim() || "#39ff14";
+    const ink = readHeadingInk();
 
     let width = 0;
     let height = 0;
     let ratio = 1;
+    // The ink runs across the whole row, as it runs across a heading, so a
+    // peak takes the colour of where it stands; rebuilt with the width.
+    let accent: CanvasGradient | string = "#ffffff";
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -45,6 +48,7 @@ export function AudioVisualizer({ className }: { className?: string }) {
       canvas.width = Math.max(1, Math.round(width * ratio));
       canvas.height = Math.max(1, Math.round(height * ratio));
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      accent = inkGradient(context, ink, 0, 0, Math.max(1, width), 0);
     };
 
     const paint = () => {
@@ -57,7 +61,7 @@ export function AudioVisualizer({ className }: { className?: string }) {
         const y = (height - barHeight) / 2;
         const intensity = Math.min(heights[i] * 1.6, 1);
 
-        // Quiet bars stay monochrome; only the peaks pick up the accent.
+        // Quiet bars stay monochrome; only the peaks pick up the ink.
         context.fillStyle = intensity > 0.4 ? accent : "#ffffff";
         context.globalAlpha = 0.18 + intensity * 0.62;
         context.fillRect(x, y, barWidth, barHeight);

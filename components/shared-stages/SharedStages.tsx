@@ -278,7 +278,7 @@ function ArtistTile({ artist }: { artist: Artist }) {
         </span>
         <span className="shared-stages__curtain" aria-hidden />
       </span>
-      <span className="shared-stages__name">
+      <span className="shared-stages__name" data-text={artist.name}>
         {/* Screen readers get the whole name; the letters are for the eye. */}
         <span className="sr-only">{artist.name}</span>
         {/* Letters are grouped per word (a hyphen ends a word too, e.g.

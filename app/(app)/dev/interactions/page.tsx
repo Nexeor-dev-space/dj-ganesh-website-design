@@ -27,7 +27,7 @@ export default function InteractionSandboxPage() {
 
       <main className="min-h-svh py-4xl">
         <Container>
-          <p className="text-[10px] uppercase tracking-[0.24em] text-accent">
+          <p className="text-[10px] uppercase tracking-[0.24em] ink-text">
             Interaction sandbox
           </p>
           <h1 className="font-display mt-md text-4xl font-bold uppercase tracking-tight">
@@ -35,7 +35,7 @@ export default function InteractionSandboxPage() {
           </h1>
           <p className="mt-md max-w-[640px] text-sm text-muted-foreground">
             Move the pointer to drive the knob. Hover the links and the play
-            control to see the accent and energy states. Audio source:{" "}
+            control to see the ink and energy states. Audio source:{" "}
             <span className="text-foreground">{audioSrc ?? "none supplied"}</span>.
           </p>
 
@@ -47,13 +47,13 @@ export default function InteractionSandboxPage() {
           <div className="mt-2xl flex flex-wrap items-center gap-xl">
             <a
               href="#"
-              className="border-b border-white/25 pb-sm text-[11px] uppercase tracking-[0.24em] transition-colors hover:border-accent hover:text-accent"
+              className="ink-cue ink-hover border-b border-white/25 pb-sm text-[11px] uppercase tracking-[0.24em] transition-colors hover:border-(--heading-ink-solid)"
             >
               Interactive link
             </a>
             <button
               type="button"
-              className="border border-border px-md py-xs text-[11px] uppercase tracking-[0.24em] transition-colors hover:border-accent hover:text-accent"
+              className="ink-cue ink-hover ink-ring relative border border-border px-md py-xs text-[11px] uppercase tracking-[0.24em] transition-colors hover:border-transparent hover:[--ink-ring:1]"
             >
               Interactive button
             </button>

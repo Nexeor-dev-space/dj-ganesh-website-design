@@ -14,17 +14,16 @@
   --muted-foreground: rgba(255, 255, 255, 0.65);
   --border: rgba(255, 255, 255, 0.12);
 
-  /* The single signature accent — electric, atmospheric, used sparingly. */
-  /* Neon green. Near-black text reads on it at ~15:1, so filled buttons keep
-     their dark labels; white would only reach ~1.4:1. */
-  --accent: #39ff14;
-  /* The deeper shade a button sweeps to on hover. */
-  --accent-hover: #25ee00;
-
-  /* Heading ink — the lime-to-deep-green wash the display headings and the
-     footer mark are painted in. Painted by `.heading-ink` only; the solid
-     stop is what it falls back to wherever a clipped gradient can't be
-     drawn (no `background-clip: text`, forced colours, print). */
+  /* Heading ink — the lime-to-deep-green wash the site's colour is painted
+     in: the headings, the eyebrows and figures, the filled buttons, the
+     hover states, the rules and the glows. It is the one accent; there is no
+     flat green beside it. Text takes it through `.heading-ink`, `.ink-text`
+     and `.ink-cue`, edges through `.ink-ring`, icons through
+     `--heading-ink-paint`. The solid stop is what it falls back to wherever a
+     clipped gradient can't be drawn (no `background-clip: text`, forced
+     colours, print). Near-black reads on it at 17.6:1 on the lime, 11.6:1 on
+     the mid green and 4:1 only at the deep end, which a button's padding
+     keeps clear of its label — so filled buttons keep their dark labels. */
   --heading-ink-start: #d9fc6c;
   --heading-ink-mid: #2fe066;
   --heading-ink-end: #107f45;
@@ -35,6 +34,25 @@
     var(--heading-ink-mid) 55%,
     var(--heading-ink-end) 100%
   );
+  /* The same three stops as channels, for the washes that need an alpha —
+     glows, tints, shadows and faint edges: `rgb(var(--heading-ink-mid-rgb) / 0.06)`. */
+  --heading-ink-start-rgb: 217 252 108;
+  --heading-ink-mid-rgb: 47 224 102;
+  --heading-ink-end-rgb: 16 127 69;
+  /* The wash run down rather than across, for a rule that stands upright. */
+  --heading-ink-gradient-down: linear-gradient(
+    180deg,
+    var(--heading-ink-start) 0%,
+    var(--heading-ink-mid) 55%,
+    var(--heading-ink-end) 100%
+  );
+  /* SVG icons paint with the same wash through the gradient `InkPaint`
+     defines once per page; the solid stop stands in if it is missing. */
+  --heading-ink-paint: url(#heading-ink-paint) var(--heading-ink-solid);
+  /* An outline is drawn in one colour, so the inked focus rings take the
+     brightest stop: 17.6:1 on the near-black, where the mid green would
+     read as a dimmer ring. (The page's own ring stays white.) */
+  --focus-ink: var(--heading-ink-start);
 
   /* Layout */
   --container-max-width: 1440px;
@@ -100,6 +118,15 @@
   --overlay-strong: rgba(5, 5, 5, 0.72);
 }
 
+/* Registered so it can ease: an unregistered custom property only ever
+   jumps. How far an `.ink-cue` has turned to the wash — 0 its own colour,
+   1 the ink. */
+@property --ink-lift {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 /* The gutter tokens across their breakpoints. Declared here rather than
    beside the layered rules because an unlayered custom property wins over a
    layered one, so a layered override would never apply. */
@@ -136,8 +163,6 @@
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -180,7 +205,7 @@
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
     /* One colour scheme, in every mode: "only" forbids a browser's own dark
-       mode from re-tinting the page, so #39ff14 stays #39ff14 on phones too. */
+       mode from re-tinting the page, so the ink stays the ink on phones too. */
     color-scheme: only dark;
   }
 
@@ -532,7 +557,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   @media (width >= 768px) {
@@ -611,7 +635,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient-down);
     animation: hero-scroll-cue 2.4s var(--ease-in-out) infinite;
   }
 
@@ -756,7 +780,7 @@
 /* -------------------------------------------------------------------------- */
 
 @layer components {
-  /* A band of the accent crosses the letterforms once, left to right, the
+  /* A band of the ink crosses the letterforms once, left to right, the
      moment a title is pointed at. Clipped to the text, so an accent word
      inside the title keeps its own colour and nothing around it moves —
      no tracking change, no reflow, no wrapped line. Mouse and trackpad
@@ -792,7 +816,9 @@
         100deg,
         currentColor 0%,
         currentColor 38%,
-        var(--accent) 50%,
+        var(--heading-ink-start) 46%,
+        var(--heading-ink-mid) 50%,
+        var(--heading-ink-end) 54%,
         currentColor 62%,
         currentColor 100%
       );
@@ -868,9 +894,206 @@
     box-decoration-break: clone;
   }
 
+  /* Ink text beyond the headings — the eyebrows and labels, the figures, the
+     small marks. The same wash as `.heading-ink`, measured from the content
+     box so a padded label is inked across its words rather than its padding.
+     The wash spans the box, so the box shrinks to its words — a short
+     eyebrow on a full-width line would otherwise only ever reach the lime
+     end; a centred label centres itself with auto margins. A dimmed label keeps its dimming as
+     `opacity` on itself: an alpha colour has nothing to tint once the fill is
+     transparent. */
+  .ink-text,
+  .hero__kicker,
+  .menu-marquee__label,
+  .menu-row__mark,
+  .shows__eyebrow,
+  .shows__side-label,
+  .show-info__label,
+  .up-next__label,
+  .up-next__date,
+  .releases__label,
+  .nonstop__label,
+  .playlist__title,
+  .story-fact__value,
+  .story-fact__suffix,
+  .trusted__label,
+  .trusted__mark,
+  .legacy-tile__year,
+  .exp-card__ghost,
+  .exp-card__index,
+  .exp-card__point::before,
+  .gallery__shows-eyebrow,
+  .gallery__set-kind,
+  .wall__quote cite,
+  .reaction-card__index,
+  .policy__label,
+  .stages-label,
+  .stage-row__sep,
+  .about-label,
+  .about-figure__suffix,
+  .music-label,
+  .contact-hero__eyebrow,
+  .enquiry-done__title,
+  .contact-note__title,
+  .ootm__code::after,
+  .clientele__label,
+  .clientele__tag,
+  .clientele__star,
+  .shared-stages__label,
+  .shared-stages__group,
+  .shared-stages__name::before {
+    width: fit-content;
+    color: var(--heading-ink-solid);
+    background-image: var(--ink-wash, var(--heading-ink-gradient));
+    background-size: 100% 100%;
+    background-position: 0 0;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: var(--ink-fill, transparent);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* The inked copies laid over a word are sized by their own insets. */
+  .ootm__code::after,
+  .shared-stages__name::before {
+    width: auto;
+  }
+
+  /* Ink on cue — text that turns to the wash on hover, on focus, or in a
+     state (the open page, the track that is playing). Two layers clipped to
+     the letters: the element's own colour, and over it the wash at an alpha
+     of `--ink-lift` — 0 at rest, so the text looks exactly as it did. A state
+     sets `--ink-on: 1`, and the registered `--ink-lift` eases between the two
+     wherever the rule's transition lists it: the colour change it replaces,
+     without the jump a swapped gradient makes. `--ink-on` inherits, so a
+     state set on a card or a row reaches every cue inside it.
+
+     Goes on the element that holds the words. A cue inside a cue would paint
+     its letters twice; a glyph that moves on its own layer (a stepping arrow)
+     falls outside its parent's clip instead, so it is kept on a layer from
+     the start and takes the cue itself. */
+  .ink-cue,
+  .menu__link,
+  .show-info__close > span,
+  .city-run__name,
+  .release-card__title,
+  .vinyl__toggle,
+  .playlist__name,
+  .story-strand__button,
+  .exp-card__title,
+  .gallery__set-index,
+  .gallery__set-head,
+  .booking-links__link,
+  .footer-column__link,
+  .footer-column__mark,
+  .footer-bar__privacy,
+  .enquiry-consent__link,
+  .cookie-banner__link,
+  .stage-row__item,
+  .archive-card__no,
+  .btn-primary > span:not(.btn__mark),
+  .btn-tertiary,
+  .btn-tertiary .btn__arrow,
+  .controls-cat,
+  .enquiry-field__label,
+  .contact-desk__link,
+  .contact-social__label,
+  .contact-social__arrow,
+  .clientele__arrow,
+  .shared-stages__arrow,
+  .reaction-card__mark {
+    --ink-lift: var(--ink-on, 0);
+    background-image: var(
+      --ink-wash,
+      linear-gradient(
+        90deg,
+        rgb(var(--heading-ink-start-rgb) / var(--ink-lift)) 0%,
+        rgb(var(--heading-ink-mid-rgb) / var(--ink-lift)) 55%,
+        rgb(var(--heading-ink-end-rgb) / var(--ink-lift)) 100%
+      ),
+      linear-gradient(currentColor, currentColor)
+    );
+    background-size: 100% 100%;
+    background-position: 0 0;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: var(--ink-fill, transparent);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* Ink edge — a hairline of the wash around a box, faded in over the box's
+     own border by `--ink-ring: 1` (the state also clears the border, so the
+     two cross-fade). A masked pseudo-element, so it keeps the box's radius
+     and leaves its fill alone, translucent or not. The host is positioned and
+     gives up its `::after`; the ring sits on the 1px border, or just inside
+     it (`--ink-ring-inset: 0px`) where the host clips its overflow. */
+  .ink-ring::after,
+  .menu__social::after,
+  .play-button::after,
+  .release-card__play::after,
+  .vinyl__arrow::after,
+  .vinyl__toggle::after,
+  .nonstop-card__play::after,
+  .clientele__arrow::after,
+  .clientele__card::after,
+  .shared-stages__arrow::after,
+  .shared-stages__frame::after {
+    content: "";
+    position: absolute;
+    inset: var(--ink-ring-inset, -1px);
+    padding: 1px;
+    border-radius: inherit;
+    background-image: var(--heading-ink-gradient);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: var(--ink-ring, 0);
+    transition: opacity var(--duration-fast) var(--ease-out);
+    pointer-events: none;
+  }
+
+  /* For markup with no rule of its own (Tailwind-only controls): a cue that
+     lifts under the pointer or keyboard focus, and repaints any icon inside
+     with it. Its transition keeps the colour utilities' list and adds the
+     lift. */
+  .ink-hover {
+    transition-property: color, background-color, border-color, --ink-lift;
+  }
+
+  .ink-hover:hover:not(:disabled),
+  .ink-hover:focus-visible {
+    --ink-on: 1;
+    --ink-paint: var(--heading-ink-paint);
+  }
+
+  /* A toggle for hosts whose state lives in script (the cursor ring). */
+  .ink-ring[data-ink="on"] {
+    --ink-ring: 1;
+    border-color: transparent;
+  }
+
   /* Solid ink wherever the clip can't be drawn or shouldn't be: a transparent
-     fill without it would leave the word invisible. */
+     fill without it would leave the word invisible. The ink and cue rules
+     read `--ink-wash` and `--ink-fill`, so one switch here turns them all to
+     plain colour; a cue then simply keeps its own. The rings step aside and
+     the borders under them carry the state. */
   @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+    :root {
+      --ink-wash: none;
+      --ink-fill: currentColor;
+    }
+
     .heading-ink,
     .experience-title__accent::after {
       background-image: none;
@@ -879,11 +1102,72 @@
   }
 
   @media (forced-colors: active), print {
+    :root {
+      --ink-wash: none;
+      --ink-fill: currentColor;
+    }
+
     .heading-ink,
     .experience-title__accent::after {
       background-image: none;
       -webkit-text-fill-color: currentColor;
     }
+
+    .ink-ring::after,
+    .menu__social::after,
+    .play-button::after,
+    .release-card__play::after,
+    .vinyl__arrow::after,
+    .vinyl__toggle::after,
+    .nonstop-card__play::after,
+    .clientele__arrow::after,
+    .clientele__card::after,
+    .shared-stages__arrow::after,
+    .shared-stages__frame::after {
+      display: none;
+    }
+  }
+}
+
+/* The wash as a fill, for markup styled with utilities alone (a progress
+   bar, a status dot) — an `@utility`, so it takes variants like
+   `group-hover:ink-bg`. */
+@utility ink-bg {
+  background-image: var(--heading-ink-gradient);
+}
+
+/* Icons drawn in `currentColor` take the wash wherever an ancestor sets
+   `--ink-paint: var(--heading-ink-paint)`, and keep their colour everywhere
+   else. Zero specificity in the base layer: it only has to outrank the SVG's
+   own presentation attributes, and any component rule still wins. A paint
+   server can't be eased, so an icon changes on the beat while the ring and
+   label around it fade. */
+@layer base {
+  :where(svg[fill="currentColor"], svg [fill="currentColor"]) {
+    fill: var(--ink-paint, currentColor);
+  }
+
+  :where(svg[stroke="currentColor"], svg [stroke="currentColor"]) {
+    stroke: var(--ink-paint, currentColor);
+  }
+
+  /* The three stops of `InkPaint`'s gradient, from the tokens. */
+  .ink-paint__start {
+    stop-color: var(--heading-ink-start);
+  }
+
+  .ink-paint__mid {
+    stop-color: var(--heading-ink-mid);
+  }
+
+  .ink-paint__end {
+    stop-color: var(--heading-ink-end);
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --heading-ink-paint: currentColor;
   }
 }
 
@@ -994,13 +1278,13 @@
     line-height: 1;
     letter-spacing: -0.03em;
     text-transform: uppercase;
-    transition: color 200ms var(--ease-out);
+    transition: --ink-lift 200ms var(--ease-out);
   }
 
   .menu__link:hover,
   .menu__link:focus-visible,
   .menu__link[aria-current="page"] {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   /* ---- The trust marquee ------------------------------------------------- */
@@ -1034,14 +1318,13 @@
   }
 
   .menu-marquee__label {
-    margin: 0 0 min(var(--space-md), 2.2svh);
+    margin: 0 auto min(var(--space-md), 2.2svh);
     padding-inline: var(--gutter-start) var(--gutter-end);
     text-wrap: balance;
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .menu-row {
@@ -1104,7 +1387,6 @@
   .menu-row__mark {
     font-size: 0.5em;
     line-height: 1;
-    color: var(--accent);
     opacity: 0.5;
   }
 
@@ -1123,6 +1405,7 @@
   /* Bare marks: each logo carries its own colour, so the ring is all the
      hover needs to change. */
   .menu__social {
+    position: relative;
     display: inline-grid;
     place-items: center;
     width: 48px;
@@ -1137,8 +1420,9 @@
 
   .menu__social:hover,
   .menu__social:focus-visible {
-    color: var(--accent);
-    border-color: var(--accent);
+    --ink-ring: 1;
+    --ink-paint: var(--heading-ink-paint);
+    border-color: transparent;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1171,15 +1455,15 @@
     text-align: left;
   }
 
-  /* Faint accent haze behind the globe. */
+  /* Faint ink haze behind the globe. */
   .global-glow {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
       52% 40% at 50% 42%,
-      color-mix(in srgb, var(--accent) 7%, transparent) 0%,
-      color-mix(in srgb, var(--accent) 2%, transparent) 40%,
+      rgb(var(--heading-ink-mid-rgb) / 0.07) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.02) 40%,
       transparent 72%
     );
   }
@@ -1189,7 +1473,6 @@
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.34em;
-    color: var(--accent);
   }
 
   /* The international intro (the site's lede voice). It sits beside the
@@ -1305,7 +1588,6 @@
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.28em;
-    color: var(--accent);
   }
 
   @media (min-width: 1024px) {
@@ -1325,7 +1607,7 @@
     width: 100%;
     padding: var(--space-md);
     text-align: left;
-    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border: 1px solid rgb(var(--heading-ink-mid-rgb) / 0.35);
     background: rgba(5, 5, 5, 0.92);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
@@ -1382,9 +1664,15 @@
       background-color 200ms var(--ease-out);
   }
 
+  /* The × itself takes the ink; the button keeps its own hover disc, which
+     a text-clipped background on the button would cut away. */
+  .show-info__close > span {
+    transition: --ink-lift 200ms var(--ease-out);
+  }
+
   .show-info__close:hover,
   .show-info__close:focus-visible {
-    color: var(--accent);
+    --ink-on: 1;
     background-color: rgba(255, 255, 255, 0.06);
   }
 
@@ -1393,7 +1681,6 @@
     font-weight: 300;
     text-transform: uppercase;
     letter-spacing: 0.28em;
-    color: var(--accent);
   }
 
   .show-info__city {
@@ -1454,7 +1741,7 @@
 
      One run, centred, with the globe's own marker repeated as a dot ahead of
      each name: a dot that is lit means that city has an announced date, which
-     is the same thing the accent marker says on the sphere.                 */
+     is the same thing the inked marker says on the sphere.                  */
 
   .city-run {
     display: flex;
@@ -1480,6 +1767,10 @@
     transition: color 260ms var(--ease-out);
   }
 
+  .city-run__name {
+    transition: --ink-lift 260ms var(--ease-out);
+  }
+
   .city-run__dot {
     width: 7px;
     height: 7px;
@@ -1492,24 +1783,25 @@
   }
 
   .city-run__city[data-booked="true"] .city-run__dot {
-    background: var(--accent);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
+    background: var(--heading-ink-gradient);
+    box-shadow: 0 0 8px rgb(var(--heading-ink-mid-rgb) / 0.55);
   }
 
   .city-run__city:hover,
   .city-run__city[data-active="true"] {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   /* Pinned by a press, as opposed to merely pointed at: the name goes white
      so the strip shows which city stays when the pointer moves on. */
   .city-run__city[data-pinned="true"] {
+    --ink-on: 0;
     color: var(--foreground);
   }
 
   .city-run__city[data-active="true"] .city-run__dot {
-    background: var(--accent);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 85%, transparent);
+    background: var(--heading-ink-gradient);
+    box-shadow: 0 0 12px rgb(var(--heading-ink-mid-rgb) / 0.85);
     transform: scale(1.4);
   }
 
@@ -1559,7 +1851,6 @@
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.28em;
-    color: var(--accent);
   }
 
   .up-next__row {
@@ -1585,13 +1876,15 @@
 
   .up-next__pill:hover,
   .up-next__pill[data-active="true"] {
-    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    background: rgb(var(--heading-ink-mid-rgb) / 0.07);
   }
 
-  /* Pinned: an accent rule down its left edge marks the row that stays. */
+  /* Pinned: an inked rule down its left edge marks the row that stays —
+     drawn as a 2px strip of the wash, since a shadow can only be one colour. */
   .up-next__pill[data-pinned="true"] {
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    box-shadow: inset 2px 0 0 var(--accent);
+    background:
+      var(--heading-ink-gradient-down) left / 2px 100% no-repeat,
+      rgb(var(--heading-ink-mid-rgb) / 0.12);
   }
 
   .up-next__date {
@@ -1602,7 +1895,6 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     white-space: nowrap;
-    color: var(--accent);
   }
 
   .up-next__where {
@@ -1685,11 +1977,11 @@
     }
   }
 
-  /* Barely-there accent bloom around the artwork while a track plays. */
+  /* Barely-there ink bloom around the artwork while a track plays. */
   .artwork-glow {
     background: radial-gradient(
       120% 90% at 50% 100%,
-      rgba(57, 255, 20, 0.16) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.16) 0%,
       transparent 62%
     );
   }
@@ -1697,6 +1989,7 @@
   /* Transport ------------------------------------------------------------- */
 
   .play-button {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1712,8 +2005,9 @@
   }
 
   .play-button:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    --ink-ring: 1;
+    --ink-paint: var(--heading-ink-paint);
+    border-color: transparent;
     transform: scale(1.06);
   }
 
@@ -1761,7 +2055,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   @media (width >= 768px) {
@@ -1813,12 +2106,12 @@
   .release-card:hover,
   .release-card:focus-within {
     transform: translateY(-6px);
-    border-color: rgba(57, 255, 20, 0.28);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.28);
     box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
   }
 
   .release-card[data-current] {
-    border-color: rgba(57, 255, 20, 0.4);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.4);
   }
 
   /* The artwork is the control: one button, the whole frame. */
@@ -1881,13 +2174,15 @@
     color: #050505;
   }
 
-  /* Sounding: the accent marks it, and the button stays legible over the art
+  /* Sounding: the ink marks it, and the button stays legible over the art
      rather than going solid white under a pause glyph. */
   .release-card[data-playing] .release-card__play,
   .release-card[data-playing]:hover .release-card__play {
-    border-color: var(--accent);
+    --ink-ring: 1;
+    --ink-paint: var(--heading-ink-paint);
+    border-color: transparent;
     background-color: rgba(5, 5, 5, 0.42);
-    color: var(--accent);
+    color: #ffffff;
   }
 
   .release-card__eq {
@@ -1907,7 +2202,7 @@
     margin-bottom: var(--space-sm);
     padding: 3px 8px;
     border-radius: 2px;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.2em;
@@ -1923,11 +2218,11 @@
     line-height: 1.25;
     letter-spacing: -0.01em;
     color: rgba(255, 255, 255, 0.94);
-    transition: color 300ms var(--ease-out);
+    transition: --ink-lift 300ms var(--ease-out);
   }
 
   .release-card:hover .release-card__title {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .release-card__artist {
@@ -2078,7 +2373,7 @@
 
   .vinyl__item[data-active] .vinyl__sleeve:hover,
   .vinyl__item[data-active] .vinyl__sleeve:focus-visible {
-    border-color: rgba(57, 255, 20, 0.4);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.4);
   }
 
   .vinyl__item[data-active] .vinyl__sleeve:hover .vinyl__art,
@@ -2163,7 +2458,7 @@
     inset: 33.5%;
     overflow: hidden;
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(57, 255, 20, 0.45);
+    box-shadow: 0 0 0 1px rgb(var(--heading-ink-mid-rgb) / 0.45);
   }
 
   .vinyl__label-art {
@@ -2244,8 +2539,9 @@
 
   .vinyl__arrow:hover,
   .vinyl__arrow:focus-visible {
-    border-color: var(--accent);
-    color: var(--accent);
+    --ink-ring: 1;
+    --ink-paint: var(--heading-ink-paint);
+    border-color: transparent;
   }
 
   .vinyl__arrow--prev {
@@ -2285,6 +2581,7 @@
   }
 
   .vinyl__toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -2299,7 +2596,7 @@
     color: var(--foreground);
     transition:
       border-color 300ms var(--ease-out),
-      color 300ms var(--ease-out);
+      --ink-lift 300ms var(--ease-out);
   }
 
   .vinyl__toggle svg {
@@ -2310,8 +2607,10 @@
   .vinyl__toggle:hover,
   .vinyl__toggle:focus-visible,
   .vinyl__toggle[data-playing] {
-    border-color: var(--accent);
-    color: var(--accent);
+    --ink-on: 1;
+    --ink-ring: 1;
+    --ink-paint: var(--heading-ink-paint);
+    border-color: transparent;
   }
 
   .vinyl__info {
@@ -2359,7 +2658,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .nonstop__title {
@@ -2413,7 +2711,7 @@
   a.nonstop-card:hover,
   a.nonstop-card:focus-visible {
     transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.4);
   }
 
   .nonstop-card__frame {
@@ -2456,8 +2754,9 @@
   }
 
   a.nonstop-card:hover .nonstop-card__play {
-    border-color: var(--accent);
-    color: var(--accent);
+    --ink-ring: 1;
+    --ink-paint: var(--heading-ink-paint);
+    border-color: transparent;
   }
 
   .nonstop-card__length {
@@ -2553,7 +2852,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .playlist__list {
@@ -2587,7 +2885,7 @@
   }
 
   .playlist__row[data-current] {
-    border-color: rgba(57, 255, 20, 0.4);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.4);
   }
 
   .playlist__thumb {
@@ -2639,7 +2937,7 @@
   }
 
   .playlist__row[data-current] .playlist__name {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .playlist__tag {
@@ -2783,7 +3081,7 @@
     display: block;
     width: 2px;
     height: 100%;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient-down);
     transform-origin: bottom;
     animation: eq-bounce 900ms var(--ease-in-out) infinite alternate;
   }
@@ -2964,19 +3262,19 @@
     color: rgba(255, 255, 255, 0.65);
   }
 
-  /* The lead strand carries the accent until another is picked, then the
-     accent follows the pick. */
+  /* The lead strand carries the ink until another is picked, then the ink
+     follows the pick. */
   .story-strand:first-child,
   .story-strand__button[data-current] {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .story-strands[data-picked] .story-strand:first-child {
-    color: inherit;
+    --ink-on: 0;
   }
 
   .story-strands[data-picked] .story-strand__button[data-current] {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .story-strand__button {
@@ -2990,14 +3288,19 @@
     text-decoration-color: transparent;
     text-underline-offset: 6px;
     transition:
-      color 300ms var(--ease-out),
+      --ink-lift 300ms var(--ease-out),
       text-decoration-color 300ms var(--ease-out);
   }
 
   .story-strand__button:hover,
-  .story-strand__button:focus-visible,
-  .story-strand__button[data-current] {
+  .story-strand__button:focus-visible {
     text-decoration-color: currentColor;
+  }
+
+  /* An underline is drawn in one colour, so the inked strand's rule takes
+     the solid stop under its washed letters. */
+  .story-strand__button[data-current] {
+    text-decoration-color: var(--heading-ink-solid);
   }
 
   /* The story and each strand's paragraph, stacked in one cell. */
@@ -3073,13 +3376,12 @@
     display: flex;
     align-items: baseline;
     justify-content: center;
-    margin: 0;
+    margin: 0 auto;
     font-family: var(--font-display);
     font-size: clamp(24px, 4.6vw, 52px);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.03em;
-    color: var(--accent);
     /* Digits share a width, so a counting figure cannot jitter the layout. */
     font-variant-numeric: tabular-nums;
   }
@@ -3103,9 +3405,11 @@
     visibility: hidden;
   }
 
+  /* Inked on its own (it is a layer of its own once dimmed), at the 55% it
+     always stood back to. */
   .story-fact__suffix {
     font-size: 0.62em;
-    color: rgba(57, 255, 20, 0.55);
+    opacity: 0.55;
   }
 
   .story-fact__label {
@@ -3134,14 +3438,14 @@
     }
   }
 
-  /* Barely-there accent light behind the frame. */
+  /* Barely-there ink light behind the frame. */
   .story-glow {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
       46% 46% at 74% 42%,
-      rgba(57, 255, 20, 0.05) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.05) 0%,
       transparent 70%
     );
   }
@@ -3171,7 +3475,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   /* The names dissolve at both ends instead of stopping at the viewport edge,
@@ -3252,7 +3555,6 @@
   .trusted__mark {
     font-size: clamp(10px, 1.1vw, 14px);
     line-height: 1;
-    color: var(--accent);
     opacity: 0.5;
   }
 
@@ -3291,7 +3593,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 42% at 72% 12%,
-      rgba(57, 255, 20, 0.045) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.045) 0%,
       transparent 68%
     );
   }
@@ -3337,25 +3639,25 @@
 
   .legacy-tile:hover,
   .legacy-tile:focus-visible {
-    background-color: color-mix(in srgb, var(--accent) 3.5%, transparent);
+    background-color: rgb(var(--heading-ink-mid-rgb) / 0.035);
   }
 
   /* Focus is the same gesture as hover here, so it gets the same treatment
      plus the page's ring — and the ring is drawn inside, because a tile sits
      flush against its neighbours with a hairline between them. */
   .legacy-tile:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--focus-ink);
     outline-offset: -2px;
   }
 
-  /* The accent arrives along the top edge, wiping in from the left. */
+  /* The ink arrives along the top edge, wiping in from the left. */
   .legacy-tile__rule {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 2px;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 520ms var(--ease-out);
@@ -3385,7 +3687,6 @@
     font-weight: 400;
     letter-spacing: 0.28em;
     font-variant-numeric: tabular-nums;
-    color: var(--accent);
     transition: letter-spacing 520ms var(--ease-out);
   }
 
@@ -3475,7 +3776,7 @@
     transition: none;
   }
 
-  /* Nothing wipes or opens: the accent edge is simply there or not, and
+  /* Nothing wipes or opens: the inked edge is simply there or not, and
      every line is printed from the start. */
   .legacy-tile:hover .legacy-tile__year,
   .legacy-tile:focus-visible .legacy-tile__year {
@@ -3500,7 +3801,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 44% at 50% 38%,
-      rgba(57, 255, 20, 0.045) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.045) 0%,
       transparent 72%
     );
   }
@@ -3594,7 +3895,7 @@
     position: relative;
     display: flex;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--accent) 7%, transparent);
+    border: 1px solid rgb(var(--heading-ink-mid-rgb) / 0.07);
     border-radius: 6px;
     background-color: var(--surface);
     transition:
@@ -3604,8 +3905,8 @@
 
   .exp-card:hover,
   .exp-card:focus-within {
-    border-color: color-mix(in srgb, var(--accent) 22%, transparent);
-    background-color: color-mix(in srgb, var(--accent) 2%, transparent);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.22);
+    background-color: rgb(var(--heading-ink-mid-rgb) / 0.02);
   }
 
   /* Fills down the leading edge as the card is read. */
@@ -3615,11 +3916,7 @@
     left: 0;
     width: 3px;
     height: 0;
-    background-image: linear-gradient(
-      180deg,
-      var(--accent) 0%,
-      color-mix(in srgb, var(--accent) 15%, transparent) 100%
-    );
+    background-image: var(--heading-ink-gradient-down);
     transition: height 520ms var(--ease-out);
   }
 
@@ -3640,7 +3937,7 @@
     background-image: linear-gradient(
       100deg,
       transparent,
-      color-mix(in srgb, var(--accent) 7%, transparent),
+      rgb(var(--heading-ink-mid-rgb) / 0.07),
       transparent
     );
     transform: skewX(-18deg);
@@ -3663,17 +3960,18 @@
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.04em;
-    color: color-mix(in srgb, var(--accent) 5%, transparent);
+    /* Inked, and held back by opacity rather than an alpha colour. */
+    opacity: 0.05;
     pointer-events: none;
     transition:
       transform 520ms var(--ease-out),
-      color 520ms var(--ease-out);
+      opacity 520ms var(--ease-out);
   }
 
   .exp-card:hover .exp-card__ghost,
   .exp-card:focus-within .exp-card__ghost {
     transform: translate(-6px, 4px) scale(1.08);
-    color: color-mix(in srgb, var(--accent) 13%, transparent);
+    opacity: 0.13;
   }
 
   .exp-card__body {
@@ -3691,7 +3989,6 @@
     font-weight: 300;
     letter-spacing: 0.28em;
     font-variant-numeric: tabular-nums;
-    color: var(--accent);
   }
 
   .exp-card__title {
@@ -3703,12 +4000,12 @@
     letter-spacing: -0.02em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.96);
-    transition: color 320ms var(--ease-out);
+    transition: --ink-lift 320ms var(--ease-out);
   }
 
   .exp-card:hover .exp-card__title,
   .exp-card:focus-within .exp-card__title {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .exp-card__summary {
@@ -3752,7 +4049,7 @@
 
   .exp-card__point {
     padding: var(--space-xs) 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--accent) 8%, transparent);
+    border-bottom: 1px solid rgb(var(--heading-ink-mid-rgb) / 0.08);
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.08em;
@@ -3762,7 +4059,6 @@
   .exp-card__point::before {
     content: "→";
     margin-right: var(--space-xs);
-    color: var(--accent);
   }
 
   /* No pointer to open the card with: below `md` the points are printed. */
@@ -3879,7 +4175,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   /* "Gallery", now a sub-heading between the setlist and the photographs. */
@@ -3909,13 +4204,13 @@
     border-bottom: 1px solid var(--border);
   }
 
-  /* An accent rule draws along the row's own hairline under the pointer. */
+  /* An inked rule draws along the row's own hairline under the pointer. */
   .gallery__set::after {
     content: "";
     position: absolute;
     inset: auto 0 -1px;
     height: 1px;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 600ms var(--ease-out);
@@ -3932,11 +4227,11 @@
     letter-spacing: 0.2em;
     font-variant-numeric: tabular-nums;
     color: rgba(255, 255, 255, 0.35);
-    transition: color 300ms var(--ease-out);
+    transition: --ink-lift 300ms var(--ease-out);
   }
 
   .gallery__set:hover .gallery__set-index {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .gallery__set-body {
@@ -3952,12 +4247,12 @@
     letter-spacing: -0.03em;
     text-transform: uppercase;
     transition:
-      color 250ms var(--ease-out),
+      --ink-lift 250ms var(--ease-out),
       transform 450ms var(--ease-out);
   }
 
   .gallery__set:hover .gallery__set-head {
-    color: var(--accent);
+    --ink-on: 1;
     transform: translateX(6px);
   }
 
@@ -3977,14 +4272,13 @@
   .gallery__set-kind {
     align-self: start;
     padding: 4px 10px;
-    border: 1px solid rgba(57, 255, 20, 0.4);
+    border: 1px solid rgb(var(--heading-ink-mid-rgb) / 0.4);
     border-radius: 999px;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--accent);
   }
 
   /* On a phone the tag would squeeze the name; it moves under the detail. */
@@ -4032,7 +4326,7 @@
   }
 
   .gallery__link:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--focus-ink);
     outline-offset: -3px;
   }
 
@@ -4236,16 +4530,16 @@
     text-wrap: balance;
   }
 
+  /* Shrunk to its words for the ink, so centred by its margins. */
   .wall__quote cite {
     display: block;
-    margin-top: var(--space-md);
+    margin: var(--space-md) auto 0;
     font-family: var(--font-sans);
     font-style: normal;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -4271,7 +4565,7 @@
     pointer-events: none;
     background: radial-gradient(
       54% 48% at 50% 58%,
-      rgba(57, 255, 20, 0.04) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.04) 0%,
       transparent 72%
     );
   }
@@ -4382,8 +4676,8 @@
      travelling sideways, and a card that rises as it passes reads as the run
      jolting rather than as the card answering the pointer. */
   .reaction-card:hover {
-    border-color: rgba(57, 255, 20, 0.4);
-    background-color: rgba(57, 255, 20, 0.03);
+    border-color: rgb(var(--heading-ink-mid-rgb) / 0.4);
+    background-color: rgb(var(--heading-ink-mid-rgb) / 0.03);
   }
 
   .reaction-card__head {
@@ -4398,7 +4692,6 @@
     font-weight: 300;
     letter-spacing: 0.2em;
     font-variant-numeric: tabular-nums;
-    color: var(--accent);
   }
 
   /* Set large and held well back: a mark for the eye to catch as the card
@@ -4410,11 +4703,12 @@
     font-weight: 700;
     line-height: 1;
     color: rgba(255, 255, 255, 0.12);
-    transition: color 400ms var(--ease-out);
+    transition: --ink-lift 400ms var(--ease-out);
   }
 
+  /* Lifted only partway: the wash at the 32% the mark always came up to. */
   .reaction-card:hover .reaction-card__mark {
-    color: rgba(57, 255, 20, 0.32);
+    --ink-on: 0.32;
   }
 
   .reaction-card__quote {
@@ -4514,7 +4808,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 46% at 74% 62%,
-      rgba(57, 255, 20, 0.06) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.06) 0%,
       transparent 70%
     );
   }
@@ -4663,7 +4957,7 @@
     letter-spacing: 0.06em;
     color: rgba(255, 255, 255, 0.72);
     word-break: break-word;
-    transition: color 240ms var(--ease-out);
+    transition: --ink-lift 240ms var(--ease-out);
   }
 
   @media (width >= 768px) {
@@ -4673,7 +4967,7 @@
   }
 
   .booking-links__link:hover {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   /* Small phones: the pass and its button give the label room to stay on
@@ -4836,13 +5130,17 @@
 
   .footer-column__link:hover,
   .footer-column__link:focus-visible {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
+  /* Dimmed, so a layer of its own and outside the link's clip: it inks
+     itself, on the link's cue. */
   .footer-column__mark {
     font-size: 0.7em;
     opacity: 0.6;
-    transition: transform 260ms var(--ease-out);
+    transition:
+      transform 260ms var(--ease-out),
+      --ink-lift 240ms var(--ease-out);
   }
 
   .footer-column__link:hover .footer-column__mark,
@@ -4889,18 +5187,20 @@
     text-underline-offset: 3px;
     text-decoration-color: rgba(255, 255, 255, 0.35);
     transition:
-      color 200ms var(--ease-out),
+      --ink-lift 200ms var(--ease-out),
       text-decoration-color 200ms var(--ease-out);
   }
 
+  /* The words take the wash; an underline is one colour, so it takes the
+     solid stop. */
   .footer-bar__privacy:hover,
   .footer-bar__privacy:focus-visible,
   .enquiry-consent__link:hover,
   .enquiry-consent__link:focus-visible,
   .cookie-banner__link:hover,
   .cookie-banner__link:focus-visible {
-    color: var(--accent);
-    text-decoration-color: currentColor;
+    --ink-on: 1;
+    text-decoration-color: var(--heading-ink-solid);
   }
 
   /* "Cookie settings" is a button, set exactly like the Privacy link. */
@@ -4964,7 +5264,7 @@
     text-underline-offset: 3px;
     text-decoration-color: rgba(255, 255, 255, 0.35);
     transition:
-      color 200ms var(--ease-out),
+      --ink-lift 200ms var(--ease-out),
       text-decoration-color 200ms var(--ease-out);
   }
 
@@ -5002,7 +5302,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .policy__title {
@@ -5082,7 +5381,7 @@
      now the opposite: the ground drops below the page's own black and the
      names come up out of it in white.
 
-     The ground carries a whisper of the accent rather than being neutral, so
+     The ground carries a whisper of the ink rather than being neutral, so
      the band still reads as its own room between two sections of `#050505`
      instead of as a gap between them. */
   .stages-section {
@@ -5101,7 +5400,7 @@
     pointer-events: none;
     background: radial-gradient(
       64% 46% at 26% 22%,
-      color-mix(in srgb, var(--accent) 5%, transparent) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.05) 0%,
       transparent 72%
     );
   }
@@ -5115,14 +5414,13 @@
 
   /* ---- The section head -------------------------------------------------- */
 
-  /* The eyebrow takes the accent here, as it does in every other section —
-     on the green field it had to be ink. */
+  /* The eyebrow takes the ink here, as it does in every other section — on
+     the green field it had to be black. */
   .stages-label {
     font-size: 12px;
     font-weight: 400;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .stages-title {
@@ -5213,7 +5511,7 @@
     letter-spacing: -0.02em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.4);
-    transition: color 320ms var(--ease-out);
+    transition: --ink-lift 320ms var(--ease-out);
   }
 
   /* The rooms that carry each row print at full strength, so the wall has a
@@ -5225,12 +5523,13 @@
   /* The wall stops under the pointer, so the name it stops on comes up. */
   .stage-row__item:hover,
   .stage-row__item[data-featured="true"]:hover {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
+  /* Dimmed by opacity, so it inks itself on its own layer. */
   .stage-row__sep {
     font-size: 0.26em;
-    color: color-mix(in srgb, var(--accent) 45%, transparent);
+    opacity: 0.45;
   }
 
   /* ---- The way out ------------------------------------------------------ */
@@ -5411,7 +5710,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   @media (width >= 768px) {
@@ -5540,10 +5838,6 @@
     line-height: 1;
     letter-spacing: -0.04em;
     color: rgba(255, 255, 255, 0.94);
-  }
-
-  .about-figure__suffix {
-    color: var(--accent);
   }
 
   .about-figure__label {
@@ -5766,7 +6060,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   @media (width >= 768px) {
@@ -5797,7 +6090,7 @@
     pointer-events: none;
     background: radial-gradient(
       58% 52% at 22% 34%,
-      rgba(57, 255, 20, 0.06) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.06) 0%,
       transparent 70%
     );
   }
@@ -5930,7 +6223,7 @@
   /* Lit only on the record the transport is holding, which is the same signal
      the card's border and its equaliser already give. */
   .archive-card[data-current] .archive-card__no {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .archive-card__rule {
@@ -6094,15 +6387,18 @@
      scaled pseudo-element rather than an animated width, so it composites on
      the GPU instead of laying out on every frame.
 
-     Each button sets the two colours it sweeps to:
-       --sweep-bg   the panel that arrives
-       --sweep-ink  what the label becomes once it has
-     The defaults suit a dark or outlined button; an accent-filled one inverts
-     them. */
+     Each button sets what it sweeps to:
+       --sweep-bg    the panel that arrives (a colour, or the ink's wash)
+       --sweep-edge  the border once it has
+       --sweep-ink   what the label becomes
+     The defaults suit a dark or outlined button: the wash arrives, the
+     border clears so nothing but the wash shows round it, and the label goes
+     dark on it. An ink-filled one inverts them. */
   .btn-sweep,
   .btn-primary,
   .btn-secondary {
-    --sweep-bg: var(--accent-hover);
+    --sweep-bg: var(--heading-ink-gradient);
+    --sweep-edge: transparent;
     --sweep-ink: #050505;
     --sweep-drift: 4px;
 
@@ -6123,7 +6419,7 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background-color: var(--sweep-bg);
+    background: var(--sweep-bg);
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform 460ms var(--ease-out);
@@ -6142,7 +6438,7 @@
   :is(.btn-sweep, .btn-primary, .btn-secondary):focus-visible,
   [data-sweep-host]:hover :is(.btn-sweep, .btn-primary, .btn-secondary),
   [data-sweep-host]:focus-within :is(.btn-sweep, .btn-primary, .btn-secondary) {
-    border-color: var(--sweep-bg);
+    border-color: var(--sweep-edge);
     color: var(--sweep-ink);
   }
 
@@ -6150,7 +6446,9 @@
      label and arrow. Staggered a touch behind the wipe so they read as being
      carried by it rather than moving with it. */
   :is(.btn-sweep, .btn-primary, .btn-secondary) > * {
-    transition: transform 460ms var(--ease-out);
+    transition:
+      transform 460ms var(--ease-out),
+      --ink-lift 320ms var(--ease-out);
     transition-delay: 60ms;
   }
 
@@ -6161,15 +6459,25 @@
     transform: translateX(var(--sweep-drift));
   }
 
-  /* Already filled in the accent: the panel arriving is the dark, and the
-     label lifts to the accent to stay legible on it. */
+  /* Already filled with the ink: the panel arriving is the dark, and the
+     label turns to the ink to stay legible on it — its spans are
+     `.ink-cue`s, lifted here, and an icon in it takes the paint. The border
+     stays clear, so the wash under it is left as a hairline round the dark. */
   :is(.btn-sweep--onAccent, .btn-primary) {
     --sweep-bg: #050505;
-    --sweep-ink: var(--accent);
+    --sweep-ink: #050505;
     /* Owns the resting ink too: a Tailwind colour utility on the element
        would outrank the hover rule below and leave the label unreadable once
        the dark panel arrived. */
     color: #050505;
+  }
+
+  :is(.btn-sweep--onAccent, .btn-primary):hover,
+  :is(.btn-sweep--onAccent, .btn-primary):focus-visible,
+  [data-sweep-host]:hover :is(.btn-sweep--onAccent, .btn-primary),
+  [data-sweep-host]:focus-within :is(.btn-sweep--onAccent, .btn-primary) {
+    --ink-on: 1;
+    --ink-paint: var(--heading-ink-paint);
   }
 }
 
@@ -6193,7 +6501,7 @@
 
 /* -------------------------------------------------------------------------- */
 /*  Buttons — three tiers, and nothing else                                   */
-/*  primary    the filled accent pill: the one action of a section            */
+/*  primary    the ink-filled pill: the one action of a section               */
 /*  secondary  the outlined pill with a mark on a disc: the other way in      */
 /*  tertiary   the ruled text link: a step sideways, never the main ask       */
 /* -------------------------------------------------------------------------- */
@@ -6230,13 +6538,15 @@
     }
   }
 
+  /* The wash runs under the clear border too (from the border box), so the
+     pill is one sweep of ink edge to edge. */
   .btn-primary {
-    border-color: var(--accent);
-    background-color: var(--accent);
+    border-color: transparent;
+    background-origin: border-box;
   }
 
   /* Outlined on frosted dark, so it keeps its shape over a photograph or
-     footage; the sweep fills it with the accent on approach. */
+     footage; the sweep fills it with the ink on approach. */
   .btn-secondary {
     border-color: rgba(255, 255, 255, 0.42);
     background-color: rgba(5, 5, 5, 0.32);
@@ -6249,11 +6559,13 @@
   .btn-primary:focus-visible,
   .btn-secondary:hover,
   .btn-secondary:focus-visible {
-    box-shadow: 0 14px 40px rgba(57, 255, 20, 0.22);
+    box-shadow: 0 14px 40px rgb(var(--heading-ink-mid-rgb) / 0.22);
   }
 
   /* A glyph on its own small disc — the play mark, a platform badge. It
-     inverts as the panel arrives so it stays visible on the accent. */
+     inverts as the panel arrives so it stays visible on the ink. The disc is
+     painted below (`--mark-disc`); the glyph is an SVG in `currentColor`,
+     which takes the ink as paint. */
   .btn__mark {
     display: grid;
     place-items: center;
@@ -6261,7 +6573,6 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background-color: var(--accent);
     font-size: 8px;
     line-height: 1;
     color: #050505;
@@ -6283,7 +6594,7 @@
     height: 100%;
   }
 
-  /* A brand logo is its own mark: no accent disc behind the red badge. */
+  /* A brand logo is its own mark: no inked disc behind the red badge. */
   .btn__mark:has(> svg),
   .btn-secondary:hover .btn__mark:has(> svg),
   .btn-secondary:focus-visible .btn__mark:has(> svg) {
@@ -6300,46 +6611,43 @@
   .btn-secondary:hover .btn__mark,
   .btn-secondary:focus-visible .btn__mark {
     background-color: #050505;
-    color: var(--accent);
+    --ink-paint: var(--heading-ink-paint);
   }
 
-  /* The primary's mark is already on the accent, so it is drawn dark and
-     lifts to the accent on the dark panel. */
+  /* The primary's mark is already on the ink, so it is drawn dark and lifts
+     to the ink on the dark panel. */
   .btn-primary .btn__mark {
     background-color: #050505;
-    color: var(--accent);
+    --ink-paint: var(--heading-ink-paint);
   }
 
   .btn-primary:hover .btn__mark,
   .btn-primary:focus-visible .btn__mark {
-    background-color: var(--accent);
+    --ink-paint: currentColor;
     color: #050505;
   }
 
   /* Painted rather than only coloured. Samsung Internet's dark mode repaints
      plain colours — the green darkened, the black labels turned white — and
-     websites can't switch it off. The same colours drawn as gradients, with
-     the labels' ink clipped to the letters, are left as they are, so the
-     buttons look the same in dark mode as in light. Nothing changes on
-     screen anywhere else. */
+     websites can't switch it off. Gradients, with the labels' ink clipped
+     to the letters, are left as they are, so the buttons look the same in
+     dark mode as in light — and the ink is a gradient anyway. Nothing
+     changes on screen anywhere else. */
   .btn-primary {
-    background-image: linear-gradient(var(--accent), var(--accent));
+    background-image: var(--heading-ink-gradient);
   }
 
-  .btn-primary > span:not(.btn__mark) {
-    background-image: linear-gradient(currentColor, currentColor);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+  /* The labels are `.ink-cue`s (named with the others): the dark drawn as a
+     gradient clipped to the letters, with the wash over it lifted on the
+     dark panel. */
 
-  /* The play disc: one layer for the glyph (clipped to it), one for the
+  /* The play disc: one layer for a text glyph (clipped to it), one for the
      disc, so each keeps its own colour. */
   .btn__mark {
-    --mark-fill: var(--accent);
+    --mark-disc: var(--heading-ink-gradient);
     background-image:
       linear-gradient(currentColor, currentColor),
-      linear-gradient(var(--mark-fill), var(--mark-fill));
+      var(--mark-disc);
     -webkit-background-clip: text, border-box;
     background-clip: text, border-box;
     -webkit-text-fill-color: transparent;
@@ -6348,22 +6656,23 @@
   .btn-secondary:hover .btn__mark,
   .btn-secondary:focus-visible .btn__mark,
   .btn-primary .btn__mark {
-    --mark-fill: #050505;
+    --mark-disc: linear-gradient(#050505, #050505);
   }
 
   .btn-primary:hover .btn__mark,
   .btn-primary:focus-visible .btn__mark {
-    --mark-fill: var(--accent);
+    --mark-disc: var(--heading-ink-gradient);
   }
 
   .btn__mark:has(> svg),
   .btn-secondary:hover .btn__mark:has(> svg),
   .btn-secondary:focus-visible .btn__mark:has(> svg) {
-    --mark-fill: transparent;
+    --mark-disc: none;
   }
 
   /* The ruled link: small tracked caps over a hairline, and on approach the
-     accent runs along the rule from the left while the arrow steps on. */
+     ink runs along the rule from the left, the words turn to it, and the
+     arrow steps on. */
   .btn-tertiary {
     position: relative;
     display: inline-flex;
@@ -6377,7 +6686,7 @@
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
-    transition: color 240ms var(--ease-out);
+    transition: --ink-lift 240ms var(--ease-out);
   }
 
   .btn-tertiary::before,
@@ -6394,7 +6703,7 @@
   }
 
   .btn-tertiary::after {
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 420ms var(--ease-out);
@@ -6404,7 +6713,7 @@
   .btn-tertiary:focus-visible,
   [data-sweep-host]:hover .btn-tertiary,
   [data-sweep-host]:focus-within .btn-tertiary {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .btn-tertiary:hover::after,
@@ -6419,8 +6728,18 @@
     transition: transform 320ms var(--ease-out);
   }
 
+  /* On a layer from the start: it steps on its own, and a glyph that took a
+     layer only mid-step would drop out of the link's clipped ink. It inks
+     itself, on the link's cue. */
+  .btn-tertiary .btn__arrow {
+    will-change: transform;
+    transition:
+      transform 320ms var(--ease-out),
+      --ink-lift 240ms var(--ease-out);
+  }
+
   /* A platform's own logo in place of the arrow on links that leave for it;
-     it keeps its brand colour when the label turns accent on hover. */
+     it keeps its brand colour when the label turns to the ink on hover. */
   .btn__brand {
     flex: none;
     width: auto;
@@ -6569,7 +6888,9 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.65);
-    transition: color 240ms var(--ease-out);
+    transition:
+      color 240ms var(--ease-out),
+      --ink-lift 240ms var(--ease-out);
   }
 
   .controls-cat::after {
@@ -6578,7 +6899,7 @@
     inset-inline: 0;
     bottom: 10px;
     height: 1px;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 300ms var(--ease-out);
@@ -6590,7 +6911,7 @@
 
   /* State is carried by the rule and the text weight, not colour alone. */
   .controls-cat[data-active] {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .controls-cat[data-active]::after {
@@ -6634,11 +6955,11 @@
     transition: background-color 240ms var(--ease-out);
   }
 
-  /* The accent underline is a second cue, not the only one: the global
+  /* The inked underline is a second cue, not the only one: the global
      `:focus-visible` ring is left in place so focus is never signalled by
      colour alone. */
   .controls-search__input:focus + .controls-search__rule {
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
   }
 
   .archive-empty {
@@ -6678,7 +6999,7 @@
     pointer-events: none;
     background: radial-gradient(
       52% 48% at 22% 34%,
-      rgba(57, 255, 20, 0.07) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.07) 0%,
       transparent 70%
     );
   }
@@ -6688,7 +7009,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .contact-hero__title {
@@ -6754,7 +7074,7 @@
     pointer-events: none;
     background: radial-gradient(
       48% 44% at 78% 18%,
-      rgba(57, 255, 20, 0.05) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.05) 0%,
       transparent 70%
     );
   }
@@ -6819,11 +7139,11 @@
     letter-spacing: 0.24em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.65);
-    transition: color 240ms var(--ease-out);
+    transition: --ink-lift 240ms var(--ease-out);
   }
 
   .enquiry-field:focus-within .enquiry-field__label {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   /* 0.55 keeps it quieter than the label but at ~6:1 on the form ground (AA). */
@@ -6846,6 +7166,10 @@
     font-size: 15px;
     font-weight: 300;
     color: var(--foreground);
+    background-position: left bottom;
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
+    background-origin: border-box;
     transition:
       border-color 280ms var(--ease-out),
       box-shadow 280ms var(--ease-out);
@@ -6865,9 +7189,11 @@
   .enquiry-input:focus,
   .enquiry-input:focus-visible {
     outline: none;
-    border-color: var(--accent);
-    /* A line rather than a halo: the rule thickens, nothing glows. */
-    box-shadow: 0 1px 0 0 var(--accent);
+    /* A line rather than a halo: the rule thickens to 2px of the wash over
+       the hairline, nothing glows. A field has no pseudo-element to carry
+       it, so it is drawn as the field's own background along its foot. */
+    border-color: transparent;
+    background-image: var(--heading-ink-gradient);
   }
 
   .enquiry-field[data-invalid] .enquiry-input {
@@ -6944,9 +7270,9 @@
   /* ---- Sent -------------------------------------------------------------- */
 
   .enquiry-done {
-    border: 1px solid rgba(57, 255, 20, 0.3);
+    border: 1px solid rgb(var(--heading-ink-mid-rgb) / 0.3);
     padding: clamp(28px, 5vw, 56px);
-    background-color: rgba(57, 255, 20, 0.04);
+    background-color: rgb(var(--heading-ink-mid-rgb) / 0.04);
   }
 
   .enquiry-done:focus-visible {
@@ -6961,7 +7287,6 @@
     line-height: 1.05;
     letter-spacing: -0.035em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .enquiry-done__lede {
@@ -7046,7 +7371,7 @@
     font-weight: 300;
     color: var(--foreground);
     word-break: break-word;
-    transition: color 240ms var(--ease-out);
+    transition: --ink-lift 240ms var(--ease-out);
   }
 
   @media (width >= 768px) {
@@ -7056,7 +7381,7 @@
   }
 
   .contact-desk__link:hover {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .contact-desk__note {
@@ -7087,7 +7412,10 @@
     letter-spacing: -0.01em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.86);
-    transition: color 240ms var(--ease-out);
+  }
+
+  .contact-social__label {
+    transition: --ink-lift 240ms var(--ease-out);
   }
 
   @media (width >= 768px) {
@@ -7097,19 +7425,18 @@
   }
 
   .contact-social__link:hover {
-    color: var(--accent);
+    --ink-on: 1;
   }
 
   .contact-social__arrow {
     color: rgba(255, 255, 255, 0.65);
     transition:
       transform 280ms var(--ease-out),
-      color 240ms var(--ease-out);
+      --ink-lift 240ms var(--ease-out);
   }
 
   .contact-social__link:hover .contact-social__arrow {
     transform: translateX(6px);
-    color: var(--accent);
   }
 
   /* ---- The last word ----------------------------------------------------- */
@@ -7125,15 +7452,17 @@
     pointer-events: none;
     background: radial-gradient(
       50% 46% at 68% 60%,
-      rgba(57, 255, 20, 0.06) 0%,
+      rgb(var(--heading-ink-mid-rgb) / 0.06) 0%,
       transparent 70%
     );
   }
 
+  /* The rule down its edge is a strip of the wash run downwards, drawn as
+     a background so it can carry a gradient. */
   .contact-note {
     max-width: 58ch;
-    border-left: 1px solid var(--accent);
-    padding-left: var(--space-lg);
+    padding-left: calc(var(--space-lg) + 1px);
+    background: var(--heading-ink-gradient-down) left / 1px 100% no-repeat;
   }
 
   .contact-note__title {
@@ -7142,7 +7471,6 @@
     font-weight: 400;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .contact-note__copy {
@@ -7188,12 +7516,12 @@
     pointer-events: none;
   }
 
-  /* Haze: two soft accent clouds drifting slowly against each other. */
+  /* Haze: two soft clouds, one of the ink, drifting slowly against each other. */
   .ootm__haze {
     position: absolute;
     inset: -20%;
     background:
-      radial-gradient(40% 32% at 30% 70%, rgba(57, 255, 20, 0.12), transparent 70%),
+      radial-gradient(40% 32% at 30% 70%, rgb(var(--heading-ink-mid-rgb) / 0.12), transparent 70%),
       radial-gradient(36% 28% at 72% 60%, rgba(255, 255, 255, 0.05), transparent 70%);
     filter: blur(20px);
     animation: ootm-haze 26s var(--ease-in-out) infinite alternate;
@@ -7217,7 +7545,7 @@
       from 168deg at 50% 0%,
       transparent 0deg,
       rgba(255, 255, 255, 0.07) 10deg,
-      rgba(57, 255, 20, 0.09) 12deg,
+      rgb(var(--heading-ink-mid-rgb) / 0.09) 12deg,
       rgba(255, 255, 255, 0.07) 14deg,
       transparent 24deg
     );
@@ -7244,7 +7572,7 @@
     width: min(90vw, 900px);
     aspect-ratio: 2 / 1;
     transform: translate(-50%, -50%);
-    background: radial-gradient(closest-side, rgba(57, 255, 20, 0.22), transparent);
+    background: radial-gradient(closest-side, rgb(var(--heading-ink-mid-rgb) / 0.22), transparent);
     opacity: 0;
     animation: ootm-pulse 6s ease-out infinite;
   }
@@ -7309,10 +7637,11 @@
     opacity: 0;
   }
 
-  /* The oversized 404, in the banner's face. A copy in the accent rides over
-     it, revealed by a mask that sweeps slowly across: a light passing over
-     the letters, not a colour change. Mask, not a clipped gradient, so a
-     phone's forced dark mode cannot darken it. */
+  /* The oversized 404, in the banner's face. An inked copy rides over it,
+     revealed by a mask that sweeps slowly across: a light passing over the
+     letters, not a colour change. The sweep is a mask rather than a moving
+     clipped gradient, so a phone's forced dark mode cannot darken it; the
+     copy is inked like the headings (`.ink-text`). */
   .ootm__code {
     position: relative;
     margin: 0;
@@ -7333,7 +7662,6 @@
     content: attr(data-text) / "";
     position: absolute;
     inset: 0 -0.2em 0 0;
-    color: var(--accent);
     -webkit-mask-image: linear-gradient(100deg, transparent 35%, #000 50%, transparent 65%);
     mask-image: linear-gradient(100deg, transparent 35%, #000 50%, transparent 65%);
     -webkit-mask-size: 300% 100%;
@@ -7440,7 +7768,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   /* The site's intro voice (as .nonstop__lede): 15px, light, loose. */
@@ -7510,9 +7837,12 @@
     color: var(--foreground);
   }
 
+  /* The chosen pill is filled with the wash, its label dark on it; the wash
+     runs under the cleared border so the pill is ink to its edge. */
   .clientele__chip[aria-pressed="true"] {
-    background-color: var(--accent);
-    border-color: var(--accent);
+    border-color: transparent;
+    background-image: var(--heading-ink-gradient);
+    background-origin: border-box;
     color: var(--background);
   }
 
@@ -7529,18 +7859,21 @@
   }
 
   .clientele__arrow {
+    position: relative;
     width: 44px;
     height: 44px;
     border: 1px solid var(--border-strong);
     border-radius: 50%;
     transition:
-      color var(--duration-fast) var(--ease-out),
+      --ink-lift var(--duration-fast) var(--ease-out),
       border-color var(--duration-fast) var(--ease-out);
   }
 
+  /* The ring and the arrow both turn to the ink. */
   .clientele__arrow:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    --ink-on: 1;
+    --ink-ring: 1;
+    border-color: transparent;
   }
 
   /* Bleeds to the viewport edge but snaps cards to the container gutter. */
@@ -7565,7 +7898,7 @@
   }
 
   .clientele__rail:focus-visible {
-    outline: 1px solid var(--accent);
+    outline: 1px solid var(--focus-ink);
     outline-offset: -1px;
   }
 
@@ -7614,14 +7947,27 @@
       border-color 300ms var(--ease-out);
   }
 
+  /* Under the pointer the border hands over to a hairline of the wash (the
+     card clips its overflow, so the ring is drawn just inside the border),
+     and a light of the ink follows the pointer. The names stay white. */
+  .clientele__card {
+    --ink-ring-inset: 0px;
+  }
+
   .clientele__card:hover {
-    border-color: rgba(57, 255, 20, 0.55);
+    --ink-ring: 1;
+    border-color: transparent;
   }
 
   .clientele__sheen {
     position: absolute;
     inset: 0;
-    background: radial-gradient(420px circle at var(--mx) var(--my), rgba(57, 255, 20, 0.16), transparent 45%);
+    background: radial-gradient(
+      420px circle at var(--mx) var(--my),
+      rgb(var(--heading-ink-start-rgb) / 0.16),
+      rgb(var(--heading-ink-mid-rgb) / 0.08) 22%,
+      transparent 45%
+    );
     opacity: 0;
     transition: opacity 300ms var(--ease-out);
     pointer-events: none;
@@ -7636,7 +7982,6 @@
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .clientele__mono {
@@ -7652,7 +7997,6 @@
 
   .clientele__star {
     font-size: 11px;
-    color: var(--accent);
   }
 
   .clientele__name {
@@ -7675,19 +8019,32 @@
     color: var(--muted-foreground);
   }
 
+  /* The divider draws out and the wash fades in over its hairline, on a
+     layer of its own so the change eases rather than jumps. */
   .clientele__rule {
+    position: relative;
     margin-block: 16px 12px;
     width: 32px;
     height: 1px;
     background-color: var(--border-strong);
-    transition:
-      width 500ms var(--ease-out),
-      background-color 300ms var(--ease-out);
+    transition: width 500ms var(--ease-out);
+  }
+
+  .clientele__rule::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--heading-ink-gradient);
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
   }
 
   .clientele__card:hover .clientele__rule {
     width: 72px;
-    background-color: var(--accent);
+  }
+
+  .clientele__card:hover .clientele__rule::after {
+    opacity: 1;
   }
 
   .clientele__secondary {
@@ -7742,7 +8099,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   .shared-stages__lede {
@@ -7775,7 +8131,6 @@
     font-weight: 300;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--accent);
   }
 
   /* Phones swipe; the arrows are for tablet and desktop. Same round buttons
@@ -7792,19 +8147,21 @@
   }
 
   .shared-stages__arrow {
+    position: relative;
     width: 44px;
     height: 44px;
     border: 1px solid var(--border-strong);
     border-radius: 50%;
     transition:
-      color var(--duration-fast) var(--ease-out),
+      --ink-lift var(--duration-fast) var(--ease-out),
       border-color var(--duration-fast) var(--ease-out),
       opacity var(--duration-fast) var(--ease-out);
   }
 
   .shared-stages__arrow:hover:not(:disabled) {
-    border-color: var(--accent);
-    color: var(--accent);
+    --ink-on: 1;
+    --ink-ring: 1;
+    border-color: transparent;
   }
 
   .shared-stages__arrow:disabled {
@@ -7858,7 +8215,7 @@
   }
 
   .shared-stages__grid:focus-visible {
-    outline: 1px solid var(--accent);
+    outline: 1px solid var(--focus-ink);
     outline-offset: 4px;
   }
 
@@ -7887,7 +8244,7 @@
   .shared-stages__progress-bar {
     display: block;
     height: 100%;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     transform: scaleX(var(--p, 0.4));
     transform-origin: left;
     transition: transform 150ms linear;
@@ -7908,6 +8265,8 @@
     background-color: #0b0b0b;
     border: 1px solid var(--border);
     transition: border-color 300ms var(--ease-out);
+    /* It clips its overflow, so its ring is drawn just inside the border. */
+    --ink-ring-inset: 0px;
   }
 
   .shared-stages__zoom {
@@ -7946,9 +8305,20 @@
     line-height: 1.12;
     letter-spacing: -0.02em;
     text-transform: uppercase;
-    transition:
-      color 250ms var(--ease-out),
-      transform 400ms var(--ease-out);
+    transition: transform 400ms var(--ease-out);
+  }
+
+  /* The ink arrives as an inked copy of the name faded in over it, not by
+     clipping the name itself: its letters type in on layers of their own,
+     which a clipped wash would leave blank while they animate. */
+  .shared-stages__name::before {
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    position: absolute;
+    inset: 0 0 6px;
+    opacity: 0;
+    transition: opacity 250ms var(--ease-out);
+    pointer-events: none;
   }
 
   .shared-stages__name::after {
@@ -7958,7 +8328,7 @@
     bottom: 0;
     width: 100%;
     height: 1px;
-    background-color: var(--accent);
+    background-image: var(--heading-ink-gradient);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 500ms var(--ease-out);
@@ -8042,12 +8412,16 @@
     }
 
     .shared-stages__tile:hover .shared-stages__frame {
-      border-color: rgba(57, 255, 20, 0.55);
+      --ink-ring: 1;
+      border-color: transparent;
     }
 
     .shared-stages__tile:hover .shared-stages__name {
-      color: var(--accent);
       transform: translateY(-4px);
+    }
+
+    .shared-stages__tile:hover .shared-stages__name::before {
+      opacity: 1;
     }
 
     .shared-stages__tile:hover .shared-stages__name::after {
@@ -8065,6 +8439,7 @@
   .shared-stages__frame,
   .shared-stages__zoom,
   .shared-stages__name,
+  .shared-stages__name::before,
   .shared-stages__name::after {
     transition: none;
   }

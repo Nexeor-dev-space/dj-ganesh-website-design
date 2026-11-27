@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { inkGradient, readHeadingInk } from "@/lib/heading-ink";
 
 /**
  * The 404 stage's signal: a slow waveform across the floor of the frame that
  * every so often drops almost flat and swells back, as if the mix had lost
- * its feed and found it again. Drawn on a canvas in the site accent, at a
- * capped pixel ratio, paused while the tab is hidden, and a single still
- * frame for anyone who has asked for less motion.
+ * its feed and found it again. Drawn on a canvas in the heading ink, run
+ * across the frame the way it runs across a heading, at a capped pixel
+ * ratio, paused while the tab is hidden, and a single still frame for anyone
+ * who has asked for less motion.
  */
 export function MixWaveform() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -17,8 +19,8 @@ export function MixWaveform() {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    const accent =
-      getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#39ff14";
+    const ink = readHeadingInk();
+    let accent: CanvasGradient | string = "#ffffff";
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let width = 0;
     let height = 0;
@@ -31,6 +33,7 @@ export function MixWaveform() {
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      accent = inkGradient(ctx, ink, 0, 0, Math.max(1, width), 0);
     };
 
     // Three strands at different speeds and weights, so it never reads as one

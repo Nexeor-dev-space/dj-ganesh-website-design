@@ -100,7 +100,7 @@ export function AboutSection({
 
       <Container className="relative z-10">
         <p
-          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] text-accent"
+          className="reveal-scroll text-[12px] font-light uppercase tracking-[0.34em] ink-text"
           style={delay(0)}
         >
           {aboutSectionLabel}

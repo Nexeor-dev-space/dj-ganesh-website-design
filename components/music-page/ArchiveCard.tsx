@@ -101,7 +101,7 @@ export function ArchiveCard({ track, index, delay }: ArchiveCardProps) {
           <span className="archive-card__time tabular-nums">
             {isCurrent ? (
               <>
-                <span className={sounding ? "text-accent" : undefined}>
+                <span className={sounding ? "ink-text" : undefined}>
                   {formatTime(currentTime)}
                 </span>
                 <span aria-hidden className="archive-card__slash">

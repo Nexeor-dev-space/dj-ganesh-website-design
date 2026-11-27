@@ -77,7 +77,7 @@ export function DirectContact({
                     rel="noreferrer noopener"
                     className="contact-social__link"
                   >
-                    {social.label}
+                    <span className="contact-social__label">{social.label}</span>
                     <span aria-hidden className="contact-social__arrow">
                       →
                     </span>

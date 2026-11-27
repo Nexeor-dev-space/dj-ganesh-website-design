@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { tourCities as defaultCities, tourRoute as defaultRoute } from "@/lib/tour";
 import type { TourCity } from "@/types/tour";
 import { decodeWorldMask, isLand } from "@/lib/world-mask";
+import { inkGradient, inkRgba, readHeadingInk } from "@/lib/heading-ink";
 
 export type GlobeAnchor = {
   /** Position of the active marker inside the frame, in CSS px. */
@@ -22,8 +23,6 @@ type TourGlobeProps = {
   onSelectCity: (city: string | null) => void;
   onAnchorChange: (anchor: GlobeAnchor | null) => void;
 };
-
-const ACCENT = "57, 255, 20"; // --accent as an rgb triplet, for alpha compositing
 
 /** Degrees of spin per frame while nothing is focused — one turn takes ~3 min. */
 const IDLE_SPIN = 0.035;
@@ -136,6 +135,9 @@ export function TourGlobe({
     if (!ctx) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // The heading ink's three stops: the wash for the route, the leader and
+    // the active label; the mid green alone for the glows and the dots.
+    const ink = readHeadingInk();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     /* ── The land point cloud, sampled once ──────────────────────────────── */
@@ -216,7 +218,7 @@ export function TourGlobe({
       // A faint atmosphere so the globe reads as a body, not a scatter of dots.
       const halo = ctx.createRadialGradient(cx, cy, radius * 0.82, cx, cy, radius * 1.14);
       halo.addColorStop(0, "rgba(255, 255, 255, 0.08)");
-      halo.addColorStop(0.55, `rgba(${ACCENT}, 0.06)`);
+      halo.addColorStop(0.55, inkRgba(ink.mid, 0.06));
       halo.addColorStop(1, "rgba(255, 255, 255, 0)");
       ctx.fillStyle = halo;
       ctx.beginPath();
@@ -284,7 +286,11 @@ export function TourGlobe({
       lineWidth: number,
     ) => {
       const last = Math.max(1, Math.floor(progress * (leg.length - 1)));
-      ctx.strokeStyle = `rgba(${ACCENT}, ${alpha})`;
+      // The wash runs the length of the leg, from where it leaves to where
+      // it has reached.
+      const from = project(leg[0], legLift(0, leg.length));
+      const to = project(leg[last], legLift(last, leg.length));
+      ctx.strokeStyle = inkGradient(ctx, ink, from.x, from.y, to.x, to.y, alpha);
       ctx.lineWidth = lineWidth;
       ctx.lineCap = "round";
 
@@ -308,8 +314,8 @@ export function TourGlobe({
 
     const drawComet = (p: Projected) => {
       const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 13);
-      glow.addColorStop(0, `rgba(${ACCENT}, 0.55)`);
-      glow.addColorStop(1, `rgba(${ACCENT}, 0)`);
+      glow.addColorStop(0, inkRgba(ink.mid, 0.55));
+      glow.addColorStop(1, inkRgba(ink.mid, 0));
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(p.x, p.y, 13, 0, Math.PI * 2);
@@ -339,8 +345,8 @@ export function TourGlobe({
 
       const glowRadius = base * (isActive ? 6 : 3);
       const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowRadius);
-      glow.addColorStop(0, `rgba(${ACCENT}, ${(isActive ? 0.55 : 0.3) * facing})`);
-      glow.addColorStop(1, `rgba(${ACCENT}, 0)`);
+      glow.addColorStop(0, inkRgba(ink.mid, (isActive ? 0.55 : 0.3) * facing));
+      glow.addColorStop(1, inkRgba(ink.mid, 0));
       ctx.fillStyle = glow;
       ctx.beginPath();
       ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2);
@@ -349,7 +355,7 @@ export function TourGlobe({
       if (isActive && !reduceMotion) {
         for (let k = 0; k < 2; k += 1) {
           const phase = (time * 0.42 + k * 0.5) % 1;
-          ctx.strokeStyle = `rgba(${ACCENT}, ${((1 - phase) * 0.42 * facing).toFixed(3)})`;
+          ctx.strokeStyle = inkRgba(ink.mid, (1 - phase) * 0.42 * facing);
           ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.arc(p.x, p.y, base + phase * 26, 0, Math.PI * 2);
@@ -357,13 +363,14 @@ export function TourGlobe({
         }
       }
 
-      // Every city is a marker in the accent — a date announced or not —
-      // with the route's cities a touch brighter and the active one white.
+      // Every city is a marker in the ink — a date announced or not — with
+      // the route's cities a touch brighter and the active one white. A dot
+      // a few pixels across shows one colour, so it takes the mid stop.
       ctx.fillStyle = isActive
         ? `rgba(255, 255, 255, ${facing.toFixed(3)})`
         : onRoute
-          ? `rgba(${ACCENT}, ${(0.95 * facing).toFixed(3)})`
-          : `rgba(${ACCENT}, ${(0.75 * facing).toFixed(3)})`;
+          ? inkRgba(ink.mid, 0.95 * facing)
+          : inkRgba(ink.mid, 0.75 * facing);
       ctx.beginPath();
       ctx.arc(p.x, p.y, isActive ? base + 1 : base, 0, Math.PI * 2);
       ctx.fill();
@@ -379,11 +386,6 @@ export function TourGlobe({
       ctx.textBaseline = (city.labelDy ?? 0) < 0 ? "bottom" : "top";
 
       const labelAlpha = Math.min(1, (p.z - 0.3) * 3.4);
-      ctx.fillStyle = isActive
-        ? `rgba(${ACCENT}, ${labelAlpha.toFixed(3)})`
-        : city.hub
-          ? `rgba(255, 255, 255, ${(0.92 * labelAlpha).toFixed(3)})`
-          : `rgba(255, 255, 255, ${(0.72 * labelAlpha).toFixed(3)})`;
       // Keep the label inside the canvas — near the limb the offset can push
       // a name off the edge, where it would simply be clipped mid-word.
       const label = city.name.toUpperCase();
@@ -392,6 +394,13 @@ export function TourGlobe({
         Math.max(p.x + (city.labelDx ?? 0) * 0.6, halfLabel),
         Math.max(halfLabel, width - halfLabel),
       );
+      // The active city's name is inked across its own width, as the
+      // headings are; the rest stay white.
+      ctx.fillStyle = isActive
+        ? inkGradient(ctx, ink, labelX - halfLabel + 6, 0, labelX + halfLabel - 6, 0, labelAlpha)
+        : city.hub
+          ? `rgba(255, 255, 255, ${(0.92 * labelAlpha).toFixed(3)})`
+          : `rgba(255, 255, 255, ${(0.72 * labelAlpha).toFixed(3)})`;
 
       ctx.fillText(label, labelX, p.y + (city.labelDy ?? 12));
     };
@@ -524,7 +533,7 @@ export function TourGlobe({
         const dir = side === "right" ? 1 : -1;
         const reach = width < 640 ? 26 : 44;
 
-        ctx.strokeStyle = `rgba(${ACCENT}, 0.55)`;
+        ctx.strokeStyle = inkGradient(ctx, ink, p.x + dir * 8, p.y, p.x + dir * reach, p.y, 0.55);
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(p.x + dir * 8, p.y);

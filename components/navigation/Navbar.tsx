@@ -168,7 +168,7 @@ export function Navbar() {
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label={social.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl text-white/70 transition-colors duration-200 hover:bg-white/10 hover:text-accent"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl ink-hover text-white/70 transition-colors duration-200 hover:bg-white/10"
                   >
                     <SocialIcon name={social.icon} className="h-5 w-auto" />
                   </a>
