@@ -16,9 +16,9 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
-import { chromium, type Browser, type Locator, type Page } from 'playwright-core'
+import { chromium, type Browser, type BrowserContext, type Locator, type Page } from 'playwright-core'
 
-import { bootPayload, createFixtures, removeFixtures, type Fixtures } from './fixtures.ts'
+import { bootPayload, createFixtures, removeFixtures, SAMPLE_ENQUIRY_EMAIL, type Fixtures } from './fixtures.ts'
 
 const BASE = (process.env.GUIDE_BASE_URL || 'http://localhost:3000').replace(/\/+$/, '')
 const OUT = path.join(process.cwd(), 'public', 'admin-guide')
@@ -55,6 +55,28 @@ const openFirst = (list: string) => async (p: Page) => {
   await p.locator('.doc-controls').first().waitFor()
 }
 
+/**
+ * Waits until the Dashboard's enquiry list has loaded the sample enquiry,
+ * then removes any other enquiry link as a second safety net. The admin
+ * browser is only ever sent the sample (see onlySampleEnquiries), so this
+ * should find nothing to remove. If the sample has not loaded in time the
+ * shot fails rather than risk saving a half-loaded list.
+ */
+async function showOnlySampleEnquiry(p: Page) {
+  await p
+    .locator('a[href*="/collections/contact-submissions/"]', { hasText: 'Sample Enquiry' })
+    .first()
+    .waitFor({ timeout: 20_000 })
+    .catch(() => {
+      throw new Error('the Sample Enquiry did not load, so the shot was not saved')
+    })
+  await p.evaluate(() => {
+    document.querySelectorAll('a[href*="/collections/contact-submissions/"]').forEach((a) => {
+      if (!a.textContent?.includes('Sample Enquiry')) a.remove()
+    })
+  })
+}
+
 const SHOTS: ShotDef[] = [
   /* Getting started ------------------------------------------------------ */
   {
@@ -70,15 +92,7 @@ const SHOTS: ShotDef[] = [
   {
     id: 'dashboard',
     url: '/admin',
-    prepare: async (p) => {
-      // Only the sample enquiry may be seen: hide every real one.
-      await p.locator('a[href*="/collections/contact-submissions/"]').first().waitFor({ timeout: 15000 }).catch(() => {})
-      await p.evaluate(() => {
-        document.querySelectorAll('a[href*="/collections/contact-submissions/"]').forEach((a) => {
-          if (!a.textContent?.includes('Sample Enquiry')) a.remove()
-        })
-      })
-    },
+    prepare: showOnlySampleEnquiry,
     marks: [
       { at: (p) => p.getByRole('link', { name: 'Edit Home Page' }).first().locator('xpath=..'), n: 1 },
       { at: (p) => p.getByRole('link', { name: /Upcoming shows/ }).first().locator('xpath=..'), n: 2 },
@@ -89,16 +103,13 @@ const SHOTS: ShotDef[] = [
     id: 'sidebar',
     url: '/admin',
     prepare: async (p) => {
+      // The Dashboard's enquiry list shows beside the menu.
+      await showOnlySampleEnquiry(p)
       // A closed menu is still in the page, only faded out.
       const navOnScreen = () => Boolean(document.querySelector('.nav.nav--nav-open'))
       if (!(await p.evaluate(navOnScreen))) await p.locator('.template-default__nav-toggler').first().click()
       await p.waitForFunction(navOnScreen, undefined, { timeout: 10_000 })
       await p.waitForTimeout(500)
-      await p.evaluate(() => {
-        document.querySelectorAll('a[href*="/collections/contact-submissions/"]').forEach((a) => {
-          if (!a.textContent?.includes('Sample Enquiry')) a.remove()
-        })
-      })
     },
     marks: [{ at: (p) => p.locator('#nav-admin-guide'), n: 1 }],
     focus: (p) => p.locator('body'),
@@ -326,6 +337,36 @@ async function capture(page: Page, shot: ShotDef, fixtures: Fixtures) {
   }
 }
 
+/**
+ * Real enquiries must never reach the screenshot browser. Every request the
+ * CMS pages make for contact submissions is narrowed to the sample enquiry
+ * on the server, and the reply is filtered again before the page sees it.
+ */
+async function onlySampleEnquiries(context: BrowserContext) {
+  await context.route(
+    (url) => url.pathname.replace(/\/+$/, '').startsWith('/api/contact-submissions'),
+    async (route) => {
+      const url = new URL(route.request().url())
+      url.searchParams.set('where[email][equals]', SAMPLE_ENQUIRY_EMAIL)
+      const reply = await route.fetch({ url: url.toString() })
+      let body: unknown
+      try {
+        body = await reply.json()
+      } catch {
+        return route.fulfill({ status: 404, json: { errors: [{ message: 'Hidden from screenshots' }] } })
+      }
+      const isSample = (d: unknown) => (d as { email?: string } | null)?.email === SAMPLE_ENQUIRY_EMAIL
+      const res = body as { docs?: unknown[]; totalDocs?: number; email?: string }
+      if (Array.isArray(res.docs)) {
+        res.docs = res.docs.filter(isSample)
+      } else if ('email' in res && !isSample(res)) {
+        return route.fulfill({ status: 404, json: { errors: [{ message: 'Hidden from screenshots' }] } })
+      }
+      return route.fulfill({ response: reply, json: res })
+    },
+  )
+}
+
 async function launch(): Promise<Browser> {
   const wanted = process.env.GUIDE_BROWSER
   if (wanted && /[\\/]/.test(wanted)) return chromium.launch({ executablePath: wanted })
@@ -371,6 +412,7 @@ async function main() {
       })
     }
     const admin = await browser.newContext(common)
+    await onlySampleEnquiries(admin)
     const adminPage = await admin.newPage()
     await adminPage.goto(`${BASE}/admin/login`, { waitUntil: 'networkidle', timeout: 120_000 })
     await adminPage.fill('input[name="email"]', fixtures.email)
