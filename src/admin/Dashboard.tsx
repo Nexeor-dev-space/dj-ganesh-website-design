@@ -78,6 +78,12 @@ export default function Dashboard() {
         <Link style={btn} href="/admin/collections/upcoming-shows/create">Add Show</Link>
         <Link style={btn} href="/admin/collections/music-releases/create">Add Music</Link>
         <a style={btn} href={SITE + '/'} target="_blank" rel="noreferrer">View live site</a>
+        <Link
+          style={{ ...btn, background: 'transparent', color: '#39ff14', border: '1px solid rgba(57, 255, 20, 0.6)' }}
+          href="/admin/guide"
+        >
+          Admin Guide: how to update the site
+        </Link>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12 }}>
         {stat('Upcoming shows', 'shows', '/admin/collections/upcoming-shows')}
